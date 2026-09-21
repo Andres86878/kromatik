@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Kromatik | Ingeniería y Arquitectura Web</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#030307',
+                        cardBg: '#090914',
+                        accentCyan: '#00f2fe',
+                        accentPurple: '#7928ca',
+                        accentPink: '#ff007f',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Librería html2pdf.js para exportación limpia -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030307;
+            color: #f3f4f6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+        .glass-panel {
+            background: rgba(9, 9, 20, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #00f2fe 0%, #7928ca 50%, #ff007f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .bg-grid {
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: #030307;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.25s ease;
+        }
+        .fade-out {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.4)); }
+            50% { transform: scale(1.06); filter: drop-shadow(0 0 30px rgba(121, 40, 202, 0.8)); }
+        }
+        .animate-logo {
+            animation: pulseLogo 2.5s infinite ease-in-out;
+        }
+        .active-plan-card {
+            border-color: #00f2fe !important;
+            background: rgba(0, 242, 254, 0.08) !important;
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.2);
+        }
+        .nav-link-active {
+            color: #00f2fe !important;
+            font-weight: 700;
+            position: relative;
+        }
+        .nav-link-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #00f2fe;
+            border-radius: 999px;
+            box-shadow: 0 0 8px #00f2fe;
+        }
+        .invoice-sheet {
+            background-color: #ffffff !important;
+            color: #090912 !important;
+        }
+        .fluid-title {
+            font-size: clamp(2rem, 4vw + 1rem, 3.75rem);
+            line-height: 1.1;
+        }
+        .fluid-subtitle {
+            font-size: clamp(0.95rem, 1.2vw + 0.5rem, 1.2rem);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-100 antialiased bg-grid relative selection:bg-cyan-500 selection:text-black">
+
+    <iframe name="mail_target_iframe" id="mail_target_iframe" style="display:none;"></iframe>
+
+    <!-- Pantalla de Transición -->
+    <div id="preloader">
+        <div class="text-center relative z-10 px-4">
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-accentCyan to-accentPurple flex items-center justify-center mx-auto mb-4 shadow-xl animate-logo">
+                <i class="fa-solid fa-palette text-black text-2xl sm:text-3xl font-black"></i>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black tracking-widest text-white mb-1">KRO<span class="text-gradient">MATIK</span></h2>
+            <p id="loaderText" class="text-[11px] sm:text-xs text-cyan-400 uppercase tracking-[0.25em] font-semibold">Cargando...</p>
+            <div class="w-40 sm:w-48 h-1 bg-white/10 rounded-full mx-auto mt-4 overflow-hidden">
+                <div id="loaderBar" class="h-full bg-gradient-to-r from-accentCyan via-accentPurple to-accentPink w-0 transition-all duration-150"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header con Traductor Súper Llamativo -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/10">
+        <div class="w-full max-w-7xl mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchPage('hero', 'Cargando Inicio...')">
+                <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-tr from-accentCyan to-accentPurple flex items-center justify-center shadow-md shadow-cyan-500/20">
+                    <i class="fa-solid fa-palette text-black text-xs sm:text-sm font-black"></i>
+                </div>
+                <span class="text-lg sm:text-2xl font-black tracking-wider text-white">KRO<span class="text-gradient">MATIK</span></span>
+            </div>
+
+            <!-- Navegación Desktop -->
+            <nav class="hidden lg:flex items-center space-x-7 text-xs sm:text-sm font-medium text-gray-300">
+                <button id="nav-hero" onclick="switchPage('hero', 'Cargando Inicio...')" class="nav-link-active hover:text-accentCyan transition-colors" data-i18n="nav_inicio">Inicio</button>
+                <button id="nav-simulador" onclick="switchPage('simulador', 'Abriendo Simulador...')" class="hover:text-accentCyan transition-colors" data-i18n="nav_simulador">Simulador Pro</button>
+                <button id="nav-cotizador" onclick="switchPage('cotizador', 'Abriendo Planes...')" class="hover:text-accentCyan transition-colors" data-i18n="nav_planes">Planes & Cotización</button>
+                <button id="nav-contacto" onclick="switchPage('contacto', 'Accediendo a Presupuestos...')" class="hover:text-accentCyan transition-colors" data-i18n="nav_presupuesto">Pedir Presupuesto</button>
+                <button id="nav-soporte" onclick="switchPage('soporte', 'Accediendo a Soporte Técnico...')" class="hover:text-accentCyan transition-colors" data-i18n="nav_soporte">Soporte</button>
+            </nav>
+
+            <div class="hidden sm:flex items-center space-x-4">
+                <!-- Selector de Idioma con Borde Neón y Animación -->
+                <div class="relative">
+                    <div onclick="toggleLangDropdown()" class="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 border-2 border-accentCyan text-white text-xs font-black cursor-pointer hover:scale-105 transition-all shadow-lg shadow-cyan-500/25 animate-pulse">
+                        <i class="fa-solid fa-globe text-accentCyan text-sm"></i>
+                        <span id="currentLangLabel">ESPAÑOL (ES)</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-cyan-300 ml-1"></i>
+                    </div>
+                    <div id="langDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-2xl bg-[#080818] border border-accentCyan/40 shadow-2xl overflow-hidden z-50 py-2">
+                        <button onclick="changeLanguage('es'); toggleLangDropdown();" class="w-full text-left px-4 py-2.5 text-xs font-bold text-gray-200 hover:bg-cyan-500/20 hover:text-cyan-300 transition-colors flex items-center space-x-2">
+                            <span>🇪🇸 Español (ES)</span>
+                        </button>
+                        <button onclick="changeLanguage('en'); toggleLangDropdown();" class="w-full text-left px-4 py-2.5 text-xs font-bold text-gray-200 hover:bg-cyan-500/20 hover:text-cyan-300 transition-colors flex items-center space-x-2">
+                            <span>🇺🇸 English (EN)</span>
+                        </button>
+                        <button onclick="changeLanguage('fr'); toggleLangDropdown();" class="w-full text-left px-4 py-2.5 text-xs font-bold text-gray-200 hover:bg-cyan-500/20 hover:text-cyan-300 transition-colors flex items-center space-x-2">
+                            <span>🇫🇷 Français (FR)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="switchPage('contacto', 'Preparando Presupuesto...')" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-accentCyan to-accentPurple text-black text-xs sm:text-sm font-bold shadow-md shadow-cyan-500/20 hover:opacity-90 transition-all" data-i18n="nav_presupuesto">
+                    Pedir Presupuesto
+                </button>
+            </div>
+
+            <!-- Botón Menú Móvil -->
+            <button onclick="toggleMobileMenu()" class="lg:hidden w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white text-base">
+                <i id="mobileMenuIcon" class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Drawer Menú Móvil -->
+        <div id="mobileMenu" class="hidden lg:hidden px-6 pt-3 pb-6 border-t border-white/10 bg-[#06060e] flex flex-col space-y-3 text-sm font-medium text-gray-300">
+            <div class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+                <span class="text-xs text-cyan-300 font-bold uppercase tracking-wider"><i class="fa-solid fa-globe mr-1.5 text-cyan-400"></i> <span data-i18n="lang_select">Idioma / Language</span></span>
+                <div class="flex space-x-1.5">
+                    <button onclick="changeLanguage('es'); toggleMobileMenu();" class="px-2.5 py-1 rounded bg-cyan-500 text-black text-xs font-black">ES</button>
+                    <button onclick="changeLanguage('en'); toggleMobileMenu();" class="px-2.5 py-1 rounded bg-white/10 text-xs font-black text-white">EN</button>
+                    <button onclick="changeLanguage('fr'); toggleMobileMenu();" class="px-2.5 py-1 rounded bg-white/10 text-xs font-black text-white">FR</button>
+                </div>
+            </div>
+            <button onclick="switchPage('hero'); toggleMobileMenu();" class="text-left py-2 hover:text-cyan-400" data-i18n="nav_inicio">Inicio</button>
+            <button onclick="switchPage('simulador'); toggleMobileMenu();" class="text-left py-2 hover:text-cyan-400" data-i18n="nav_simulador">Simulador Pro</button>
+            <button onclick="switchPage('cotizador'); toggleMobileMenu();" class="text-left py-2 hover:text-cyan-400" data-i18n="nav_planes">Planes & Cotización</button>
+            <button onclick="switchPage('contacto'); toggleMobileMenu();" class="text-left py-2 hover:text-cyan-400" data-i18n="nav_presupuesto">Pedir Presupuesto</button>
+            <button onclick="switchPage('soporte'); toggleMobileMenu();" class="text-left py-2 hover:text-cyan-400" data-i18n="nav_soporte">Soporte Técnico</button>
+            <button onclick="switchPage('contacto'); toggleMobileMenu();" class="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-accentCyan to-accentPurple text-black font-bold text-center" data-i18n="nav_presupuesto">
+                Pedir Presupuesto Ahora
+            </button>
+        </div>
+    </header>
+
+    <main class="min-h-screen w-full">
+
+        <!-- ================= 1. INICIO ================= -->
+        <section id="view-hero" class="page-view relative pt-28 sm:pt-36 pb-20 px-4 sm:px-8">
+            <div class="w-full max-w-7xl mx-auto space-y-16">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+                    <div class="lg:col-span-7 text-left space-y-6">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full glass-panel border border-accentCyan/30 text-xs font-semibold text-accentCyan">
+                            <span class="w-2 h-2 rounded-full bg-accentCyan animate-ping"></span>
+                            <span data-i18n="hero_badge">Arquitectura Web & Rendimiento Comercial &bull; 2026</span>
+                        </div>
+                        
+                        <h1 class="fluid-title font-black tracking-tight text-white">
+                            <span data-i18n="hero_title_1">Tu negocio en internet con el impacto de las</span> <span class="text-gradient" data-i18n="hero_title_2">marcas líderes</span>.
+                        </h1>
+                        
+                        <p class="fluid-subtitle text-gray-300 max-w-2xl leading-relaxed" data-i18n="hero_desc">
+                            Diseñamos plataformas rápidas, visualmente equilibradas y orientadas a captar clientes reales. Obtén una factura desglosada oficial en PDF antes de ordenar.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                            <button onclick="switchPage('cotizador', 'Abriendo Planes...')" class="px-7 py-3.5 rounded-xl bg-gradient-to-r from-accentCyan to-accentPurple text-black font-bold text-sm shadow-lg shadow-cyan-500/20 hover:opacity-90 transition-all flex items-center justify-center space-x-2">
+                                <span data-i18n="hero_btn_planes">Ver Planes & Módulos</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                            <button onclick="switchPage('simulador', 'Abriendo Simulador...')" class="px-7 py-3.5 rounded-xl glass-panel text-white font-semibold text-sm hover:bg-white/10 transition-all flex items-center justify-center space-x-2 border border-white/10">
+                                <i class="fa-solid fa-laptop-code"></i>
+                                <span data-i18n="hero_btn_sim">Explorar Simulador Pro</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5">
+                        <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 space-y-5">
+                            <div class="text-xs font-mono uppercase tracking-widest text-accentCyan flex items-center justify-between">
+                                <span data-i18n="perf_title">Rendimiento Estimado</span>
+                                <span class="px-2.5 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-[11px] font-bold" data-i18n="perf_badge">Auditoría Activa</span>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-white/5 border border-red-500/20 space-y-2">
+                                <div class="flex items-center justify-between text-xs sm:text-sm text-gray-400">
+                                    <span class="text-red-400 font-bold"><i class="fa-solid fa-xmark mr-1"></i> <span data-i18n="perf_common">Sitios Web Comunes</span></span>
+                                    <span>3.8s - 5.2s</span>
+                                </div>
+                                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-red-500 h-full w-[35%]"></div>
+                                </div>
+                                <div class="text-xs text-gray-400" data-i18n="perf_common_desc">Alto porcentaje de abandono por carga lenta en redes móviles.</div>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 space-y-2">
+                                <div class="flex items-center justify-between text-xs sm:text-sm text-accentCyan font-bold">
+                                    <span><i class="fa-solid fa-check mr-1"></i> <span data-i18n="perf_krom">Estándar Kromatik</span></span>
+                                    <span>&lt; 0.4s</span>
+                                </div>
+                                <div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-gradient-to-r from-accentCyan to-accentPurple h-full w-[98%]"></div>
+                                </div>
+                                <div class="text-xs text-gray-300" data-i18n="perf_krom_desc">Carga inmediata en cualquier celular con retención superior al 95%.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 Pilares -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-panel p-6 sm:p-7 rounded-2xl border border-white/10 space-y-2.5">
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-accentCyan text-xl mb-2"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <h4 class="font-bold text-white text-base" data-i18n="pilar_1_title">Diseño Exclusivo</h4>
+                        <p class="text-xs sm:text-sm text-gray-400 leading-relaxed" data-i18n="pilar_1_desc">Sin plantillas genéricas. Cada proyecto se adapta a los objetivos comerciales de tu negocio.</p>
+                    </div>
+
+                    <div class="glass-panel p-6 sm:p-7 rounded-2xl border border-white/10 space-y-2.5">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-accentPurple text-xl mb-2"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                        <h4 class="font-bold text-white text-base" data-i18n="pilar_2_title">Indexación Google (SEO)</h4>
+                        <p class="text-xs sm:text-sm text-gray-400 leading-relaxed" data-i18n="pilar_2_desc">Estructura limpia con microdatos para posicionar tu marca en búsquedas locales.</p>
+                    </div>
+
+                    <div class="glass-panel p-6 sm:p-7 rounded-2xl border border-white/10 space-y-2.5">
+                        <div class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-accentPink text-xl mb-2"><i class="fa-solid fa-headset"></i></div>
+                        <h4 class="font-bold text-white text-base" data-i18n="pilar_3_title">Soporte Continuo</h4>
+                        <p class="text-xs sm:text-sm text-gray-400 leading-relaxed" data-i18n="pilar_3_desc">Atención técnica directa vía WhatsApp y Mail para resolver dudas y actualizaciones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 2. SIMULADOR ================= -->
+        <section id="view-simulador" class="page-view hidden relative pt-28 sm:pt-36 pb-20 px-4 sm:px-8">
+            <div class="w-full max-w-7xl mx-auto space-y-10">
+                <div class="text-center max-w-2xl mx-auto space-y-2">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-accentCyan" data-i18n="sim_lab">Laboratorio de Interfaz</h2>
+                    <p class="text-2xl sm:text-4xl font-black tracking-tight" data-i18n="sim_title">Simulador Interactivo de Proyectos</p>
+                    <p class="text-gray-400 text-xs sm:text-sm" data-i18n="sim_desc">Prueba aplicaciones de muestra con catálogo comercial, filtros y calculadora financiera.</p>
+                </div>
+
+                <div class="glass-panel p-4 sm:p-8 rounded-3xl border border-white/10 space-y-6">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+                        <div class="grid grid-cols-1 sm:flex flex-wrap items-center gap-2">
+                            <button id="simTab-tienda" onclick="setSimulator('tienda')" class="px-4 py-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500 text-cyan-300 text-xs font-bold transition-all text-center" data-i18n="sim_tab_1">
+                                <i class="fa-solid fa-cart-shopping mr-1.5"></i> E-Commerce con Carrito
+                            </button>
+                            <button id="simTab-inmobiliaria" onclick="setSimulator('inmobiliaria')" class="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-xs font-bold hover:text-white transition-all text-center" data-i18n="sim_tab_2">
+                                <i class="fa-solid fa-city mr-1.5"></i> Portal Inmobiliario
+                            </button>
+                            <button id="simTab-corporativo" onclick="setSimulator('corporativo')" class="px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-xs font-bold hover:text-white transition-all text-center" data-i18n="sim_tab_3">
+                                <i class="fa-solid fa-briefcase mr-1.5"></i> Consultoría & Citas
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-center space-x-1.5 bg-black/40 p-1 rounded-xl border border-white/10 text-xs shrink-0">
+                            <button id="viewBtn-desktop" onclick="setDeviceView('desktop')" class="px-3.5 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition-all" data-i18n="view_monitor">
+                                Monitor
+                            </button>
+                            <button id="viewBtn-mobile" onclick="setDeviceView('mobile')" class="px-3.5 py-1.5 rounded-lg text-gray-400 font-semibold hover:text-white transition-all" data-i18n="view_phone">
+                                Teléfono
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="simContainer" class="mx-auto transition-all duration-300 w-full max-w-full">
+                        <div id="simFrame" class="rounded-2xl border border-white/10 bg-darkBg overflow-hidden shadow-2xl p-4 sm:p-6 transition-all w-full">
+                            <div id="simDisplayArea" class="w-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 3. PLANES & COTIZADOR ================= -->
+        <section id="view-cotizador" class="page-view hidden relative pt-28 sm:pt-36 pb-20 px-4 sm:px-8">
+            <div class="w-full max-w-7xl mx-auto space-y-12">
+                <div class="text-center max-w-2xl mx-auto space-y-2">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-accentCyan" data-i18n="planes_sub">Estructuras de Inversión</h2>
+                    <p class="text-2xl sm:text-4xl font-black tracking-tight" data-i18n="planes_title">Planes Oficiales Kromatik</p>
+                    <p class="text-gray-400 text-xs sm:text-sm" data-i18n="planes_desc">Selecciona el plan que mejor se adapte a tu objetivo comercial y avanza a Pedir Presupuesto.</p>
+                </div>
+
+                <!-- Tarjetas de Planes -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Plan 1 -->
+                    <div id="cardPlan-150" onclick="choosePlan('Plan Esencial', 150)" class="glass-panel p-6 rounded-3xl border border-white/10 flex flex-col justify-between hover:border-cyan-500/40 transition-all cursor-pointer active-plan-card">
+                        <div class="space-y-3.5">
+                            <div class="text-[10px] font-bold uppercase tracking-widest text-accentCyan" data-i18n="p1_tag">Entrada Rápida</div>
+                            <h3 class="text-xl font-bold text-white" data-i18n="p1_name">Plan Esencial</h3>
+                            <p class="text-gray-400 text-xs leading-relaxed" data-i18n="p1_desc">Página web de aterrizaje directa para validar tu oferta en internet.</p>
+                            <div class="text-3xl font-black text-white">$150 <span class="text-xs text-gray-400 font-normal">USD</span></div>
+                            <ul class="space-y-2.5 text-xs text-gray-300 pt-2 border-t border-white/10">
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentCyan text-xs"></i><span data-i18n="p1_f1">Landing de alto impacto</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentCyan text-xs"></i><span data-i18n="p1_f2">Modo oscuro inmersivo</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentCyan text-xs"></i><span data-i18n="p1_f3">Adaptación móvil completa</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentCyan text-xs"></i><span data-i18n="p1_f4">WhatsApp directo</span></li>
+                            </ul>
+                        </div>
+                        <button onclick="choosePlanAndGo('Plan Esencial', 150)" class="w-full mt-6 py-3 rounded-xl bg-white/10 text-white font-bold text-xs flex items-center justify-center space-x-2 hover:bg-cyan-500 hover:text-black transition-all">
+                            <span data-i18n="btn_choose">Elegir Plan Esencial</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Plan 2 -->
+                    <div id="cardPlan-300" onclick="choosePlan('Landing Pro', 300)" class="glass-panel p-6 rounded-3xl border border-white/10 flex flex-col justify-between hover:border-cyan-500/40 transition-all cursor-pointer">
+                        <div class="space-y-3.5">
+                            <div class="text-[10px] font-bold uppercase tracking-widest text-cyan-400" data-i18n="p2_tag">Más Popular</div>
+                            <h3 class="text-xl font-bold text-white" data-i18n="p2_name">Landing Pro</h3>
+                            <p class="text-gray-400 text-xs leading-relaxed" data-i18n="p2_desc">Para empresas que buscan captar prospectos todos los días.</p>
+                            <div class="text-3xl font-black text-white">$300 <span class="text-xs text-gray-400 font-normal">USD</span></div>
+                            <ul class="space-y-2.5 text-xs text-gray-300 pt-2 border-t border-white/10">
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-cyan-400 text-xs"></i><span data-i18n="p2_f1">Múltiples secciones</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-cyan-400 text-xs"></i><span data-i18n="p2_f2">Galería de proyectos</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-cyan-400 text-xs"></i><span data-i18n="p2_f3">Formulario de cotización</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-cyan-400 text-xs"></i><span data-i18n="p2_f4">Carga instantánea</span></li>
+                            </ul>
+                        </div>
+                        <button onclick="choosePlanAndGo('Landing Pro', 300)" class="w-full mt-6 py-3 rounded-xl bg-white/10 text-white font-bold text-xs flex items-center justify-center space-x-2 hover:bg-cyan-500 hover:text-black transition-all">
+                            <span data-i18n="btn_choose_pro">Elegir Landing Pro</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Plan 3 -->
+                    <div id="cardPlan-750" onclick="choosePlan('E-Commerce Elite', 750)" class="glass-panel p-6 rounded-3xl border border-white/10 flex flex-col justify-between hover:border-purple-500/40 transition-all cursor-pointer">
+                        <div class="space-y-3.5">
+                            <div class="text-[10px] font-bold uppercase tracking-widest text-accentPurple" data-i18n="p3_tag">Comercio Digital</div>
+                            <h3 class="text-xl font-bold text-white" data-i18n="p3_name">E-Commerce Elite</h3>
+                            <p class="text-gray-400 text-xs leading-relaxed" data-i18n="p3_desc">Tienda online para cobrar productos y gestionar pedidos.</p>
+                            <div class="text-3xl font-black text-white">$750 <span class="text-xs text-gray-400 font-normal">USD</span></div>
+                            <ul class="space-y-2.5 text-xs text-gray-300 pt-2 border-t border-white/10">
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPurple text-xs"></i><span data-i18n="p3_f1">Catálogo de productos</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPurple text-xs"></i><span data-i18n="p3_f2">Cobros con pasarelas</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPurple text-xs"></i><span data-i18n="p3_f3">Panel autogestionable</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPurple text-xs"></i><span data-i18n="p3_f4">Certificado SSL y seguridad</span></li>
+                            </ul>
+                        </div>
+                        <button onclick="choosePlanAndGo('E-Commerce Elite', 750)" class="w-full mt-6 py-3 rounded-xl bg-white/10 text-white font-bold text-xs flex items-center justify-center space-x-2 hover:bg-purple-500 hover:text-white transition-all">
+                            <span data-i18n="btn_choose_ecom">Elegir E-Commerce</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Plan 4 -->
+                    <div id="cardPlan-1200" onclick="choosePlan('Plataforma Custom', 1200)" class="glass-panel p-6 rounded-3xl border border-white/10 flex flex-col justify-between hover:border-pink-500/40 transition-all cursor-pointer">
+                        <div class="space-y-3.5">
+                            <div class="text-[10px] font-bold uppercase tracking-widest text-accentPink" data-i18n="p4_tag">A Medida</div>
+                            <h3 class="text-xl font-bold text-white" data-i18n="p4_name">Custom Total</h3>
+                            <p class="text-gray-400 text-xs leading-relaxed" data-i18n="p4_desc">Arquitectura de código para plataformas con flujos avanzados.</p>
+                            <div class="text-3xl font-black text-white">$1,200+ <span class="text-xs text-gray-400 font-normal">USD</span></div>
+                            <ul class="space-y-2.5 text-xs text-gray-300 pt-2 border-t border-white/10">
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPink text-xs"></i><span data-i18n="p4_f1">Arquitectura de código</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPink text-xs"></i><span data-i18n="p4_f2">Bases de datos relacionales</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPink text-xs"></i><span data-i18n="p4_f3">Integración de APIs</span></li>
+                                <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-accentPink text-xs"></i><span data-i18n="p4_f4">Soporte prioritario</span></li>
+                            </ul>
+                        </div>
+                        <button onclick="choosePlanAndGo('Plataforma Custom', 1200)" class="w-full mt-6 py-3 rounded-xl bg-white/10 text-white font-bold text-xs flex items-center justify-center space-x-2 hover:bg-pink-500 hover:text-white transition-all">
+                            <span data-i18n="btn_choose_cust">Elegir Custom</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Módulos de Expansión -->
+                <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-cyan-500/30 bg-gradient-to-b from-[#0a0a1a] to-cardBg space-y-8">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-5 border-b border-white/10">
+                        <div>
+                            <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold uppercase tracking-wider mb-2">
+                                <i class="fa-solid fa-cubes-stacked text-cyan-400"></i>
+                                <span data-i18n="mod_tag">Potencia Opcional</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-black text-white" data-i18n="mod_title">Módulos de Expansión</h3>
+                            <p class="text-gray-400 text-xs sm:text-sm mt-1" data-i18n="mod_desc">Activa funciones adicionales que se sumarán a tu factura de presupuesto.</p>
+                        </div>
+                        <div class="text-left md:text-right">
+                            <span class="text-xs text-gray-400" data-i18n="mod_total">Total seleccionado:</span>
+                            <div id="expansionTotalDisplay" class="text-2xl sm:text-3xl font-black text-gradient">$150 USD</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div onclick="toggleAddon('seoCheck')" class="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400/50 transition-all cursor-pointer flex flex-col justify-between space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-11 h-11 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300 text-xl">
+                                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                                    </div>
+                                    <input type="checkbox" id="seoCheck" value="100" class="addon-checkbox w-5 h-5 accent-cyan-400 rounded cursor-pointer" onclick="event.stopPropagation(); calculateLiveBudget();">
+                                </div>
+                                <h4 class="font-bold text-white text-base" data-i18n="m1_title">SEO & Indexación Google</h4>
+                                <p class="text-xs text-gray-400 mt-1.5 leading-relaxed" data-i18n="m1_desc">Configuración de metadatos, sitemap y robots.txt para aparecer en búsquedas locales.</p>
+                            </div>
+                            <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                                <span class="text-cyan-400 font-semibold text-xs" data-i18n="m_extra">Módulo Extra</span>
+                                <span class="font-bold text-white text-sm">+$100 USD</span>
+                            </div>
+                        </div>
+
+                        <div onclick="toggleAddon('cmsCheck')" class="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-purple-400/50 transition-all cursor-pointer flex flex-col justify-between space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-11 h-11 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-300 text-xl">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </div>
+                                    <input type="checkbox" id="cmsCheck" value="150" class="addon-checkbox w-5 h-5 accent-purple-400 rounded cursor-pointer" onclick="event.stopPropagation(); calculateLiveBudget();">
+                                </div>
+                                <h4 class="font-bold text-white text-base" data-i18n="m2_title">Panel Autogestionable</h4>
+                                <p class="text-xs text-gray-400 mt-1.5 leading-relaxed" data-i18n="m2_desc">Acceso administrativo privado para cambiar fotos, precios y textos sin programar.</p>
+                            </div>
+                            <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                                <span class="text-purple-400 font-semibold text-xs" data-i18n="m_extra">Módulo Extra</span>
+                                <span class="font-bold text-white text-sm">+$150 USD</span>
+                            </div>
+                        </div>
+
+                        <div onclick="toggleAddon('multiCurrencyCheck')" class="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-pink-400/50 transition-all cursor-pointer flex flex-col justify-between space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-11 h-11 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-300 text-xl">
+                                        <i class="fa-solid fa-wallet"></i>
+                                    </div>
+                                    <input type="checkbox" id="multiCurrencyCheck" value="120" class="addon-checkbox w-5 h-5 accent-pink-400 rounded cursor-pointer" onclick="event.stopPropagation(); calculateLiveBudget();">
+                                </div>
+                                <h4 class="font-bold text-white text-base" data-i18n="m3_title">Checkout Multi-Moneda</h4>
+                                <p class="text-xs text-gray-400 mt-1.5 leading-relaxed" data-i18n="m3_desc">Cobro en bolívares (Pago Móvil) y divisas en la misma pasarela de pago.</p>
+                            </div>
+                            <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+                                <span class="text-pink-400 font-semibold text-xs" data-i18n="m_extra">Módulo Extra</span>
+                                <span class="font-bold text-white text-sm">+$120 USD</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <span class="text-xs sm:text-sm text-gray-400 text-center sm:text-left" data-i18n="mod_footer">
+                            Al hacer clic, se trasladará el total configurado a tu orden oficial.
+                        </span>
+                        <button onclick="transferBudgetToContact()" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-accentCyan to-accentPurple text-black font-bold text-xs sm:text-sm shadow-lg hover:opacity-90 transition-all flex items-center justify-center space-x-2">
+                            <span data-i18n="mod_btn">Pasar a Pedir Presupuesto</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= 4. VISTA: PEDIR PRESUPUESTO ================= -->
+        <section id="view-contacto" class="page-view hidden relative pt-28 sm:pt-36 pb-20 px-4 sm:px-8">
+            <div class="w-full max-w-4xl mx-auto glass-panel p-6 sm:p-10 md:p-12 rounded-3xl border border-white/10 space-y-8">
+                <div class="text-center max-w-2xl mx-auto space-y-2">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-accentCyan" data-i18n="form_sub">Formulación de Proyecto</h2>
+                    <p class="text-2xl sm:text-4xl font-black tracking-tight" data-i18n="form_title">Pedir Presupuesto</p>
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed" data-i18n="form_desc">Ingresa tus datos. Al presionar el botón se emitirá tu <strong>Factura Formal</strong> en PDF descargable antes del envío.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button type="button" id="btnMethodWhatsApp" onclick="switchMethod('whatsapp')" class="p-4 rounded-2xl border border-accentCyan bg-cyan-500/10 text-center transition-all">
+                        <i class="fa-brands fa-whatsapp text-2xl text-accentCyan mb-2 block"></i>
+                        <span class="font-bold text-white text-xs sm:text-sm" data-i18n="meth_wa">Vía WhatsApp Directo</span>
+                        <span class="text-[11px] text-gray-400 block mt-0.5">+58 412 530 2211</span>
+                    </button>
+                    <button type="button" id="btnMethodMail" onclick="switchMethod('mail')" class="p-4 rounded-2xl border border-white/10 bg-darkBg text-center transition-all hover:border-white/30">
+                        <i class="fa-solid fa-envelope text-2xl text-gray-400 mb-2 block"></i>
+                        <span class="font-bold text-white text-xs sm:text-sm" data-i18n="meth_mail">Vía Mail Oficial</span>
+                        <span class="text-[11px] text-gray-400 block mt-0.5">andresdcarrenog@gmail.com</span>
+                    </button>
+                </div>
+
+                <form id="contactForm" target="mail_target_iframe" action="https://formsubmit.co/andresdcarrenog@gmail.com" method="POST" class="space-y-5">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="_subject" value="🔥 NUEVO PRESUPUESTO GENERADO - Kromatik Studio">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2"><span data-i18n="lbl_name">Tu Nombre y Apellido</span> <span class="text-accentPink">*</span></label>
+                            <input type="text" id="clientName" name="Nombre_Titular" required class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan transition-colors" placeholder="Ej. Carlos Mendoza">
+                            <p id="nameError" class="hidden text-accentPink text-[11px] mt-1.5 font-medium flex items-center">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                                <span data-i18n="err_name">Por favor, ingresa tu nombre y apellido (mínimo dos palabras).</span>
+                            </p>
+                        </div>
+
+                        <div>
+                            <label id="labelContact" class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Tu WhatsApp <span class="text-accentPink">*</span></label>
+                            
+                            <div id="boxWhatsAppInput" class="space-y-2">
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <div class="flex gap-2 w-full sm:w-auto">
+                                        <select id="countrySelect" onchange="updateCountryFormat()" class="bg-darkBg border border-white/10 rounded-xl px-3 py-3 text-white text-xs focus:outline-none focus:border-accentCyan transition-colors w-1/2 sm:w-36 shrink-0">
+                                            <option value="VE" data-code="+58" data-digits="7" selected>🇻🇪 +58 (VE)</option>
+                                            <option value="US" data-code="+1" data-digits="10">🇺🇸 +1 (US)</option>
+                                            <option value="ES" data-code="+34" data-digits="9">🇪🇸 +34 (ES)</option>
+                                            <option value="CO" data-code="+57" data-digits="10">🇨🇴 +57 (CO)</option>
+                                            <option value="MX" data-code="+52" data-digits="10">🇲🇽 +52 (MX)</option>
+                                            <option value="AR" data-code="+54" data-digits="10">🇦🇷 +54 (AR)</option>
+                                            <option value="CL" data-code="+56" data-digits="9">🇨🇱 +56 (CL)</option>
+                                            <option value="PE" data-code="+51" data-digits="9">🇵🇪 +51 (PE)</option>
+                                            <option value="PA" data-code="+507" data-digits="8">🇵🇦 +507 (PA)</option>
+                                        </select>
+
+                                        <div id="prefixContainer" class="w-1/2 sm:w-28 shrink-0">
+                                            <select id="operatorSelect" class="w-full bg-darkBg border border-white/10 rounded-xl px-2.5 py-3 text-white text-xs focus:outline-none focus:border-accentCyan">
+                                                <option value="0412">0412</option>
+                                                <option value="0414">0414</option>
+                                                <option value="0424">0424</option>
+                                                <option value="0416">0416</option>
+                                                <option value="0426">0426</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <input type="text" id="phoneDigits" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan transition-colors" placeholder="7 dígitos" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                </div>
+                                <p id="phoneError" class="hidden text-accentPink text-[11px] mt-1.5 font-medium flex items-center">
+                                    <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                                    <span id="phoneErrorMsg">Número incompleto.</span>
+                                </p>
+                            </div>
+
+                            <div id="boxMailInput" class="hidden">
+                                <input type="email" id="emailInput" name="Correo_Electronico" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan transition-colors" placeholder="tucorreo@ejemplo.com">
+                            </div>
+
+                            <input type="hidden" id="fullContactInfo" name="Contacto_Final">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" data-i18n="lbl_plan">Plan o Presupuesto a Solicitar:</label>
+                        <select id="selectedPlanSelect" name="Plan_Presupuesto" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-cyan-300 text-xs sm:text-sm font-bold focus:outline-none focus:border-accentCyan transition-colors cursor-pointer">
+                            <option value="Plan Esencial - $150 USD">Plan Esencial - $150 USD</option>
+                            <option value="Landing Pro - $300 USD">Landing Pro - $300 USD</option>
+                            <option value="E-Commerce Elite - $750 USD">E-Commerce Elite - $750 USD</option>
+                            <option value="Plataforma Custom - $1,200 USD">Plataforma Custom - $1,200+ USD</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" data-i18n="lbl_details">Detalles Específicos del Proyecto</label>
+                        <textarea id="clientMessage" name="Mensaje" rows="4" required class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan transition-colors resize-none" placeholder="Describe brevemente tus requerimientos o dudas antes de emitir la factura..."></textarea>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full py-4 rounded-xl bg-gradient-to-r from-accentCyan via-accentPurple to-accentPink text-black font-bold text-sm tracking-wide shadow-lg shadow-cyan-500/20 hover:opacity-90 transition-all flex items-center justify-center space-x-2">
+                        <span id="btnText" data-i18n="btn_invoice">Emitir Factura Formal & Ver Presupuesto</span>
+                        <i id="btnIcon" class="fa-solid fa-file-invoice-dollar text-base"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= 5. SOPORTE TÉCNICO ================= -->
+        <section id="view-soporte" class="page-view hidden relative pt-28 sm:pt-36 pb-20 px-4 sm:px-8">
+            <div class="w-full max-w-5xl mx-auto space-y-12">
+                <div class="text-center max-w-2xl mx-auto space-y-2">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span data-i18n="sup_badge">Sistemas Operativos 99.9% Online</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-black tracking-tight" data-i18n="sup_title">Centro de Soporte Técnico</h2>
+                    <p class="text-gray-400 text-xs sm:text-sm" data-i18n="sup_desc">Asistencia técnica para incidencias de hosting, dominios y actualizaciones.</p>
+                </div>
+
+                <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-white/10">
+                    <form id="supportForm" target="mail_target_iframe" action="https://formsubmit.co/andresdcarrenog@gmail.com" method="POST" class="space-y-5">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_subject" value="🛠️ TICKET DE SOPORTE - Kromatik">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" data-i18n="sup_name">Nombre o Titular</label>
+                                <input type="text" id="suppName" name="Titular" required class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan" placeholder="Ej. Roberto Gómez">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" data-i18n="sup_url">URL de la Web</label>
+                                <input type="text" id="suppUrl" name="Sitio_Web" required class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan" placeholder="ejemplo.com">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" data-i18n="sup_type">Tipo de Incidencia</label>
+                            <select id="suppType" name="Tipo_Incidencia" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan">
+                                <option value="Actualización de Precios/Fotos" data-i18n="opt_1">Actualización de Precios/Fotos</option>
+                                <option value="Falla de Dominio/DNS" data-i18n="opt_2">Falla de Dominio / DNS</option>
+                                <option value="Configuración de Correo" data-i18n="opt_3">Configuración de Correo</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" data-i18n="sup_details">Detalles</label>
+                            <textarea id="suppDetails" name="Detalles" rows="4" required class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-3 text-white text-xs sm:text-sm focus:outline-none focus:border-accentCyan resize-none" placeholder="Describe brevemente la solicitud o falla..."></textarea>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                            <button type="submit" class="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-bold text-xs sm:text-sm hover:opacity-90 transition-all flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-ticket"></i>
+                                <span data-i18n="sup_btn_mail">Enviar Ticket a andresdcarrenog@gmail.com</span>
+                            </button>
+                            <button type="button" onclick="sendSupportWhatsApp()" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-emerald-600/20 border border-emerald-500/40 text-emerald-300 font-bold text-xs sm:text-sm hover:bg-emerald-600/30 transition-all flex items-center justify-center space-x-2">
+                                <i class="fa-brands fa-whatsapp"></i>
+                                <span data-i18n="sup_btn_wa">Reportar por WhatsApp (+58 412 530 2211)</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= MODAL DE PRESUPUESTO ADAPTABLE ================= -->
+    <div id="invoiceModal" onclick="handleModalBackdropClick(event)" class="hidden fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="glass-panel bg-[#090914] border border-cyan-500/40 w-full max-w-3xl rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-2xl relative my-auto max-h-[95vh] flex flex-col justify-between" onclick="event.stopPropagation()">
+            
+            <div class="flex items-center justify-between pb-3 mb-3 sm:mb-4 border-b border-white/10 shrink-0">
+                <button onclick="closeInvoiceModal()" class="text-xs text-gray-400 hover:text-cyan-400 font-semibold flex items-center space-x-1.5 transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span data-i18n="inv_back">Volver a editar</span>
+                </button>
+                
+                <div class="flex items-center space-x-2">
+                    <button onclick="downloadInvoicePDF()" class="px-4 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-black font-black text-xs flex items-center space-x-1.5 transition-all shadow-md shadow-cyan-500/20 hover:scale-105">
+                        <i class="fa-solid fa-file-pdf text-sm"></i>
+                        <span data-i18n="inv_pdf">DESCARGAR PDF</span>
+                    </button>
+                    
+                    <button onclick="closeInvoiceModal()" title="Cerrar factura" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-500/80 text-gray-300 hover:text-white flex items-center justify-center text-sm transition-all border border-white/10 shrink-0">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-y-auto pr-1">
+                <div id="invoicePrintContent" class="invoice-sheet rounded-xl p-4 sm:p-8 space-y-5 text-left text-[#090912] text-xs shadow">
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-gray-200 gap-3">
+                        <div>
+                            <div class="flex items-center space-x-2 mb-1">
+                                <div class="w-6 h-6 rounded-md bg-[#05050a] flex items-center justify-center shadow">
+                                    <i class="fa-solid fa-palette text-white text-[10px] font-black"></i>
+                                </div>
+                                <span class="text-xl sm:text-2xl font-black tracking-wider text-[#05050a]">KROMATIK</span>
+                            </div>
+                            <div class="text-gray-600 text-[11px] font-medium" data-i18n="inv_sub">Estudio de Ingeniería & Arquitectura Web</div>
+                            <div class="text-gray-600 text-[11px]">andresdcarrenog@gmail.com &bull; +58 412 530 2211</div>
+                        </div>
+                        <div class="text-left sm:text-right">
+                            <div class="text-black font-black font-mono text-sm sm:text-base" id="invNumber">COT-2026-0842</div>
+                            <div class="text-gray-600 text-[11px] font-medium" id="invDate">Fecha: 21 Sep 2026</div>
+                            <div class="text-emerald-700 font-bold text-[11px]" data-i18n="inv_valid">Validez: 15 Días Continuos</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-gray-50 border border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <span class="text-gray-500 uppercase tracking-wider text-[9px] font-bold block" data-i18n="inv_client">Cliente / Titular:</span>
+                            <strong class="text-[#05050a] text-xs sm:text-sm" id="invClientName">Carlos Mendoza</strong>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 uppercase tracking-wider text-[9px] font-bold block" data-i18n="inv_contact">Contacto:</span>
+                            <span class="text-gray-800 font-semibold text-xs sm:text-sm" id="invClientContact">+58 412 530 2211</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs min-w-[340px]">
+                            <thead>
+                                <tr class="border-b-2 border-gray-300 text-gray-700 uppercase text-[9px] font-black">
+                                    <th class="py-2" data-i18n="inv_col_1">Concepto / Entregables</th>
+                                    <th class="py-2 text-center" data-i18n="inv_col_2">Plazo</th>
+                                    <th class="py-2 text-right" data-i18n="inv_col_3">Inversión</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invItemsTable" class="divide-y divide-gray-200 text-gray-800">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pt-3 border-t-2 border-gray-300 flex justify-end">
+                        <div class="w-60 space-y-1.5">
+                            <div class="flex justify-between text-gray-600 text-xs">
+                                <span data-i18n="inv_subtotal">Subtotal:</span>
+                                <span id="invSubtotal" class="text-black font-bold">$150.00 USD</span>
+                            </div>
+                            <div class="flex justify-between text-base font-black text-black pt-1.5 border-t border-gray-300">
+                                <span data-i18n="inv_total">Total Presupuesto:</span>
+                                <span id="invGrandTotal">$150.00 USD</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-lg bg-gray-50 border border-gray-200 space-y-1 text-[10px] text-gray-600">
+                        <div class="font-bold text-gray-800 uppercase" data-i18n="inv_terms_title">Términos de Ejecución Oficial:</div>
+                        <div data-i18n="inv_term_1">&bull; Modalidad de Pago: 50% anticipo y 50% contra entrega final en producción.</div>
+                        <div data-i18n="inv_term_2">&bull; Incluye garantía de 30 días posteriores al lanzamiento para corrección de anomalías.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones Inferiores del Modal -->
+            <div class="mt-4 pt-3 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+                <button onclick="downloadInvoicePDF()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-black font-black text-xs flex items-center justify-center space-x-2 transition-all shadow">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <span data-i18n="inv_pdf">DESCARGAR DOCUMENTO PDF</span>
+                </button>
+                
+                <button onclick="dispatchInvoiceToDestination()" class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-accentCyan to-accentPurple text-black font-bold text-xs flex items-center justify-center space-x-2 shadow hover:opacity-90 transition-all">
+                    <span id="btnModalDispatchText" data-i18n="inv_dispatch_btn">Confirmar y Despachar a WhatsApp</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-12 px-6 bg-darkBg text-center text-xs text-gray-500">
+        <div class="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="switchPage('hero', 'Volviendo al Inicio...')">
+                <div class="w-7 h-7 rounded-md bg-gradient-to-tr from-accentCyan to-accentPurple flex items-center justify-center">
+                    <i class="fa-solid fa-palette text-black text-xs font-black"></i>
+                </div>
+                <span class="text-base font-black tracking-wider text-white">KRO<span class="text-gradient">MATIK</span></span>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-5 text-gray-400 text-xs sm:text-sm">
+                <button onclick="switchPage('hero')" class="hover:text-white" data-i18n="nav_inicio">Inicio</button>
+                <button onclick="switchPage('simulador')" class="hover:text-white" data-i18n="nav_simulador">Simulador Pro</button>
+                <button onclick="switchPage('cotizador')" class="hover:text-white" data-i18n="nav_planes">Planes & Cotización</button>
+                <button onclick="switchPage('contacto')" class="hover:text-white" data-i18n="nav_presupuesto">Pedir Presupuesto</button>
+                <button onclick="switchPage('soporte')" class="hover:text-white" data-i18n="nav_soporte">Soporte</button>
+            </div>
+            <div data-i18n="footer_copy">
+                &copy; 2026 Kromatik. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts de Control e Idiomas (ES, EN, FR) -->
+    <script>
+        let currentMethod = 'whatsapp';
+        let currentBasePlan = 'Plan Esencial';
+        let currentBasePrice = 150;
+        let currentDeviceView = 'desktop';
+        let currentLang = 'es';
+
+        // Diccionario Global y Completo (Interfaz + Facturas)
+        const i18n = {
+            es: {
+                nav_inicio: "Inicio",
+                nav_simulador: "Simulador Pro",
+                nav_planes: "Planes & Cotización",
+                nav_presupuesto: "Pedir Presupuesto",
+                nav_soporte: "Soporte",
+                lang_select: "Idioma / Language",
+                hero_badge: "Arquitectura Web & Rendimiento Comercial • 2026",
+                hero_title_1: "Tu negocio en internet con el impacto de las",
+                hero_title_2: "marcas líderes",
+                hero_desc: "Diseñamos plataformas rápidas, visualmente equilibradas y orientadas a captar clientes reales. Obtén una factura desglosada oficial en PDF antes de ordenar.",
+                hero_btn_planes: "Ver Planes & Módulos",
+                hero_btn_sim: "Explorar Simulador Pro",
+                perf_title: "Rendimiento Estimado",
+                perf_badge: "Auditoría Activa",
+                perf_common: "Sitios Web Comunes",
+                perf_common_desc: "Alto porcentaje de abandono por carga lenta en redes móviles.",
+                perf_krom: "Estándar Kromatik",
+                perf_krom_desc: "Carga inmediata en cualquier celular con retención superior al 95%.",
+                pilar_1_title: "Diseño Exclusivo",
+                pilar_1_desc: "Sin plantillas genéricas. Cada proyecto se adapta a los objetivos comerciales de tu negocio.",
+                pilar_2_title: "Indexación Google (SEO)",
+                pilar_2_desc: "Estructura limpia con microdatos para posicionar tu marca en búsquedas locales.",
+                pilar_3_title: "Soporte Continuo",
+                pilar_3_desc: "Atención técnica directa vía WhatsApp y Mail para resolver dudas y actualizaciones.",
+                sim_lab: "Laboratorio de Interfaz",
+                sim_title: "Simulador Interactivo de Proyectos",
+                sim_desc: "Prueba aplicaciones de muestra con catálogo comercial, filtros y calculadora financiera.",
+                sim_tab_1: "E-Commerce con Carrito",
+                sim_tab_2: "Portal Inmobiliario",
+                sim_tab_3: "Consultoría & Citas",
+                view_monitor: "Monitor",
+                view_phone: "Teléfono",
+                planes_sub: "Estructuras de Inversión",
+                planes_title: "Planes Oficiales Kromatik",
+                planes_desc: "Selecciona el plan que mejor se adapte a tu objetivo comercial y avanza a Pedir Presupuesto.",
+                p1_tag: "Entrada Rápida",
+                p1_name: "Plan Esencial",
+                p1_desc: "Página web de aterrizaje directa para validar tu oferta en internet.",
+                p1_f1: "Landing de alto impacto",
+                p1_f2: "Modo oscuro inmersivo",
+                p1_f3: "Adaptación móvil completa",
+                p1_f4: "WhatsApp directo",
+                p2_tag: "Más Popular",
+                p2_name: "Landing Pro",
+                p2_desc: "Para empresas que buscan captar prospectos todos los días.",
+                p2_f1: "Múltiples secciones",
+                p2_f2: "Galería de proyectos",
+                p2_f3: "Formulario de cotización",
+                p2_f4: "Carga instantánea",
+                p3_tag: "Comercio Digital",
+                p3_name: "E-Commerce Elite",
+                p3_desc: "Tienda online para cobrar productos y gestionar pedidos.",
+                p3_f1: "Catálogo de productos",
+                p3_f2: "Cobros con pasarelas",
+                p3_f3: "Panel autogestionable",
+                p3_f4: "Certificado SSL y seguridad",
+                p4_tag: "A Medida",
+                p4_name: "Custom Total",
+                p4_desc: "Arquitectura de código para plataformas con flujos avanzados.",
+                p4_f1: "Arquitectura de código",
+                p4_f2: "Bases de datos relacionales",
+                p4_f3: "Integración de APIs",
+                p4_f4: "Soporte prioritario",
+                btn_choose: "Elegir Plan Esencial",
+                btn_choose_pro: "Elegir Landing Pro",
+                btn_choose_ecom: "Elegir E-Commerce",
+                btn_choose_cust: "Elegir Custom",
+                mod_tag: "Potencia Opcional",
+                mod_title: "Módulos de Expansión",
+                mod_desc: "Activa funciones adicionales que se sumarán a tu factura de presupuesto.",
+                mod_total: "Total seleccionado:",
+                m1_title: "SEO & Indexación Google",
+                m1_desc: "Configuración de metadatos, sitemap y robots.txt para aparecer en búsquedas locales.",
+                m2_title: "Panel Autogestionable",
+                m2_desc: "Acceso administrativo privado para cambiar fotos, precios y textos sin programar.",
+                m3_title: "Checkout Multi-Moneda",
+                m3_desc: "Cobro en bolívares (Pago Móvil) y divisas en la misma pasarela de pago.",
+                m_extra: "Módulo Extra",
+                mod_footer: "Al hacer clic, se trasladará el total configurado a tu orden oficial.",
+                mod_btn: "Pasar a Pedir Presupuesto",
+                form_sub: "Formulación de Proyecto",
+                form_title: "Pedir Presupuesto",
+                form_desc: "Ingresa tus datos. Al presionar el botón se emitirá tu Factura Formal en PDF descargable antes del envío.",
+                meth_wa: "Vía WhatsApp Directo",
+                meth_mail: "Vía Mail Oficial",
+                lbl_name: "Tu Nombre y Apellido",
+                err_name: "Por favor, ingresa tu nombre y apellido (mínimo dos palabras).",
+                lbl_plan: "Plan o Presupuesto a Solicitar:",
+                lbl_details: "Detalles Específicos del Proyecto",
+                btn_invoice: "Emitir Factura Formal & Ver Presupuesto",
+                sup_badge: "Sistemas Operativos 99.9% Online",
+                sup_title: "Centro de Soporte Técnico",
+                sup_desc: "Asistencia técnica para incidencias de hosting, dominios y actualizaciones.",
+                sup_name: "Nombre o Titular",
+                sup_url: "URL de la Web",
+                sup_type: "Tipo de Incidencia",
+                opt_1: "Actualización de Precios/Fotos",
+                opt_2: "Falla de Dominio / DNS",
+                opt_3: "Configuración de Correo",
+                sup_details: "Detalles",
+                sup_btn_mail: "Enviar Ticket a andresdcarrenog@gmail.com",
+                sup_btn_wa: "Reportar por WhatsApp",
+                inv_back: "Volver a editar",
+                inv_pdf: "DESCARGAR PDF",
+                inv_sub: "Estudio de Ingeniería & Arquitectura Web",
+                inv_valid: "Validez: 15 Días Continuos",
+                inv_client: "Cliente / Titular:",
+                inv_contact: "Contacto:",
+                inv_col_1: "Concepto / Entregables Técnicos",
+                inv_col_2: "Plazo",
+                inv_col_3: "Inversión",
+                inv_subtotal: "Subtotal:",
+                inv_total: "Total Presupuesto:",
+                inv_terms_title: "Términos de Ejecución y Garantía Oficial:",
+                inv_term_1: "• Modalidad de Pago: 50% anticipo y 50% contra entrega final en producción.",
+                inv_term_2: "• Incluye garantía de 30 días posteriores al lanzamiento para corrección de anomalías.",
+                inv_btn_pdf: "DESCARGAR DOCUMENTO PDF",
+                inv_dispatch_btn: "Confirmar y Despachar a WhatsApp",
+                footer_copy: "© 2026 Kromatik. Todos los derechos reservados."
+            },
+            en: {
+                nav_inicio: "Home",
+                nav_simulador: "Pro Simulator",
+                nav_planes: "Plans & Quotes",
+                nav_presupuesto: "Request Quote",
+                nav_soporte: "Support",
+                lang_select: "Language",
+                hero_badge: "Web Architecture & Commercial Performance • 2026",
+                hero_title_1: "Your business on the internet with the impact of",
+                hero_title_2: "leading brands",
+                hero_desc: "We design fast, visually balanced platforms focused on converting real clients. Get an official itemized PDF invoice before ordering.",
+                hero_btn_planes: "View Plans & Modules",
+                hero_btn_sim: "Explore Pro Simulator",
+                perf_title: "Estimated Performance",
+                perf_badge: "Live Audit",
+                perf_common: "Common Websites",
+                perf_common_desc: "High drop-off rate due to slow loading on mobile networks.",
+                perf_krom: "Kromatik Standard",
+                perf_krom_desc: "Instant loading on any mobile device with over 95% retention.",
+                pilar_1_title: "Exclusive Design",
+                pilar_1_desc: "No generic templates. Each project is tailored to your business goals.",
+                pilar_2_title: "Google Indexing (SEO)",
+                pilar_2_desc: "Clean structure with microdata to rank your brand in local searches.",
+                pilar_3_title: "Continuous Support",
+                pilar_3_desc: "Direct technical assistance via WhatsApp and Mail for questions and updates.",
+                sim_lab: "Interface Laboratory",
+                sim_title: "Interactive Project Simulator",
+                sim_desc: "Test real sample apps with commercial catalogs, filters, and financial calculators.",
+                sim_tab_1: "E-Commerce with Cart",
+                sim_tab_2: "Real Estate Portal",
+                sim_tab_3: "Consulting & Booking",
+                view_monitor: "Monitor",
+                view_phone: "Phone",
+                planes_sub: "Investment Structures",
+                planes_title: "Official Kromatik Plans",
+                planes_desc: "Select the plan that best fits your commercial goal and proceed to Request Quote.",
+                p1_tag: "Quick Start",
+                p1_name: "Essential Plan",
+                p1_desc: "Direct landing page to validate your offer on the internet.",
+                p1_f1: "High-impact landing",
+                p1_f2: "Immersive dark mode",
+                p1_f3: "Full mobile adaptation",
+                p1_f4: "Direct WhatsApp",
+                p2_tag: "Most Popular",
+                p2_name: "Landing Pro",
+                p2_desc: "For companies seeking to capture leads every day.",
+                p2_f1: "Multiple sections",
+                p2_f2: "Project gallery",
+                p2_f3: "Quote form",
+                p2_f4: "Instant loading",
+                p3_tag: "Digital Commerce",
+                p3_name: "E-Commerce Elite",
+                p3_desc: "Online store to charge for products and manage orders.",
+                p3_f1: "Product catalog",
+                p3_f2: "Payment gateways",
+                p3_f3: "Self-manageable panel",
+                p3_f4: "SSL certificate & security",
+                p4_tag: "Custom Made",
+                p4_name: "Custom Total",
+                p4_desc: "Code architecture for platforms with advanced workflows.",
+                p4_f1: "Custom architecture",
+                p4_f2: "Relational databases",
+                p4_f3: "API integration",
+                p4_f4: "Priority support",
+                btn_choose: "Choose Essential Plan",
+                btn_choose_pro: "Choose Landing Pro",
+                btn_choose_ecom: "Choose E-Commerce",
+                btn_choose_cust: "Choose Custom",
+                mod_tag: "Optional Power",
+                mod_title: "Expansion Modules",
+                mod_desc: "Activate additional engineering features that will be added to your invoice.",
+                mod_total: "Selected total:",
+                m1_title: "SEO & Google Indexing",
+                m1_desc: "Metadata configuration, sitemap, and robots.txt to appear in local searches.",
+                m2_title: "Self-Managed CMS Panel",
+                m2_desc: "Private admin access to change photos, prices, and text without coding.",
+                m3_title: "Multi-Currency Checkout",
+                m3_desc: "Charge in local currency (Pago Móvil) and foreign currencies in the same gateway.",
+                m_extra: "Extra Module",
+                mod_footer: "Clicking will transfer the configured total to your official order.",
+                mod_btn: "Proceed to Request Quote",
+                form_sub: "Project Formulation",
+                form_title: "Request Quote",
+                form_desc: "Enter your details. Clicking the button will issue your Formal Invoice in downloadable PDF before sending.",
+                meth_wa: "Direct WhatsApp",
+                meth_mail: "Official Mail",
+                lbl_name: "Your Full Name",
+                err_name: "Please enter your first and last name (at least two words).",
+                lbl_plan: "Plan or Quote to Request:",
+                lbl_details: "Specific Project Details",
+                btn_invoice: "Issue Formal Invoice & View Quote",
+                sup_badge: "Operating Systems 99.9% Online",
+                sup_title: "Technical Support Center",
+                sup_desc: "Specialized technical assistance for hosting, domain, and update issues.",
+                sup_name: "Name or Holder",
+                sup_url: "Website URL",
+                sup_type: "Incident Type",
+                opt_1: "Price/Photos Update",
+                opt_2: "Domain / DNS Failure",
+                opt_3: "Email Configuration",
+                sup_details: "Details",
+                sup_btn_mail: "Send Ticket via Mail",
+                sup_btn_wa: "Report via WhatsApp",
+                inv_back: "Back to edit",
+                inv_pdf: "DOWNLOAD PDF",
+                inv_sub: "Web Engineering & Architecture Studio",
+                inv_valid: "Validity: 15 Continuous Days",
+                inv_client: "Client / Holder:",
+                inv_contact: "Contact:",
+                inv_col_1: "Concept / Technical Deliverables",
+                inv_col_2: "Timeline",
+                inv_col_3: "Investment",
+                inv_subtotal: "Subtotal:",
+                inv_total: "Total Quote:",
+                inv_terms_title: "Official Execution Terms & Warranty:",
+                inv_term_1: "• Payment Modality: 50% advance and 50% upon final production delivery.",
+                inv_term_2: "• Includes 30-day post-launch warranty for anomaly correction.",
+                inv_btn_pdf: "DOWNLOAD PDF DOCUMENT",
+                inv_dispatch_btn: "Confirm and Dispatch to WhatsApp",
+                footer_copy: "© 2026 Kromatik. All rights reserved."
+            },
+            fr: {
+                nav_inicio: "Accueil",
+                nav_simulador: "Simulateur Pro",
+                nav_planes: "Plans & Devis",
+                nav_presupuesto: "Demander Devis",
+                nav_soporte: "Support",
+                lang_select: "Langue",
+                hero_badge: "Architecture Web & Performance Commerciale • 2026",
+                hero_title_1: "Votre entreprise sur Internet avec l'impact des",
+                hero_title_2: "marques leaders",
+                hero_desc: "Nous concevons des plateformes rapides et orientées vers la conversion. Obtenez une facture officielle détaillée en PDF avant de commander.",
+                hero_btn_planes: "Voir Plans & Modules",
+                hero_btn_sim: "Explorer Simulateur Pro",
+                perf_title: "Performance Estimée",
+                perf_badge: "Audit en Direct",
+                perf_common: "Sites Web Communs",
+                perf_common_desc: "Taux de rebond élevé en raison d'un chargement lent sur mobile.",
+                perf_krom: "Standard Kromatik",
+                perf_krom_desc: "Chargement instantané sur tout mobile avec une rétention supérieure à 95%.",
+                pilar_1_title: "Design Exclusif",
+                pilar_1_desc: "Pas de modèles génériques. Chaque projet s'adapte à vos objectifs commerciaux.",
+                pilar_2_title: "Indexation Google (SEO)",
+                pilar_2_desc: "Structure propre avec microdonnées pour positionner votre marque localement.",
+                pilar_3_title: "Support Continu",
+                pilar_3_desc: "Assistance technique directe via WhatsApp et Mail pour les questions et mises à jour.",
+                sim_lab: "Laboratoire d'Interface",
+                sim_title: "Simulateur Interactif de Projets",
+                sim_desc: "Testez des applications réelles avec catalogue commercial, filtres et calculateur financier.",
+                sim_tab_1: "E-Commerce avec Panier",
+                sim_tab_2: "Portail Immobilier",
+                sim_tab_3: "Conseil & Rendez-vous",
+                view_monitor: "Moniteur",
+                view_phone: "Téléphone",
+                planes_sub: "Structures d'Investissement",
+                planes_title: "Plans Officiels Kromatik",
+                planes_desc: "Sélectionnez le plan idéal pour votre entreprise et passez à la demande de devis.",
+                p1_tag: "Démarrage Rapide",
+                p1_name: "Plan Essentiel",
+                p1_desc: "Page de destination directe pour valider votre offre sur internet.",
+                p1_f1: "Landing page à fort impact",
+                p1_f2: "Mode sombre immersif",
+                p1_f3: "Adaptation mobile complète",
+                p1_f4: "WhatsApp direct",
+                p2_tag: "Le Plus Populaire",
+                p2_name: "Landing Pro",
+                p2_desc: "Pour les entreprises qui cherchent à capter des prospects chaque jour.",
+                p2_f1: "Sections multiples",
+                p2_f2: "Galerie de projets",
+                p2_f3: "Formulaire de devis",
+                p2_f4: "Chargement instantané",
+                p3_tag: "Commerce Numérique",
+                p3_name: "E-Commerce Elite",
+                p3_desc: "Boutique en ligne pour encaisser des produits et gérer les commandes.",
+                p3_f1: "Catalogue de produits",
+                p3_f2: "Passerelles de paiement",
+                p3_f3: "Panneau autogéré",
+                p3_f4: "Certificat SSL et sécurité",
+                p4_tag: "Sur Mesure",
+                p4_name: "Custom Total",
+                p4_desc: "Architecture de code pour plateformes aux flux avancés.",
+                p4_f1: "Architecture sur mesure",
+                p4_f2: "Bases de données relationnelles",
+                p4_f3: "Intégration d'API",
+                p4_f4: "Support prioritaire",
+                btn_choose: "Choisir Plan Essentiel",
+                btn_choose_pro: "Choisir Landing Pro",
+                btn_choose_ecom: "Choisir E-Commerce",
+                btn_choose_cust: "Choisir Custom",
+                mod_tag: "Puissance Optionnelle",
+                mod_title: "Modules d'Extension",
+                mod_desc: "Activez des fonctionnalités d'ingénierie supplémentaires ajoutées à votre facture.",
+                mod_total: "Total sélectionné :",
+                m1_title: "SEO & Indexation Google",
+                m1_desc: "Configuration des métadonnées, sitemap et robots.txt pour les recherches locales.",
+                m2_title: "Panneau CMS Autogéré",
+                m2_desc: "Accès admin privé pour modifier photos, prix et textes sans coder.",
+                m3_title: "Paiement Multi-Devises",
+                m3_desc: "Encaissement en devises et monnaies locales sur la même passerelle.",
+                m_extra: "Module Extra",
+                mod_footer: "En cliquant, le total configuré sera transféré à votre commande officielle.",
+                mod_btn: "Passer à la Demande de Devis",
+                form_sub: "Formulation de Projet",
+                form_title: "Demander Devis",
+                form_desc: "Entrez vos coordonnées. Un clic émettra votre Facture Formelle en PDF téléchargeable avant l'envoi.",
+                meth_wa: "WhatsApp Direct",
+                meth_mail: "Mail Officiel",
+                lbl_name: "Votre Nom et Prénom",
+                err_name: "Veuillez entrer votre nom et prénom (au moins deux mots).",
+                lbl_plan: "Plan ou Devis à Demander :",
+                lbl_details: "Détails Spécifiques du Projet",
+                btn_invoice: "Émettre Facture & Voir Devis",
+                sup_badge: "Systèmes Opérationnels 99.9% En Ligne",
+                sup_title: "Centre de Support Technique",
+                sup_desc: "Assistance technique spécialisée pour l'hébergement, le domaine et les mises à jour.",
+                sup_name: "Nom ou Titulaire",
+                sup_url: "URL du Site Web",
+                sup_type: "Type d'Incident",
+                opt_1: "Mise à jour Prix/Photos",
+                opt_2: "Panne de Domaine / DNS",
+                opt_3: "Configuration des E-mails",
+                sup_details: "Détails",
+                sup_btn_mail: "Envoyer Ticket par Mail",
+                sup_btn_wa: "Signaler par WhatsApp",
+                inv_back: "Retour à l'édition",
+                inv_pdf: "TÉLÉCHARGER PDF",
+                inv_sub: "Studio d'Ingénierie & Architecture Web",
+                inv_valid: "Validité : 15 Jours Continus",
+                inv_client: "Client / Titulaire :",
+                inv_contact: "Contact :",
+                inv_col_1: "Concept / Livrables Techniques",
+                inv_col_2: "Délai",
+                inv_col_3: "Investissement",
+                inv_subtotal: "Sous-total :",
+                inv_total: "Total Devis :",
+                inv_terms_title: "Conditions d'Exécution et Garantie :",
+                inv_term_1: "• Modalité de Paiement : 50% d'acompte et 50% à la livraison finale.",
+                inv_term_2: "• Inclut une garantie de 30 jours après le lancement pour correction d'anomalies.",
+                inv_btn_pdf: "TÉLÉCHARGER DOCUMENT PDF",
+                inv_dispatch_btn: "Confirmer et Envoyer sur WhatsApp",
+                footer_copy: "© 2026 Kromatik. Tous droits réservés."
+            }
+        };
+
+        function toggleLangDropdown() {
+            const drop = document.getElementById('langDropdown');
+            if (drop) drop.classList.toggle('hidden');
+        }
+
+        // Cambio Global de Idioma (Interfaz + Facturas)
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const labels = { es: 'ESPAÑOL (ES)', en: 'ENGLISH (EN)', fr: 'FRANÇAIS (FR)' };
+            const label = document.getElementById('currentLangLabel');
+            if (label) label.innerText = labels[lang];
+
+            const dict = i18n[lang];
+            if (!dict) return;
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    el.innerText = dict[key];
+                }
+            });
+
+            if (lang === 'en') {
+                document.getElementById('clientName').placeholder = "E.g. Carlos Mendoza (First & Last Name)";
+                document.getElementById('clientMessage').placeholder = "Briefly describe your requirements or questions before issuing the invoice...";
+                document.getElementById('suppDetails').placeholder = "Briefly describe the request or issue...";
+            } else if (lang === 'fr') {
+                document.getElementById('clientName').placeholder = "Ex. Carlos Mendoza (Nom et Prénom)";
+                document.getElementById('clientMessage').placeholder = "Décrivez brièvement vos besoins avant d'émettre la facture...";
+                document.getElementById('suppDetails').placeholder = "Décrivez brièvement la demande ou le problème...";
+            } else {
+                document.getElementById('clientName').placeholder = "Ej. Carlos Mendoza (Nombre y Apellido)";
+                document.getElementById('clientMessage').placeholder = "Describe brevemente tus requerimientos o dudas antes de emitir la factura...";
+                document.getElementById('suppDetails').placeholder = "Describe brevemente la solicitud o falla...";
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.getElementById('mobileMenuIcon');
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                icon.className = 'fa-solid fa-bars';
+            } else {
+                icon.className = 'fa-solid fa-xmark';
+            }
+        }
+
+        function runTransition(callback, customText = 'Cargando...') {
+            const bar = document.getElementById('loaderBar');
+            const preloader = document.getElementById('preloader');
+            const loaderText = document.getElementById('loaderText');
+
+            loaderText.innerText = customText;
+            bar.style.width = '0%';
+            preloader.classList.remove('fade-out');
+
+            let width = 0;
+            const interval = setInterval(() => {
+                width += Math.floor(Math.random() * 40) + 30;
+                if(width >= 100) {
+                    width = 100;
+                    clearInterval(interval);
+                    bar.style.width = '100%';
+                    setTimeout(() => {
+                        if(callback) callback();
+                        window.scrollTo(0, 0);
+                        preloader.classList.add('fade-out');
+                    }, 120);
+                } else {
+                    bar.style.width = width + '%';
+                }
+            }, 25);
+        }
+
+        function switchPage(pageId, loadingText = 'Cargando...') {
+            runTransition(() => {
+                document.querySelectorAll('.page-view').forEach(view => {
+                    view.classList.add('hidden');
+                });
+
+                const targetView = document.getElementById('view-' + pageId);
+                if (targetView) targetView.classList.remove('hidden');
+
+                document.querySelectorAll('nav button').forEach(btn => {
+                    btn.classList.remove('nav-link-active');
+                });
+                const activeNav = document.getElementById('nav-' + pageId);
+                if (activeNav) activeNav.classList.add('nav-link-active');
+            }, loadingText);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.scrollTo(0, 0);
+            runTransition(null, 'Iniciando Plataforma Kromatik...');
+            updateCountryFormat();
+            setSimulator('tienda');
+
+            const nameInput = document.getElementById('clientName');
+            nameInput.addEventListener('input', () => {
+                document.getElementById('nameError').classList.add('hidden');
+                nameInput.classList.remove('border-accentPink');
+            });
+
+            const phoneInput = document.getElementById('phoneDigits');
+            phoneInput.addEventListener('input', () => {
+                document.getElementById('phoneError').classList.add('hidden');
+                phoneInput.classList.remove('border-accentPink');
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeInvoiceModal();
+            });
+        });
+
+        function choosePlan(name, price) {
+            currentBasePlan = name;
+            currentBasePrice = price;
+
+            document.querySelectorAll('[id^="cardPlan-"]').forEach(card => {
+                card.classList.remove('active-plan-card');
+            });
+            const activeCard = document.getElementById('cardPlan-' + price);
+            if (activeCard) activeCard.classList.add('active-plan-card');
+
+            calculateLiveBudget();
+        }
+
+        function choosePlanAndGo(name, price) {
+            choosePlan(name, price);
+            transferBudgetToContact();
+        }
+
+        function toggleAddon(checkboxId) {
+            const cb = document.getElementById(checkboxId);
+            cb.checked = !cb.checked;
+            calculateLiveBudget();
+        }
+
+        function calculateLiveBudget() {
+            let total = currentBasePrice;
+            let addons = [];
+            document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                total += parseInt(cb.value);
+                addons.push(cb.nextElementSibling.querySelector('h4, div').innerText);
+            });
+
+            document.getElementById('expansionTotalDisplay').innerText = `$${total} USD`;
+
+            let finalDesc = `${currentBasePlan} - $${total} USD`;
+            if (addons.length > 0) {
+                finalDesc += ` (+ ${addons.join(', ')})`;
+            }
+
+            const selectElem = document.getElementById('selectedPlanSelect');
+            let optionExists = false;
+            for (let i = 0; i < selectElem.options.length; i++) {
+                if (selectElem.options[i].value === finalDesc) {
+                    selectElem.selectedIndex = i;
+                    optionExists = true;
+                    break;
+                }
+            }
+            if (!optionExists) {
+                const newOpt = new Option(finalDesc, finalDesc, true, true);
+                selectElem.add(newOpt, 0);
+                selectElem.selectedIndex = 0;
+            }
+        }
+
+        function transferBudgetToContact() {
+            switchPage('contacto', 'Abriendo formulario con tu plan...');
+        }
+
+        function isValidFullName(str) {
+            if (!str) return false;
+            const words = str.trim().split(/\s+/);
+            return words.length >= 2 && words[0].length >= 1 && words[1].length >= 1;
+        }
+
+        // Render de Factura con Desglose Financiero Ultra-Detallado y Multi-Idioma
+        function renderInvoiceModal(clientName, clientContact, selectedPlan, details) {
+            const modal = document.getElementById('invoiceModal');
+            const randomCode = 'KMT-2026-' + Math.floor(1000 + Math.random() * 9000);
+            
+            const today = new Date();
+            const dateStr = today.toLocaleDateString(currentLang === 'es' ? 'es-ES' : currentLang === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            document.getElementById('invNumber').innerText = randomCode;
+            document.getElementById('invDate').innerText = (currentLang === 'en' ? 'Date: ' : currentLang === 'fr' ? 'Date : ' : 'Fecha: ') + dateStr;
+            document.getElementById('invClientName').innerText = clientName;
+            document.getElementById('invClientContact').innerText = clientContact;
+
+            const tableBody = document.getElementById('invItemsTable');
+            let itemsHtml = '';
+            let subtotal = 150;
+            let deliveryTime = currentLang === 'en' ? '3 - 5 Business Days' : currentLang === 'fr' ? '3 - 5 Jours Ouvrables' : '3 - 5 Días Laborales';
+
+            if (selectedPlan.includes('Landing Pro') || selectedPlan.includes('300')) {
+                subtotal = 300;
+                deliveryTime = currentLang === 'en' ? '5 - 7 Business Days' : currentLang === 'fr' ? '5 - 7 Jours Ouvrables' : '5 - 7 Días Laborales';
+                itemsHtml = `
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Frontend Architecture & UI/UX Design' : currentLang === 'fr' ? 'Architecture Frontend & Design UI/UX' : 'Arquitectura Frontend & Diseño UI/UX'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Custom responsive wireframes, visual hierarchy and conversion-driven design.' : currentLang === 'fr' ? 'Maquettes responsive personnalisées, hiérarchie visuelle et design de conversion.' : 'Maquetación adaptable, jerarquía visual y diseño orientado a conversión.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">${deliveryTime}</td>
+                        <td class="py-2.5 text-right font-black text-black">$120.00 USD</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Core Web Vitals & Speed Optimization' : currentLang === 'fr' ? 'Optimisation Core Web Vitals & Vitesse' : 'Optimización Core Web Vitals & Rendimiento'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Asset minification, lazy loading, and sub-0.4s instant load configuration.' : currentLang === 'fr' ? 'Minimisation des actifs, chargement différé et configuration de vitesse.' : 'Minificación de recursos, carga diferida y configuración de velocidad <0.4s.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">Inmediato</td>
+                        <td class="py-2.5 text-right font-black text-black">$100.00 USD</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Cloud Edge Hosting & DNS Setup' : currentLang === 'fr' ? 'Hébergement Cloud Edge & Configuration DNS' : 'Infraestructura Cloud Edge & DNS'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'High-availability global server distribution and custom domain linking.' : currentLang === 'fr' ? 'Distribution sur serveurs mondiaux et liaison de domaine personnalisé.' : 'Distribución en servidores globales de alta disponibilidad y enlace de dominio.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">Inmediato</td>
+                        <td class="py-2.5 text-right font-black text-black">$80.00 USD</td>
+                    </tr>
+                `;
+            } else if (selectedPlan.includes('E-Commerce') || selectedPlan.includes('750')) {
+                subtotal = 750;
+                deliveryTime = currentLang === 'en' ? '8 - 12 Business Days' : currentLang === 'fr' ? '8 - 12 Jours Ouvrables' : '8 - 12 Días Laborales';
+                itemsHtml = `
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Advanced E-Commerce Frontend & UI' : currentLang === 'fr' ? 'Frontend E-Commerce Avancé & UI' : 'Frontend E-Commerce Avanzado & UI/UX'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Reactive product catalog, dynamic filtering, and interactive cart drawers.' : currentLang === 'fr' ? 'Catalogue de produits réactif, filtrage dynamique et tiroirs de panier interactifs.' : 'Catálogo de productos reactivo, filtrado dinámico y carrito de compras interactivo.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">${deliveryTime}</td>
+                        <td class="py-2.5 text-right font-black text-black">$350.00 USD</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Inventory Management & Admin CMS' : currentLang === 'fr' ? 'Gestion des Stocks & CMS Admin' : 'Gestión de Inventario & Panel CMS'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Self-manageable backend dashboard to update products, stock levels, and pricing.' : currentLang === 'fr' ? 'Tableau de bord backend pour mettre à jour facilement les produits et les stocks.' : 'Panel administrativo autogestionable para actualizar productos, stock y precios.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">Simultáneo</td>
+                        <td class="py-2.5 text-right font-black text-black">$200.00 USD</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Payment Gateways & TLS/SSL Security' : currentLang === 'fr' ? 'Passerelles de Paiement & Sécurité TLS/SSL' : 'Pasarelas de Cobro & Encriptación SSL/TLS'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Secure credit card processing, checkout encryption, and compliance.' : currentLang === 'fr' ? 'Traitement sécurisé des cartes bancaires et chiffrement de caisse.' : 'Procesamiento seguro de tarjetas, cifrado de transacciones y conformidad.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">Inmediato</td>
+                        <td class="py-2.5 text-right font-black text-black">$200.00 USD</td>
+                    </tr>
+                `;
+            } else if (selectedPlan.includes('Custom') || selectedPlan.includes('1,200')) {
+                subtotal = 1200;
+                deliveryTime = currentLang === 'en' ? '12 - 18 Business Days' : currentLang === 'fr' ? '12 - 18 Jours Ouvrables' : '12 - 18 Días Laborales';
+                itemsHtml = `
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Custom Frontend Architecture & Code' : currentLang === 'fr' ? 'Architecture Frontend Sur Mesure & Code' : 'Arquitectura Frontend Exclusiva & Código a Medida'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Tailored components, bespoke micro-interactions, and high-performance algorithms.' : currentLang === 'fr' ? 'Composants sur mesure, micro-interactions personnalisées et haute performance.' : 'Componentes a la medida, micro-interacciones personalizadas y alto rendimiento.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">${deliveryTime}</td>
+                        <td class="py-2.5 text-right font-black text-black">$600.00 USD</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Relational Databases & User Roles' : currentLang === 'fr' ? 'Bases de Données Relationnelles & Rôles' : 'Bases de Datos Relacionales & Roles de Usuario'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Database schema design, authentication tokens, and granular permission tiers.' : currentLang === 'fr' ? 'Conception de schémas de bases de données, jetons d\'auth et niveaux de permissions.' : 'Diseño de esquemas de datos, tokens de autenticación y niveles de permisos.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">Simultáneo</td>
+                        <td class="py-2.5 text-right font-black text-black">$350.00 USD</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'External API Integration & Cloud Setup' : currentLang === 'fr' ? 'Intégration d\'API Externe & Setup Cloud' : 'Integración de APIs Externas & Servidor Cloud'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Webhook endpoints, third-party software linking, and dedicated cloud scaling.' : currentLang === 'fr' ? 'Points de terminaison webhooks, liaison logicielle et mise à l\'échelle cloud.' : 'Endpoints de webhooks, enlace con software de terceros y escalado cloud.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">Simultáneo</td>
+                        <td class="py-2.5 text-right font-black text-black">$250.00 USD</td>
+                    </tr>
+                `;
+            } else {
+                subtotal = 150;
+                deliveryTime = currentLang === 'en' ? '3 - 5 Business Days' : currentLang === 'fr' ? '3 - 5 Jours Ouvrables' : '3 - 5 Días Laborales';
+                itemsHtml = `
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Essential Landing Page Layout' : currentLang === 'fr' ? 'Mise en Page Landing Page Essentielle' : 'Maquetación Landing Page Esencial'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Optimized single-page layout, dark mode styling and WhatsApp direct link.' : currentLang === 'fr' ? 'Mise en page monopage optimisée, mode sombre et lien WhatsApp direct.' : 'Estructura de una página optimizada, modo oscuro y enlace directo a WhatsApp.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">${deliveryTime}</td>
+                        <td class="py-2.5 text-right font-black text-black">$100.00 USD</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Cloud Deployment & SSL Certificate' : currentLang === 'fr' ? 'Déploiement Cloud & Certificat SSL' : 'Despliegue Cloud & Certificado SSL'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Fast server deployment, domain setup, and active HTTPS encryption.' : currentLang === 'fr' ? 'Déploiement rapide sur serveur, configuration de domaine et HTTPS actif.' : 'Despliegue rápido en servidor, configuración de dominio y cifrado HTTPS.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">Inmediato</td>
+                        <td class="py-2.5 text-right font-black text-black">$50.00 USD</td>
+                    </tr>
+                `;
+            }
+
+            if (document.getElementById('seoCheck')?.checked) {
+                subtotal += 100;
+                itemsHtml += `
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Expansion Module: SEO & Google Indexing' : currentLang === 'fr' ? 'Module d\'Extension: SEO & Indexation Google' : 'Módulo de Expansión: SEO & Indexación Google'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Metadata setup, robots.txt, sitemap.xml, and schema.org microdata.' : currentLang === 'fr' ? 'Configuration des métadonnées, robots.txt, sitemap et microdonnées schema.org.' : 'Configuración de metadatos, robots.txt, sitemap y microdatos schema.org.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">+1 Día</td>
+                        <td class="py-2.5 text-right font-black text-black">$100.00 USD</td>
+                    </tr>
+                `;
+            }
+
+            if (document.getElementById('cmsCheck')?.checked) {
+                subtotal += 150;
+                itemsHtml += `
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Expansion Module: Self-Managed CMS Panel' : currentLang === 'fr' ? 'Module d\'Extension: Panneau CMS Autogéré' : 'Módulo de Expansión: Panel CMS Autogestionable'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Backend dashboard module for effortless text and image editing.' : currentLang === 'fr' ? 'Module de tableau de bord pour l\'édition facile de textes et d\'images.' : 'Módulo de panel administrativo para la edición sencilla de textos e imágenes.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">+2 Días</td>
+                        <td class="py-2.5 text-right font-black text-black">$150.00 USD</td>
+                    </tr>
+                `;
+            }
+
+            if (document.getElementById('multiCurrencyCheck')?.checked) {
+                subtotal += 120;
+                itemsHtml += `
+                    <tr>
+                        <td class="py-2.5">
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Expansion Module: Multi-Currency Checkout' : currentLang === 'fr' ? 'Module d\'Extension: Paiement Multi-Devises' : 'Módulo de Expansión: Checkout Multi-Moneda'}</div>
+                            <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Dual currency support including local mobile payments and foreign currencies.' : currentLang === 'fr' ? 'Support multi-devises incluant les paiements mobiles locaux et devises.' : 'Soporte multimoneda incluyendo pagos móviles locales y divisas extranjeras.'}</div>
+                        </td>
+                        <td class="py-2.5 text-center font-medium">+1 Día</td>
+                        <td class="py-2.5 text-right font-black text-black">$120.00 USD</td>
+                    </tr>
+                `;
+            }
+
+            tableBody.innerHTML = itemsHtml;
+            document.getElementById('invSubtotal').innerText = `$${subtotal}.00 USD`;
+            document.getElementById('invGrandTotal').innerText = `$${subtotal}.00 USD`;
+
+            lastGeneratedInvoice = {
+                name: clientName,
+                contact: clientContact,
+                plan: selectedPlan,
+                message: details,
+                total: `$${subtotal}.00 USD`,
+                number: randomCode
+            };
+
+            const modalDispatchText = document.getElementById('btnModalDispatchText');
+            modalDispatchText.innerText = currentLang === 'en' ? 'Confirm and Dispatch to WhatsApp' : currentLang === 'fr' ? 'Confirmer et Envoyer sur WhatsApp' : 'Confirmar y Despachar a WhatsApp';
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById('invoiceModal').classList.add('hidden');
+        }
+
+        function handleModalBackdropClick(e) {
+            if (e.target.id === 'invoiceModal') {
+                closeInvoiceModal();
+            }
+        }
+
+        function downloadInvoicePDF() {
+            const element = document.getElementById('invoicePrintContent');
+            const opt = {
+                margin:       8,
+                filename:     `Presupuesto_${lastGeneratedInvoice.number}_Kromatik.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, backgroundColor: '#ffffff' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function dispatchInvoiceToDestination() {
+            closeInvoiceModal();
+            if (currentMethod === 'whatsapp') {
+                const waText = encodeURIComponent(
+                    `*¡Hola Kromatik! Confirmo el presupuesto emitido en la web:*\n\n` +
+                    `*Nro Presupuesto:* ${lastGeneratedInvoice.number}\n` +
+                    `*Titular:* ${lastGeneratedInvoice.name}\n` +
+                    `*Contacto:* ${lastGeneratedInvoice.contact}\n` +
+                    `*Plan:* ${lastGeneratedInvoice.plan}\n` +
+                    `*Total:* ${lastGeneratedInvoice.total}\n` +
+                    `*Detalles:* ${lastGeneratedInvoice.message}`
+                );
+                window.open(`https://wa.me/584125302211?text=${waText}`, '_blank');
+            } else {
+                const btn = document.getElementById('submitBtn');
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando por Mail...';
+                btn.disabled = true;
+
+                if (window.location.protocol === 'file:') {
+                    setTimeout(() => {
+                        const mailSubject = encodeURIComponent("Presupuesto Oficial Kromatik: " + lastGeneratedInvoice.plan);
+                        const mailBody = encodeURIComponent(`Nro Presupuesto: ${lastGeneratedInvoice.number}\nTitular: ${lastGeneratedInvoice.name}\nContacto: ${lastGeneratedInvoice.contact}\nTotal: ${lastGeneratedInvoice.total}\n\nDetalles:\n${lastGeneratedInvoice.message}`);
+                        window.location.href = `mailto:andresdcarrenog@gmail.com?subject=${mailSubject}&body=${mailBody}`;
+                        btn.innerHTML = '<span id="btnText">Emitir Factura Formal & Ver Presupuesto</span> <i id="btnIcon" class="fa-solid fa-file-invoice-dollar text-base"></i>';
+                        btn.disabled = false;
+                        document.getElementById('contactForm').reset();
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        btn.innerHTML = '<span id="btnText">Emitir Factura Formal & Ver Presupuesto</span> <i id="btnIcon" class="fa-solid fa-file-invoice-dollar text-base"></i>';
+                        btn.disabled = false;
+                        document.getElementById('contactForm').reset();
+                    }, 1800);
+                }
+            }
+        }
+
+        // ==========================================
+        // SIMULADOR
+        // ==========================================
+        let simCartItems = [];
+        function setSimulator(type) {
+            ['tienda', 'inmobiliaria', 'corporativo'].forEach(t => {
+                const tab = document.getElementById('simTab-' + t);
+                if (tab) {
+                    tab.className = 'px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-xs font-bold hover:text-white transition-all text-center';
+                }
+            });
+            const activeTab = document.getElementById('simTab-' + type);
+            if (activeTab) {
+                activeTab.className = 'px-4 py-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500 text-cyan-300 text-xs font-bold transition-all text-center';
+            }
+
+            if (type === 'tienda') {
+                simCartItems = [];
+                renderEcommerceSim();
+            } else if (type === 'inmobiliaria') {
+                renderRealEstateSim();
+            } else if (type === 'corporativo') {
+                renderCorporateSim();
+            }
+        }
+
+        function renderEcommerceSim() {
+            const area = document.getElementById('simDisplayArea');
+            if (!area) return;
+            area.innerHTML = `
+                <div class="text-left space-y-6 w-full">
+                    <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="font-black text-white text-base tracking-wider">AURA STORE</span>
+                            <span class="text-[10px] bg-pink-500/20 text-pink-300 font-bold px-2 py-0.5 rounded-full border border-pink-500/30">Checkout Funcional</span>
+                        </div>
+                        <button onclick="toggleSimCart()" class="relative p-2.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all">
+                            <i class="fa-solid fa-cart-shopping text-sm"></i>
+                            <span id="simCartBadge" class="absolute -top-1 -right-1 bg-pink-500 text-black font-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-pink-500/40 transition-all flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="h-28 sm:h-32 rounded-xl bg-gradient-to-tr from-pink-500/20 to-purple-500/20 flex items-center justify-center text-pink-400 text-3xl mb-3 relative">
+                                    <i class="fa-solid fa-gem"></i>
+                                    <span class="absolute top-2 right-2 text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">Top</span>
+                                </div>
+                                <div class="font-bold text-white text-sm">Reloj Cronógrafo Noir</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Acero inoxidable pavonado</div>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-pink-400 font-black text-sm">$85 USD</span>
+                                <button onclick="addToSimCart('Reloj Cronógrafo Noir', 85)" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-pink-500 hover:text-black font-bold text-xs transition-all">
+                                    + Añadir
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-pink-500/40 transition-all flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="h-28 sm:h-32 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-purple-500/20 flex items-center justify-center text-cyan-400 text-3xl mb-3 relative">
+                                    <i class="fa-solid fa-shirt"></i>
+                                    <span class="absolute top-2 right-2 text-[10px] bg-pink-500 text-black px-1.5 py-0.5 rounded font-black">-20%</span>
+                                </div>
+                                <div class="font-bold text-white text-sm">Camiseta Minimal</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Algodón 280 GSM premium</div>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-cyan-400 font-black text-sm">$45 USD</span>
+                                <button onclick="addToSimCart('Camiseta Minimal', 45)" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-cyan-400 hover:text-black font-bold text-xs transition-all">
+                                    + Añadir
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-pink-500/40 transition-all flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="h-28 sm:h-32 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 flex items-center justify-center text-emerald-400 text-3xl mb-3 relative">
+                                    <i class="fa-solid fa-glasses"></i>
+                                </div>
+                                <div class="font-bold text-white text-sm">Gafas Polarizadas Aviator</div>
+                                <div class="text-xs text-gray-400 mt-0.5">Protección UV400 titanio</div>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <span class="text-emerald-400 font-black text-sm">$60 USD</span>
+                                <button onclick="addToSimCart('Gafas Polarizadas Aviator', 60)" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-emerald-400 hover:text-black font-bold text-xs transition-all">
+                                    + Añadir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="simCartDrawer" class="hidden p-5 rounded-2xl bg-black/60 border border-pink-500/40 space-y-4">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <span class="text-sm font-bold text-white flex items-center space-x-2">
+                                <i class="fa-solid fa-basket-shopping text-pink-400"></i>
+                                <span>Tu Carrito Simulado</span>
+                            </span>
+                            <button onclick="toggleSimCart()" class="text-xs text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div id="simCartList" class="space-y-2 max-h-36 overflow-y-auto text-xs text-gray-300"></div>
+                        <div class="border-t border-white/10 pt-3 flex items-center justify-between">
+                            <div>
+                                <div class="text-[11px] text-gray-400">Total:</div>
+                                <div id="simCartTotal" class="text-base font-black text-pink-400">$0 USD</div>
+                            </div>
+                            <button onclick="checkoutSimCart()" class="px-5 py-2 rounded-xl bg-pink-500 text-black font-bold text-xs hover:bg-pink-400 transition-all">
+                                Procesar Pedido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            updateSimCartUI();
+        }
+
+        function addToSimCart(name, price) {
+            simCartItems.push({ name, price });
+            updateSimCartUI();
+            const drawer = document.getElementById('simCartDrawer');
+            if (drawer) drawer.classList.remove('hidden');
+        }
+
+        function removeFromSimCart(index) {
+            simCartItems.splice(index, 1);
+            updateSimCartUI();
+        }
+
+        function toggleSimCart() {
+            const drawer = document.getElementById('simCartDrawer');
+            if (drawer) drawer.classList.toggle('hidden');
+        }
+
+        function updateSimCartUI() {
+            const badge = document.getElementById('simCartBadge');
+            const list = document.getElementById('simCartList');
+            const total = document.getElementById('simCartTotal');
+            if (!badge || !list || !total) return;
+
+            badge.innerText = simCartItems.length;
+
+            if (simCartItems.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-500 py-3">Carrito vacío. Añade un producto arriba.</div>';
+                total.innerText = '$0 USD';
+            } else {
+                let sum = 0;
+                list.innerHTML = simCartItems.map((item, idx) => {
+                    sum += item.price;
+                    return `
+                        <div class="flex items-center justify-between p-2 rounded-lg bg-white/5">
+                            <span>${item.name}</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-white">$${item.price}</span>
+                                <button onclick="removeFromSimCart(${idx})" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                total.innerText = `$${sum} USD`;
+            }
+        }
+
+        function checkoutSimCart() {
+            if (simCartItems.length === 0) {
+                alert('Añade un producto al carrito para probar.');
+                return;
+            }
+            alert('¡Simulación completada! En tu web real de Kromatik, este pedido llegaría a tu WhatsApp.');
+        }
+
+        function renderRealEstateSim() {
+            const area = document.getElementById('simDisplayArea');
+            if (!area) return;
+            area.innerHTML = `
+                <div class="text-left space-y-6 w-full">
+                    <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="font-black text-white text-base tracking-wider">URBAN REALTY</span>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-300 font-bold px-2.5 py-0.5 rounded-full border border-cyan-500/30">Inmuebles & Cuotas</span>
+                        </div>
+                        <span class="text-xs text-gray-400 font-mono">14 Inmuebles</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-7 p-5 rounded-2xl bg-white/5 border border-cyan-500/30 space-y-3">
+                            <div class="h-36 sm:h-44 rounded-xl bg-gradient-to-tr from-cyan-900/40 to-purple-900/40 flex items-center justify-center text-cyan-300 text-4xl relative">
+                                <i class="fa-solid fa-building-user"></i>
+                                <span class="absolute top-2 left-2 text-[10px] bg-cyan-400 text-black font-black px-2 py-0.5 rounded">EXCLUSIVO</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-white text-sm sm:text-base">Penthouse Panorámico</h4>
+                                <span class="text-cyan-400 font-black text-base sm:text-lg">$240,000</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 text-center text-xs text-gray-300 pt-2 border-t border-white/10">
+                                <div class="p-2 rounded-lg bg-black/30"><strong>3</strong> Hab.</div>
+                                <div class="p-2 rounded-lg bg-black/30"><strong>3.5</strong> Baños</div>
+                                <div class="p-2 rounded-lg bg-black/30"><strong>220</strong> m²</div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 p-5 rounded-2xl bg-black/40 border border-white/10 space-y-3 text-xs">
+                            <div class="text-xs font-bold uppercase text-cyan-400">Calculadora Cuota Mensual</div>
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Precio ($):</label>
+                                <input type="number" id="propPrice" value="240000" oninput="calcMortgage()" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Inicial (20%):</label>
+                                <input type="number" id="propDown" value="48000" oninput="calcMortgage()" class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-xs">
+                            </div>
+                            <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+                                <span class="text-xs text-gray-300">Cuota estimada:</span>
+                                <span id="propMonthly" class="text-base sm:text-lg font-black text-cyan-300">$1,620 / mes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            calcMortgage();
+        }
+
+        function calcMortgage() {
+            const price = parseFloat(document.getElementById('propPrice')?.value) || 0;
+            const down = parseFloat(document.getElementById('propDown')?.value) || 0;
+            const principal = Math.max(0, price - down);
+            const rate = 0.065 / 12;
+            const n = 15 * 12;
+            const monthly = principal > 0 ? (principal * (rate * Math.pow(1 + rate, n))) / (Math.pow(1 + rate, n) - 1) : 0;
+            const elem = document.getElementById('propMonthly');
+            if (elem) elem.innerText = `$${Math.round(monthly).toLocaleString()} / mes`;
+        }
+
+        function renderCorporateSim() {
+            const area = document.getElementById('simDisplayArea');
+            if (!area) return;
+            area.innerHTML = `
+                <div class="text-left space-y-6 w-full">
+                    <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="font-black text-white text-base tracking-wider">VANGUARD LEGAL</span>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2.5 py-0.5 rounded-full border border-emerald-500/30">Citas Activas</span>
+                        </div>
+                        <span class="text-xs text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check"></i> Citas Disponibles</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-3 text-xs">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/30 flex items-center justify-center text-purple-300 font-black">
+                                    VL
+                                </div>
+                                <div>
+                                    <div class="font-bold text-white text-sm">Dr. Alejandro Mendoza</div>
+                                    <div class="text-xs text-gray-400">Derecho Mercantil</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 text-xs leading-relaxed pt-1">
+                                Sesión preliminar de consultoría preventiva para empresas y marcas por videollamada.
+                            </p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-3.5 text-xs">
+                            <div class="text-xs font-bold text-white uppercase">Horario de Consulta:</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectSimSlot(this, 'Hoy 3:00 PM')" class="slot-btn p-2.5 rounded-xl border border-cyan-500 bg-cyan-500/10 text-cyan-300 text-xs font-bold text-center">Hoy 3:00 PM</button>
+                                <button onclick="selectSimSlot(this, 'Hoy 4:30 PM')" class="slot-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 text-xs font-bold text-center hover:border-white/30">Hoy 4:30 PM</button>
+                                <button onclick="selectSimSlot(this, 'Mañana 10:00 AM')" class="slot-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 text-xs font-bold text-center hover:border-white/30">Mañana 10 AM</button>
+                                <button onclick="selectSimSlot(this, 'Mañana 2:00 PM')" class="slot-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 text-xs font-bold text-center hover:border-white/30">Mañana 2 PM</button>
+                            </div>
+                            <div id="slotConfirmation" class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs text-center font-bold">
+                                Seleccionado: Hoy 3:00 PM
+                            </div>
+                            <button onclick="confirmSimBooking()" class="w-full py-2.5 rounded-xl bg-cyan-400 text-black font-bold text-xs hover:bg-cyan-300 transition-all">
+                                Confirmar Cita
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectSimSlot(btn, text) {
+            document.querySelectorAll('.slot-btn').forEach(b => {
+                b.className = 'slot-btn p-2.5 rounded-xl border border-white/10 bg-white/5 text-gray-300 text-xs font-bold text-center hover:border-white/30';
+            });
+            btn.className = 'slot-btn p-2.5 rounded-xl border border-cyan-500 bg-cyan-500/10 text-cyan-300 text-xs font-bold text-center';
+            const elem = document.getElementById('slotConfirmation');
+            if (elem) elem.innerText = `Seleccionado: ${text}`;
+        }
+
+        function confirmSimBooking() {
+            alert('¡Cita simulada! En tu web real de Kromatik, este botón agendará automáticamente en Google Calendar.');
+        }
+
+        function setDeviceView(device) {
+            currentDeviceView = device;
+            const container = document.getElementById('simContainer');
+            const dBtn = document.getElementById('viewBtn-desktop');
+            const mBtn = document.getElementById('viewBtn-mobile');
+
+            if (!container || !dBtn || !mBtn) return;
+
+            if (device === 'mobile') {
+                container.style.maxWidth = '390px';
+                mBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition-all';
+                dBtn.className = 'px-3.5 py-1.5 rounded-lg text-gray-400 font-semibold hover:text-white transition-all';
+            } else {
+                container.style.maxWidth = '100%';
+                dBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white/10 text-white font-semibold transition-all';
+                mBtn.className = 'px-3.5 py-1.5 rounded-lg text-gray-400 font-semibold hover:text-white transition-all';
+            }
+        }
+
+        function updateCountryFormat() {
+            const select = document.getElementById('countrySelect');
+            if (!select) return;
+            const selectedOpt = select.options[select.selectedIndex];
+            const country = select.value;
+            const requiredDigits = parseInt(selectedOpt.getAttribute('data-digits')) || 7;
+            const prefixBox = document.getElementById('prefixContainer');
+            const digits = document.getElementById('phoneDigits');
+
+            if (!digits || !prefixBox) return;
+            digits.maxLength = requiredDigits;
+
+            if (country === 'VE') {
+                prefixBox.classList.remove('hidden');
+                prefixBox.innerHTML = `
+                    <select id="operatorSelect" class="w-full bg-darkBg border border-white/10 rounded-xl px-2.5 py-3 text-white text-xs focus:outline-none focus:border-accentCyan">
+                        <option value="0412">0412</option>
+                        <option value="0414">0414</option>
+                        <option value="0424">0424</option>
+                        <option value="0416">0416</option>
+                        <option value="0426">0426</option>
+                    </select>
+                `;
+                digits.placeholder = "7 dígitos (5302211)";
+            } else {
+                prefixBox.classList.add('hidden');
+                digits.placeholder = `${requiredDigits} dígitos`;
+            }
+        }
+
+        function switchMethod(method) {
+            currentMethod = method;
+            const btnW = document.getElementById('btnMethodWhatsApp');
+            const btnM = document.getElementById('btnMethodMail');
+            const btnText = document.getElementById('btnText');
+            const labelContact = document.getElementById('labelContact');
+            const boxWhatsAppInput = document.getElementById('boxWhatsAppInput');
+            const boxMailInput = document.getElementById('boxMailInput');
+
+            if (!btnW || !btnM || !btnText || !labelContact || !boxWhatsAppInput || !boxMailInput) return;
+
+            if (method === 'whatsapp') {
+                btnW.className = 'p-4 rounded-2xl border border-accentCyan bg-cyan-500/10 text-center transition-all';
+                btnW.querySelector('i').className = 'fa-brands fa-whatsapp text-2xl text-accentCyan mb-2 block';
+                btnM.className = 'p-4 rounded-2xl border border-white/10 bg-darkBg text-center transition-all hover:border-white/30';
+                btnM.querySelector('i').className = 'fa-solid fa-envelope text-2xl text-gray-400 mb-2 block';
+                
+                labelContact.innerText = 'Tu WhatsApp *';
+                boxWhatsAppInput.classList.remove('hidden');
+                boxMailInput.classList.add('hidden');
+                const emailInp = document.getElementById('emailInput');
+                const phoneDig = document.getElementById('phoneDigits');
+                if (emailInp) emailInp.required = false;
+                if (phoneDig) phoneDig.required = true;
+
+                btnText.innerText = 'Emitir Factura Formal & Enviar a WhatsApp';
+            } else {
+                btnM.className = 'p-4 rounded-2xl border border-accentCyan bg-cyan-500/10 text-center transition-all';
+                btnM.querySelector('i').className = 'fa-solid fa-envelope text-2xl text-accentCyan mb-2 block';
+                btnW.className = 'p-4 rounded-2xl border border-white/10 bg-darkBg text-center transition-all hover:border-white/30';
+                btnW.querySelector('i').className = 'fa-brands fa-whatsapp text-2xl text-gray-400 mb-2 block';
+                
+                labelContact.innerText = 'Tu Correo Electrónico (Mail) *';
+                boxWhatsAppInput.classList.add('hidden');
+                boxMailInput.classList.remove('hidden');
+                const emailInp = document.getElementById('emailInput');
+                const phoneDig = document.getElementById('phoneDigits');
+                if (emailInp) emailInp.required = true;
+                if (phoneDig) phoneDig.required = false;
+
+                btnText.innerText = 'Emitir Factura Formal & Enviar por Mail';
+            }
+        }
+
+        const contactForm = document.getElementById('contactForm');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const nameInput = document.getElementById('clientName');
+                const nameVal = nameInput.value.trim();
+
+                if (!isValidFullName(nameVal)) {
+                    document.getElementById('nameError').classList.remove('hidden');
+                    nameInput.classList.add('border-accentPink');
+                    nameInput.focus();
+                    return;
+                }
+
+                let contactValue = '';
+
+                if (currentMethod === 'whatsapp') {
+                    const sel = document.getElementById('countrySelect');
+                    const selectedOpt = sel.options[sel.selectedIndex];
+                    const dialCode = selectedOpt.getAttribute('data-code');
+                    const requiredDigits = parseInt(selectedOpt.getAttribute('data-digits')) || 7;
+                    const phoneDigitsInput = document.getElementById('phoneDigits');
+                    const rawDigits = phoneDigitsInput.value.trim();
+
+                    if (rawDigits.length !== requiredDigits) {
+                        const phoneError = document.getElementById('phoneError');
+                        const phoneErrorMsg = document.getElementById('phoneErrorMsg');
+                        phoneErrorMsg.innerText = currentLang === 'en' ? `Incomplete number: must be exactly ${requiredDigits} digits.` : currentLang === 'fr' ? `Numéro incomplet : doit comporter exactement ${requiredDigits} chiffres.` : `Número incompleto: debes ingresar exactamente ${requiredDigits} dígitos (tienes ${rawDigits.length}).`;
+                        phoneError.classList.remove('hidden');
+                        phoneDigitsInput.classList.add('border-accentPink');
+                        phoneDigitsInput.focus();
+                        return;
+                    }
+
+                    const operator = document.getElementById('operatorSelect')?.value || '';
+                    contactValue = `${dialCode} ${operator} ${rawDigits}`.trim();
+                } else {
+                    contactValue = document.getElementById('emailInput').value.trim();
+                    const fullInfo = document.getElementById('fullContactInfo');
+                    if (fullInfo) fullInfo.value = contactValue;
+                }
+
+                const plan = document.getElementById('selectedPlanSelect').value;
+                const message = document.getElementById('clientMessage').value;
+
+                renderInvoiceModal(nameVal, contactValue, plan, message);
+            });
+        }
+
+        function sendSupportWhatsApp() {
+            const name = document.getElementById('suppName').value || 'Cliente';
+            const url = document.getElementById('suppUrl').value || 'Sin URL';
+            const type = document.getElementById('suppType').value;
+            const details = document.getElementById('suppDetails').value || 'Solicitud de soporte';
+
+            const text = encodeURIComponent(
+                `*🛠️ TICKET DE SOPORTE - KROMATIK*\n\n` +
+                `*Titular:* ${name}\n` +
+                `*Sitio Web:* ${url}\n` +
+                `*Tipo de Incidencia:* ${type}\n` +
+                `*Detalle:* ${details}`
+            );
+            window.open(`https://wa.me/584125302211?text=${text}`, '_blank');
+        }
+
+        const supportForm = document.getElementById('supportForm');
+        if (supportForm) {
+            supportForm.addEventListener('submit', function(e) {
+                alert('¡Ticket de asistencia enviado con éxito a andresdcarrenog@gmail.com!');
+                this.reset();
+            });
+        }
+    </script>
+</body>
+</html>
