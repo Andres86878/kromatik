@@ -527,7 +527,7 @@
                     </button>
                 </div>
 
-                <form id="contactForm" target="mail_target_iframe" action="https://formsubmit.co/andresdcarrenog@gmail.com" method="POST" class="space-y-5">
+                <form id="contactForm" class="space-y-5">
                     <input type="hidden" name="_captcha" value="false">
                     <input type="hidden" name="_template" value="table">
                     <input type="hidden" name="_subject" value="🔥 NUEVO PRESUPUESTO GENERADO - Kromatik Studio">
@@ -623,10 +623,7 @@
                 </div>
 
                 <div class="glass-panel p-6 sm:p-10 rounded-3xl border border-white/10">
-                    <form id="supportForm" target="mail_target_iframe" action="https://formsubmit.co/andresdcarrenog@gmail.com" method="POST" class="space-y-5">
-                        <input type="hidden" name="_captcha" value="false">
-                        <input type="hidden" name="_subject" value="🛠️ TICKET DE SOPORTE - Kromatik">
-
+                    <form id="supportForm" class="space-y-5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2" data-i18n="sup_name">Nombre o Titular</label>
@@ -765,9 +762,9 @@
                     <span data-i18n="inv_pdf">DESCARGAR DOCUMENTO PDF</span>
                 </button>
                 
-                <button onclick="dispatchInvoiceToDestination()" class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-accentCyan to-accentPurple text-black font-bold text-xs flex items-center justify-center space-x-2 shadow hover:opacity-90 transition-all">
-                    <span id="btnModalDispatchText" data-i18n="inv_dispatch_btn">Confirmar y Despachar a WhatsApp</span>
-                    <i class="fa-solid fa-arrow-right"></i>
+                <button onclick="dispatchInvoiceToDestination()" class="w-full sm:w-auto px-7 py-3 rounded-xl bg-gradient-to-r from-accentCyan to-accentPurple text-black font-bold text-xs sm:text-sm shadow hover:opacity-90 transition-all flex items-center justify-center space-x-2">
+                    <span id="btnModalDispatchText" data-i18n="inv_dispatch_btn">Confirmar y Despachar</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
             </div>
 
@@ -804,7 +801,6 @@
         let currentDeviceView = 'desktop';
         let currentLang = 'es';
 
-        // Diccionario Global y Completo (Interfaz + Facturas)
         const i18n = {
             es: {
                 nav_inicio: "Inicio",
@@ -1028,8 +1024,8 @@
                 opt_2: "Domain / DNS Failure",
                 opt_3: "Email Configuration",
                 sup_details: "Details",
-                sup_btn_mail: "Send Ticket via Mail",
-                sup_btn_wa: "Report via WhatsApp",
+                sup_btn_mail: "Send Ticket to andresdcarrenog@gmail.com",
+                sup_btn_wa: "Report via WhatsApp (+58 412 530 2211)",
                 inv_back: "Back to edit",
                 inv_pdf: "DOWNLOAD PDF",
                 inv_sub: "Web Engineering & Architecture Studio",
@@ -1045,7 +1041,7 @@
                 inv_term_1: "• Payment Modality: 50% advance and 50% upon final production delivery.",
                 inv_term_2: "• Includes 30-day post-launch warranty for anomaly correction.",
                 inv_btn_pdf: "DOWNLOAD PDF DOCUMENT",
-                inv_dispatch_btn: "Confirm and Dispatch to WhatsApp",
+                inv_dispatch_btn: "Confirm and Dispatch",
                 footer_copy: "© 2026 Kromatik. All rights reserved."
             },
             fr: {
@@ -1150,7 +1146,7 @@
                 opt_3: "Configuration des E-mails",
                 sup_details: "Détails",
                 sup_btn_mail: "Envoyer Ticket par Mail",
-                sup_btn_wa: "Signaler par WhatsApp",
+                sup_btn_wa: "Signaler par WhatsApp (+58 412 530 2211)",
                 inv_back: "Retour à l'édition",
                 inv_pdf: "TÉLÉCHARGER PDF",
                 inv_sub: "Studio d'Ingénierie & Architecture Web",
@@ -1166,7 +1162,7 @@
                 inv_term_1: "• Modalité de Paiement : 50% d'acompte et 50% à la livraison finale.",
                 inv_term_2: "• Inclut une garantie de 30 jours après le lancement pour correction d'anomalies.",
                 inv_btn_pdf: "TÉLÉCHARGER DOCUMENT PDF",
-                inv_dispatch_btn: "Confirmer et Envoyer sur WhatsApp",
+                inv_dispatch_btn: "Confirmer et Envoyer",
                 footer_copy: "© 2026 Kromatik. Tous droits réservés."
             }
         };
@@ -1470,7 +1466,7 @@
                     </tr>
                     <tr>
                         <td class="py-2.5">
-                            <div class="font-bold text-black">${currentLang === 'en' ? 'Cloud Deployment & SSL Certificate' : currentLang === 'fr' ? 'Déploiement Cloud & Certificat SSL' : 'Despliegue Cloud & Certificado SSL'}</div>
+                            <div class="font-bold text-black">${currentLang === 'en' ? 'Cloud Deployment & SSL Certificate' : currentLang === 'fr' ? 'Déploiement Cloud & Certificat SSL' : 'Despliegue Cloud & Certificado de Seguridad SSL'}</div>
                             <div class="text-[10px] text-gray-600">${currentLang === 'en' ? 'Fast server deployment, domain setup, and active HTTPS encryption.' : currentLang === 'fr' ? 'Déploiement rapide sur serveur, configuration de domaine et HTTPS actif.' : 'Despliegue rápido en servidor, configuración de dominio y cifrado HTTPS.'}</div>
                         </td>
                         <td class="py-2.5 text-center font-medium">Inmediato</td>
@@ -1535,7 +1531,7 @@
             };
 
             const modalDispatchText = document.getElementById('btnModalDispatchText');
-            modalDispatchText.innerText = currentLang === 'en' ? 'Confirm and Dispatch to WhatsApp' : currentLang === 'fr' ? 'Confirmer et Envoyer sur WhatsApp' : 'Confirmar y Despachar a WhatsApp';
+            modalDispatchText.innerText = currentLang === 'en' ? 'Confirm and Dispatch to WhatsApp' : currentLang === 'fr' ? 'Confirmer et Envoyer' : 'Confirmar y Despachar';
 
             modal.classList.remove('hidden');
         }
@@ -1564,38 +1560,32 @@
 
         function dispatchInvoiceToDestination() {
             closeInvoiceModal();
+            const summaryText = (
+                `*¡Hola Kromatik! Presupuesto emitido en la web:*\n\n` +
+                `*Nro Presupuesto:* ${lastGeneratedInvoice.number}\n` +
+                `*Titular:* ${lastGeneratedInvoice.name}\n` +
+                `*Contacto:* ${lastGeneratedInvoice.contact}\n` +
+                `*Plan:* ${lastGeneratedInvoice.plan}\n` +
+                `*Inversión Total:* ${lastGeneratedInvoice.total}\n` +
+                `*Observaciones:* ${lastGeneratedInvoice.message}`
+            );
+
             if (currentMethod === 'whatsapp') {
-                const waText = encodeURIComponent(
-                    `*¡Hola Kromatik! Confirmo el presupuesto emitido en la web:*\n\n` +
-                    `*Nro Presupuesto:* ${lastGeneratedInvoice.number}\n` +
-                    `*Titular:* ${lastGeneratedInvoice.name}\n` +
-                    `*Contacto:* ${lastGeneratedInvoice.contact}\n` +
-                    `*Plan:* ${lastGeneratedInvoice.plan}\n` +
-                    `*Total:* ${lastGeneratedInvoice.total}\n` +
-                    `*Detalles:* ${lastGeneratedInvoice.message}`
-                );
+                const waText = encodeURIComponent(summaryText);
                 window.open(`https://wa.me/584125302211?text=${waText}`, '_blank');
             } else {
-                const btn = document.getElementById('submitBtn');
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando por Mail...';
-                btn.disabled = true;
-
-                if (window.location.protocol === 'file:') {
-                    setTimeout(() => {
-                        const mailSubject = encodeURIComponent("Presupuesto Oficial Kromatik: " + lastGeneratedInvoice.plan);
-                        const mailBody = encodeURIComponent(`Nro Presupuesto: ${lastGeneratedInvoice.number}\nTitular: ${lastGeneratedInvoice.name}\nContacto: ${lastGeneratedInvoice.contact}\nTotal: ${lastGeneratedInvoice.total}\n\nDetalles:\n${lastGeneratedInvoice.message}`);
-                        window.location.href = `mailto:andresdcarrenog@gmail.com?subject=${mailSubject}&body=${mailBody}`;
-                        btn.innerHTML = '<span id="btnText">Emitir Factura Formal & Ver Presupuesto</span> <i id="btnIcon" class="fa-solid fa-file-invoice-dollar text-base"></i>';
-                        btn.disabled = false;
-                        document.getElementById('contactForm').reset();
-                    }, 1000);
-                } else {
-                    setTimeout(() => {
-                        btn.innerHTML = '<span id="btnText">Emitir Factura Formal & Ver Presupuesto</span> <i id="btnIcon" class="fa-solid fa-file-invoice-dollar text-base"></i>';
-                        btn.disabled = false;
-                        document.getElementById('contactForm').reset();
-                    }, 1800);
-                }
+                const mailSubject = encodeURIComponent("Presupuesto Oficial Kromatik: " + lastGeneratedInvoice.plan);
+                const mailBody = encodeURIComponent(
+                    `Hola Kromatik Studio,\n\n` +
+                    `Adjunto los datos y el resumen del presupuesto generado en la plataforma:\n\n` +
+                    `• Nro Presupuesto: ${lastGeneratedInvoice.number}\n` +
+                    `• Titular: ${lastGeneratedInvoice.name}\n` +
+                    `• Contacto: ${lastGeneratedInvoice.contact}\n` +
+                    `• Plan Elegido: ${lastGeneratedInvoice.plan}\n` +
+                    `• Inversión Total: ${lastGeneratedInvoice.total}\n\n` +
+                    `Observaciones:\n${lastGeneratedInvoice.message}`
+                );
+                window.location.href = `mailto:andresdcarrenog@gmail.com?subject=${mailSubject}&body=${mailBody}`;
             }
         }
 
@@ -1969,7 +1959,7 @@
                 if (emailInp) emailInp.required = false;
                 if (phoneDig) phoneDig.required = true;
 
-                btnText.innerText = 'Emitir Factura Formal & Enviar a WhatsApp';
+                btnText.innerText = 'Emitir Factura Formal & Ver Presupuesto';
             } else {
                 btnM.className = 'p-4 rounded-2xl border border-accentCyan bg-cyan-500/10 text-center transition-all';
                 btnM.querySelector('i').className = 'fa-solid fa-envelope text-2xl text-accentCyan mb-2 block';
@@ -1984,7 +1974,7 @@
                 if (emailInp) emailInp.required = true;
                 if (phoneDig) phoneDig.required = false;
 
-                btnText.innerText = 'Emitir Factura Formal & Enviar por Mail';
+                btnText.innerText = 'Emitir Factura Formal & Ver Presupuesto';
             }
         }
 
@@ -2056,7 +2046,15 @@
         const supportForm = document.getElementById('supportForm');
         if (supportForm) {
             supportForm.addEventListener('submit', function(e) {
-                alert('¡Ticket de asistencia enviado con éxito a andresdcarrenog@gmail.com!');
+                e.preventDefault();
+                const name = document.getElementById('suppName').value;
+                const url = document.getElementById('suppUrl').value;
+                const type = document.getElementById('suppType').value;
+                const details = document.getElementById('suppDetails').value;
+
+                const mailSubject = encodeURIComponent("TICKET DE SOPORTE KROMATIK: " + type);
+                const mailBody = encodeURIComponent(`Titular: ${name}\nSitio Web: ${url}\nIncidencia: ${type}\n\nDetalles:\n${details}`);
+                window.location.href = `mailto:andresdcarrenog@gmail.com?subject=${mailSubject}&body=${mailBody}`;
                 this.reset();
             });
         }
