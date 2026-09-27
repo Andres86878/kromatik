@@ -409,6 +409,32 @@ textarea.inp{resize:vertical;min-height:120px}
 .foot{padding-block:70px 36px}
 @media (max-width:700px){.pind{display:none}.pager{grid-template-columns:1fr}.pager .prev{order:2}}
 @media (prefers-reduced-motion:reduce){.ptitle{display:none}}
+/* ---- presupuesto profesional ---- */
+.opt{font-style:normal;color:var(--ash);font-size:.85em;font-weight:300}
+.inv-info{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.inv-info .box{padding:14px 16px;border-radius:12px;background:#F4F4F7;display:grid;gap:2px;align-content:start}
+.inv-info small{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6E6E80;font-weight:500;margin-bottom:4px}
+.inv-info b{font-weight:500;font-size:14px;overflow-wrap:anywhere}
+.inv-info .box div{font-size:12px;color:#55556A;display:grid;gap:1px}
+.inv-info .box div span{overflow-wrap:anywhere}
+.inv-info .box div i{font-style:normal;color:#8E8EA0}
+.inv th.num,.inv td.num{width:28px;color:#8E8EA0;font-family:var(--mono);padding-right:8px}
+.inv tr.grp td{padding:14px 0 4px;border-bottom:none;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7B4DFF;font-weight:500}
+.inv-tot .pay{font-size:12px;color:#6E6E80;padding:0 2px}
+.inv-tot .pay span:last-child{font-family:var(--mono)}
+.inv-from{font-size:11.5px;color:#6E6E80;margin:0}
+.inv-terms ul,.inv-terms ol{margin:4px 0 0;padding-left:18px;display:grid;gap:3px}
+.inv-done{display:grid;justify-items:center;text-align:center;gap:10px;padding:40px 20px}
+.inv-done .ok-ic{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(40,220,140,.12);color:var(--ok);border:1px solid rgba(40,220,140,.35)}
+.inv-done .ok-ic svg{width:30px;height:30px}
+.inv-done h3{margin:6px 0 0;font-weight:400;font-size:26px}
+.inv-done p{margin:0;max-width:44ch;color:var(--ash)}
+.inv-fb{border:1px solid rgba(255,184,41,.45);background:rgba(255,184,41,.08);border-radius:16px;padding:16px 18px;margin-bottom:16px;display:grid;gap:8px}
+.inv-fb p{margin:0;font-size:14px;color:var(--ash)}
+.inv-fb .btn{padding:12px 16px;font-size:14px}
+.btn.busy{opacity:.7;pointer-events:none}
+@media (max-width:560px){.inv-info{grid-template-columns:1fr}}
+@media (max-width:560px){.modal-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px}.modal-foot .btn{padding:12px 10px;font-size:11px;letter-spacing:.06em}.modal-foot #sendBtn{grid-column:1/-1;padding:15px}.inv-fb .btns{display:grid;grid-template-columns:1fr 1fr}.inv-fb .btn{font-size:11px;padding:11px 8px}}
 </style>
 </head>
 <body>
@@ -618,12 +644,17 @@ textarea.inp{resize:vertical;min-height:120px}
       <form class="form rv" id="quoteForm" novalidate>
         <div class="methods">
           <button type="button" class="meth on" data-m="whatsapp" id="mWa"><svg><use href="#i-wa"/></svg><b data-i18n="m_wa">Vía WhatsApp</b><span>+58 412 530 2211</span></button>
-          <button type="button" class="meth" data-m="mail" id="mMail"><svg><use href="#i-mail"/></svg><b data-i18n="m_mail">Vía correo</b><span>andresdcarrenog@gmail.com</span></button>
+          <button type="button" class="meth" data-m="mail" id="mMail"><svg><use href="#i-mail"/></svg><b data-i18n="m_mail">Vía correo</b><span>kromatikweb@gmail.com</span></button>
         </div>
-        <div class="fld"><label for="cName" data-i18n="f_name">Nombre y apellido</label>
-          <input class="inp" id="cName" autocomplete="name" placeholder="Carlos Mendoza">
-          <p class="err" id="eName" hidden data-i18n="e_name">Escribe tu nombre y apellido (mínimo dos palabras).</p></div>
-        <div class="fld" id="fPhone"><span class="flab" data-i18n="f_wa">Tu WhatsApp</span>
+        <input type="text" id="cHoney" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <div class="row2">
+          <div class="fld"><label for="cName" data-i18n="f_name">Nombre y apellido</label>
+            <input class="inp" id="cName" autocomplete="name" placeholder="Carlos Mendoza">
+            <p class="err" id="eName" hidden data-i18n="e_name">Escribe tu nombre y apellido (mínimo dos palabras).</p></div>
+          <div class="fld"><label for="cCompany"><span data-i18n="f_company">Empresa o marca</span> <em class="opt" data-i18n="f_opt">(opcional)</em></label>
+            <input class="inp" id="cCompany" autocomplete="organization" placeholder="Café Aroma"></div>
+        </div>
+        <div class="fld" id="fPhone"><span class="flab"><span data-i18n="f_wa">Tu WhatsApp</span> <em class="opt" id="optPhone" hidden data-i18n="f_opt">(opcional)</em></span>
           <div class="phone">
             <select class="inp" id="cCountry" aria-label="País">
               <option value="VE" data-code="+58" data-digits="7" selected>VE +58</option>
@@ -636,11 +667,11 @@ textarea.inp{resize:vertical;min-height:120px}
               <option value="PE" data-code="+51" data-digits="9">PE +51</option>
               <option value="PA" data-code="+507" data-digits="8">PA +507</option>
             </select>
-            <select class="inp" id="cOp" aria-label="Operadora"><option>0412</option><option>0414</option><option>0424</option><option>0416</option><option>0426</option></select>
+            <select class="inp" id="cOp" aria-label="Operadora"><option>0412</option><option>0414</option><option>0424</option><option>0416</option><option>0426</option><option>0422</option></select>
             <input class="inp" id="cDigits" inputmode="numeric" autocomplete="tel-local" aria-label="Número" placeholder="5302211">
           </div>
           <p class="err" id="ePhone" hidden></p></div>
-        <div class="fld" id="fMail" hidden><label for="cEmail" data-i18n="f_mail">Tu correo electrónico</label>
+        <div class="fld" id="fMail"><label for="cEmail"><span data-i18n="f_mail">Tu correo electrónico</span> <em class="opt" id="optMail" data-i18n="f_opt">(opcional)</em></label>
           <input class="inp" id="cEmail" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.com">
           <p class="err" id="eMail" hidden data-i18n="e_mail">Escribe un correo válido, por ejemplo nombre@dominio.com.</p></div>
         <div class="row2">
@@ -666,7 +697,7 @@ textarea.inp{resize:vertical;min-height:120px}
         <p class="lead rv" data-i18n="s_p">Asistencia para incidencias de hosting, dominios, correo y actualizaciones de contenido.</p>
         <div class="contact-list rv">
           <div class="cline"><svg><use href="#i-wa"/></svg><div><small>WhatsApp</small><span>+58 412 530 2211</span></div><button type="button" class="copy" data-copy="+58 412 530 2211" data-i18n="copy">Copiar</button></div>
-          <div class="cline"><svg><use href="#i-mail"/></svg><div><small>Mail</small><span>andresdcarrenog@gmail.com</span></div><button type="button" class="copy" data-copy="andresdcarrenog@gmail.com" data-i18n="copy">Copiar</button></div>
+          <div class="cline"><svg><use href="#i-mail"/></svg><div><small>Mail</small><span>kromatikweb@gmail.com</span></div><button type="button" class="copy" data-copy="kromatikweb@gmail.com" data-i18n="copy">Copiar</button></div>
         </div>
       </div>
       <form class="form rv" id="supForm" novalidate>
@@ -680,7 +711,7 @@ textarea.inp{resize:vertical;min-height:120px}
           <p class="err" id="eSup" hidden data-i18n="e_sup">Completa tu nombre y describe la incidencia.</p></div>
         <div class="btns">
           <a class="btn btn-p" id="supWa" href="https://wa.me/584125302211" target="_blank" rel="noopener"><svg style="width:18px;height:18px"><use href="#i-wa"/></svg><span data-i18n="s_bwa">Reportar por WhatsApp</span></a>
-          <a class="btn btn-g" id="supMail" href="mailto:andresdcarrenog@gmail.com"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span data-i18n="s_bmail">Enviar ticket por correo</span></a>
+          <a class="btn btn-g" id="supMail" href="mailto:kromatikweb@gmail.com"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span data-i18n="s_bmail">Enviar ticket por correo</span></a>
         </div>
       </form>
     </div>
@@ -713,6 +744,22 @@ textarea.inp{resize:vertical;min-height:120px}
       <button type="button" class="x" id="mClose" aria-label="Cerrar"><svg><use href="#i-x"/></svg></button>
     </div>
     <div class="modal-body">
+      <div class="inv-done" id="invDone" hidden>
+        <div class="ok-ic"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2"/></svg></div>
+        <h3 data-i18n="ok_t">¡Presupuesto enviado!</h3>
+        <p id="okP"></p><p id="okCopy" class="small"></p>
+        <button type="button" class="btn btn-g" id="okNew"><span data-i18n="ok_new">Crear otro presupuesto</span></button>
+      </div>
+      <div class="inv-fb" id="invFb" hidden>
+        <b data-i18n="fb_t">No pudimos enviarlo automáticamente</b>
+        <p data-i18n="fb_p">Tu PDF ya se descargó. Envíalo con cualquiera de estas opciones:</p>
+        <div class="btns">
+          <a class="btn btn-g" id="fbGmail" href="#" target="_blank" rel="noopener"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span data-i18n="fb_gmail">Abrir en Gmail</span></a>
+          <a class="btn btn-g" id="fbApp" href="#"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span data-i18n="fb_app">Abrir mi app de correo</span></a>
+          <a class="btn btn-g" id="fbWa" href="#" target="_blank" rel="noopener"><svg style="width:18px;height:18px"><use href="#i-wa"/></svg><span data-i18n="fb_wa">Enviar por WhatsApp</span></a>
+          <button type="button" class="btn btn-g copy" data-copy="kromatikweb@gmail.com"><span data-i18n="fb_copy">Copiar correo</span></button>
+        </div>
+      </div>
       <div class="inv" id="invSheet">
         <div class="inv-h">
           <div><div class="lk"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 -25 940.0 150"><g transform="translate(0,-25) scale(1.5) translate(-14,-10)"><defs>
@@ -724,29 +771,33 @@ textarea.inp{resize:vertical;min-height:120px}
     <stop offset="0" stop-color="#3B1FA8"/><stop offset="1" stop-color="#7B4DFF"/></linearGradient>
   <linearGradient id="gFaceth" x1="0" y1="0" x2="1" y2="1">
     <stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></linearGradient>
-</defs><polygon points="49.80,66.20 67.20,48.80 108.00,110.00 76.50,110.00" fill="url(#gLowh)"/><polygon points="14.00,10.00 38.00,10.00 38.00,110.00 14.00,110.00" fill="url(#gStemh)"/><polygon points="43.00,44.00 77.00,10.00 106.00,10.00 43.00,73.00" fill="url(#gUph)"/><polygon points="14.00,10.00 38.00,10.00 14.00,110.00" fill="#fff" opacity=".12"/><polygon points="43.00,44.00 77.00,10.00 106.00,10.00" fill="#fff" opacity=".14"/><polygon points="49.80,66.20 67.20,48.80 76.50,110.00" fill="#000" opacity=".22"/></g><g transform="translate(203.0,0)"><defs><clipPath id="caph"><rect x="-10" y="0" width="757" height="100"/></clipPath><linearGradient id="gOh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00E5FF"/><stop offset=".5" stop-color="#7B4DFF"/><stop offset="1" stop-color="#FF2E88"/></linearGradient></defs><g transform="translate(0,0)" clip-path="url(#caph)"><path transform="translate(0,0)" d="M7.5,-20 V120 M11.5,70 L77.5,-20 M33.5,43 L69.5,120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(90,0)" d="M7.5,120 V7.5 H38 A25.5 25.5 0 0 1 38 58.5 H7.5 M34,58.5 L66,120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(182,0)" d="M50,7.5 A42.5 42.5 0 1 1 49.99,7.5 Z" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(308,0)" d="M7.5,120 V9.5 L47,76 L86.5,9.5 V120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(428,0)" d="M0,122 L41,2 L82,122" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(536,0)" d="M-4,7.5 H74 M35,7.5 V120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(632,0)" d="M7.5,-20 V120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(673,0)" d="M7.5,-20 V120 M11.5,70 L77.5,-20 M33.5,43 L69.5,120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/></g></g></svg></div><div class="sub"><span data-i18n="i_sub">Estudio de ingeniería y arquitectura web</span><br>andresdcarrenog@gmail.com · +58 412 530 2211</div></div>
-          <div class="no"><span data-i18n="i_quote">Presupuesto</span><b id="invNo">KMT-2026-0000</b><span id="invDate"></span><span class="v" data-i18n="i_valid">Validez: 15 días continuos</span></div>
+</defs><polygon points="49.80,66.20 67.20,48.80 108.00,110.00 76.50,110.00" fill="url(#gLowh)"/><polygon points="14.00,10.00 38.00,10.00 38.00,110.00 14.00,110.00" fill="url(#gStemh)"/><polygon points="43.00,44.00 77.00,10.00 106.00,10.00 43.00,73.00" fill="url(#gUph)"/><polygon points="14.00,10.00 38.00,10.00 14.00,110.00" fill="#fff" opacity=".12"/><polygon points="43.00,44.00 77.00,10.00 106.00,10.00" fill="#fff" opacity=".14"/><polygon points="49.80,66.20 67.20,48.80 76.50,110.00" fill="#000" opacity=".22"/></g><g transform="translate(203.0,0)"><defs><clipPath id="caph"><rect x="-10" y="0" width="757" height="100"/></clipPath><linearGradient id="gOh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00E5FF"/><stop offset=".5" stop-color="#7B4DFF"/><stop offset="1" stop-color="#FF2E88"/></linearGradient></defs><g transform="translate(0,0)" clip-path="url(#caph)"><path transform="translate(0,0)" d="M7.5,-20 V120 M11.5,70 L77.5,-20 M33.5,43 L69.5,120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(90,0)" d="M7.5,120 V7.5 H38 A25.5 25.5 0 0 1 38 58.5 H7.5 M34,58.5 L66,120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(182,0)" d="M50,7.5 A42.5 42.5 0 1 1 49.99,7.5 Z" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(308,0)" d="M7.5,120 V9.5 L47,76 L86.5,9.5 V120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(428,0)" d="M0,122 L41,2 L82,122" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(536,0)" d="M-4,7.5 H74 M35,7.5 V120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(632,0)" d="M7.5,-20 V120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/><path transform="translate(673,0)" d="M7.5,-20 V120 M11.5,70 L77.5,-20 M33.5,43 L69.5,120" fill="none" stroke="#FFFFFF" stroke-width="15" stroke-linejoin="miter" stroke-miterlimit="10"/></g></g></svg></div><div class="sub"><span data-i18n="i_tag">Estudio creativo digital · Caracas, Venezuela</span><br>kromatikweb@gmail.com · +58 412 530 2211</div></div>
+          <div class="no"><span data-i18n="i_quote">Presupuesto</span><b id="invNo">KMT-0000</b><span id="invDate"></span><span class="v" id="invUntil"></span></div>
         </div>
         <div class="inv-b">
-          <div class="inv-cl">
-            <div><small data-i18n="i_client">Cliente</small><b id="invName"></b></div>
-            <div><small data-i18n="i_contact">Contacto</small><b id="invContact"></b></div>
-            <div><small data-i18n="i_channel">Canal</small><b id="invChannel"></b></div>
+          <div class="inv-info">
+            <div class="box"><small data-i18n="i_for">Preparado para</small><b id="invName"></b><div id="invClient"></div></div>
+            <div class="box"><small data-i18n="i_project">Proyecto</small><b id="invPlan"></b><div id="invProj"></div></div>
           </div>
           <div class="inv-t"><table>
-            <thead><tr><th data-i18n="i_c1">Concepto / entregables</th><th class="c" data-i18n="i_c2">Plazo</th><th class="r" data-i18n="i_c3">Inversión</th></tr></thead>
+            <thead><tr><th class="num" data-i18n="i_num">#</th><th data-i18n="i_c1">Concepto / entregables</th><th class="c" data-i18n="i_c2">Plazo</th><th class="r" data-i18n="i_c3">Inversión</th></tr></thead>
             <tbody id="invRows"></tbody></table></div>
           <div class="inv-tot"><div>
             <div class="rw"><span data-i18n="i_sub2">Subtotal</span><span id="invSub"></span></div>
-            <div class="gt"><span data-i18n="i_total">Total</span><b id="invTotal"></b></div></div></div>
-          <div class="inv-terms"><b data-i18n="i_terms">Términos de ejecución</b><span data-i18n="i_t1">Pago: 50% de anticipo y 50% contra entrega final en producción.</span><br><span data-i18n="i_t2">Incluye garantía de 30 días posteriores al lanzamiento para corrección de anomalías.</span></div>
+            <div class="gt"><span data-i18n="i_total">Total</span><b id="invTotal"></b></div>
+            <div class="rw pay"><span data-i18n="i_dep">Anticipo para iniciar (50%)</span><span id="invDep"></span></div>
+            <div class="rw pay"><span data-i18n="i_bal">Saldo contra entrega (50%)</span><span id="invBal"></span></div></div></div>
+          <p class="inv-from" id="invFrom" hidden data-i18n="i_from"></p>
+          <div class="inv-terms"><b data-i18n="i_cond">Condiciones</b><ul id="invConds"></ul></div>
+          <div class="inv-terms"><b data-i18n="i_next">Próximos pasos</b><ol id="invNext"></ol></div>
           <div class="inv-terms" id="invNotesBox"><b data-i18n="i_notes">Observaciones del cliente</b><span id="invNotes"></span></div>
         </div>
       </div>
     </div>
-    <div class="modal-foot">
+    <div class="modal-foot" id="mFoot">
       <button type="button" class="btn btn-g" id="pdfBtn"><svg style="width:18px;height:18px"><use href="#i-pdf"/></svg><span data-i18n="i_pdf">Descargar PDF</span></button>
-      <a class="btn btn-p" id="sendBtn" href="#" target="_blank" rel="noopener"><span id="sendTxt">Enviar por WhatsApp</span><svg><use href="#i-arr"/></svg></a>
+      <button type="button" class="btn btn-g" id="pngBtn"><svg style="width:18px;height:18px"><use href="#i-pdf"/></svg><span id="pngTxt">Descargar imagen</span></button>
+      <a class="btn btn-p" id="sendBtn" href="#" rel="noopener"><span id="sendTxt">Enviar a Kromatik</span><svg><use href="#i-arr"/></svg></a>
     </div>
   </div>
 </div>
@@ -909,15 +960,84 @@ const MODS = [
  {id:"multi",price:120,icon:"i-coin",t:"plus1",n:{es:"Checkout multimoneda",en:"Multi-currency checkout",fr:"Paiement multi-devises"},d:{es:"Cobro en bolívares (Pago Móvil) y divisas en la misma pasarela.",en:"Charge in bolívares (Pago Móvil) and foreign currency in one gateway.",fr:"Encaissement en bolivars (Pago Móvil) et en devises sur une seule passerelle."}}
 ];
 
-/* Minimal vector PDF writer for the Kromatik quote — no libraries. */
+/* Presupuesto profesional: textos adicionales */
+Object.assign(I18N.es, {
+ f_company:"Empresa o marca",f_opt:"(opcional)",f_company_ph:"Ej. Café Aroma",f_wa_req:"Tu WhatsApp",
+ e_mail_req:"Para enviarlo por correo necesitamos tu email.",
+ i_issued:"Emisión",i_until:"Válido hasta",i_for:"Preparado para",i_project:"Proyecto",i_company:"Empresa",i_wa:"WhatsApp",i_mail:"Correo",
+ i_plan:"Plan",i_eta:"Plazo estimado",i_currency:"Moneda",i_pref:"Canal preferido",
+ i_num:"#",i_grp_plan:"Plan contratado",i_grp_mods:"Módulos adicionales",
+ i_dep:"Anticipo para iniciar (50%)",i_bal:"Saldo contra entrega (50%)",
+ i_from:"* Monto base referencial. El proyecto a medida se ajusta tras la reunión de requerimientos.",
+ i_cond:"Condiciones",
+ i_conds:["Precios expresados en dólares (USD). Se acepta pago en divisas o su equivalente en bolívares a tasa BCV del día.","Forma de pago: 50% de anticipo para iniciar y 50% contra entrega final en producción.","El plazo comienza al recibir el anticipo y el contenido del cliente (textos, logo, fotos).","Incluye 2 rondas de ajustes de diseño. Cambios fuera del alcance se cotizan por separado.","Garantía de 30 días posteriores al lanzamiento para corrección de fallas.","No incluye compra de dominio ni licencias de terceros, salvo que se indique en este presupuesto."],
+ i_next:"Próximos pasos",
+ i_nexts:["Revisa este presupuesto y cuéntanos si quieres ajustar algo.","Confírmalo por WhatsApp o correo indicando el número {n}.","Agendamos una llamada de arranque y te enviamos los datos de pago."],
+ i_accept:"Aceptación del cliente",i_sign:"Firma",i_date2:"Fecha",i_page:"Página {a} de {b}",
+ i_tag:"Estudio creativo digital · Caracas, Venezuela",
+ i_send:"Enviar a Kromatik",i_sending:"Enviando…",i_share:"Compartir imagen",i_png:"Descargar imagen",i_send_wa2:"Enviar por WhatsApp",s_ok:"Ticket enviado a Kromatik. Te respondemos pronto.",s_sending:"Enviando ticket…",wa_tip:"Tip: adjunta también la imagen del presupuesto en el chat.",t_png:"Imagen guardada: {f}",
+ ok_t:"¡Presupuesto enviado!",ok_p:"Recibimos tu presupuesto {n}. Te escribimos en menos de 24 horas.",ok_copy:"Te enviamos una copia a {m}.",ok_new:"Crear otro presupuesto",
+ fb_t:"No pudimos enviarlo automáticamente",fb_p:"Tu PDF ya se descargó. Envíalo con cualquiera de estas opciones:",fb_gmail:"Abrir en Gmail",fb_app:"Abrir mi app de correo",fb_wa:"Enviar por WhatsApp",fb_copy:"Copiar correo",
+ t_sent_mail:"Presupuesto {n} enviado a Kromatik.",t_sent_wa:"Se abrió WhatsApp con tu presupuesto {n}.",
+ m_head:"Hola Kromatik 👋 Quiero este presupuesto:",m_items:"Conceptos",m_company:"Empresa",m_email:"Correo",m_wa:"WhatsApp",m_eta:"Plazo estimado",m_valid:"Válido hasta",m_dep:"Anticipo 50%",m_pdf:"(Tengo el PDF del presupuesto, se los puedo enviar por aquí.)",
+ auto:"¡Hola {name}! Gracias por escribir a Kromatik. Recibimos tu presupuesto {n} ({plan}, total {t}). Te contactaremos en menos de 24 horas para afinar detalles. Si quieres adelantar, escríbenos al WhatsApp +58 412 530 2211."
+});
+Object.assign(I18N.en, {
+ f_company:"Company or brand",f_opt:"(optional)",f_company_ph:"e.g. Aroma Café",f_wa_req:"Your WhatsApp",
+ e_mail_req:"We need your email to send it by email.",
+ i_issued:"Issued",i_until:"Valid until",i_for:"Prepared for",i_project:"Project",i_company:"Company",i_wa:"WhatsApp",i_mail:"Email",
+ i_plan:"Plan",i_eta:"Estimated timeline",i_currency:"Currency",i_pref:"Preferred channel",
+ i_num:"#",i_grp_plan:"Selected plan",i_grp_mods:"Add-on modules",
+ i_dep:"Deposit to start (50%)",i_bal:"Balance on delivery (50%)",
+ i_from:"* Reference base amount. Custom projects are adjusted after the requirements meeting.",
+ i_cond:"Terms",
+ i_conds:["Prices in US dollars (USD). Payment accepted in foreign currency or the bolívar equivalent at the official BCV rate of the day.","Payment: 50% deposit to start and 50% on final delivery to production.","The timeline starts once the deposit and the client's content (copy, logo, photos) are received.","Includes 2 rounds of design revisions. Out-of-scope changes are quoted separately.","30-day post-launch warranty for bug fixes.","Domain purchase and third-party licenses are not included unless stated in this quote."],
+ i_next:"Next steps",
+ i_nexts:["Review this quote and let us know if you want to adjust anything.","Confirm it via WhatsApp or email quoting number {n}.","We schedule a kick-off call and send you the payment details."],
+ i_accept:"Client acceptance",i_sign:"Signature",i_date2:"Date",i_page:"Page {a} of {b}",
+ i_tag:"Digital creative studio · Caracas, Venezuela",
+ i_send:"Send to Kromatik",i_sending:"Sending…",i_share:"Share image",i_png:"Download image",i_send_wa2:"Send via WhatsApp",s_ok:"Ticket sent to Kromatik. We will reply soon.",s_sending:"Sending ticket…",wa_tip:"Tip: also attach the quote image in the chat.",t_png:"Image saved: {f}",
+ ok_t:"Quote sent!",ok_p:"We received your quote {n}. We'll get back to you within 24 hours.",ok_copy:"A copy was sent to {m}.",ok_new:"Create another quote",
+ fb_t:"We couldn't send it automatically",fb_p:"Your PDF has been downloaded. Send it using any of these options:",fb_gmail:"Open in Gmail",fb_app:"Open my email app",fb_wa:"Send via WhatsApp",fb_copy:"Copy email",
+ t_sent_mail:"Quote {n} sent to Kromatik.",t_sent_wa:"WhatsApp opened with your quote {n}.",
+ m_head:"Hi Kromatik 👋 I'd like this quote:",m_items:"Items",m_company:"Company",m_email:"Email",m_wa:"WhatsApp",m_eta:"Estimated timeline",m_valid:"Valid until",m_dep:"50% deposit",m_pdf:"(I have the quote PDF and can send it here.)",
+ auto:"Hi {name}! Thanks for contacting Kromatik. We received your quote {n} ({plan}, total {t}). We'll reach out within 24 hours to go over the details. If you'd like to move faster, message us on WhatsApp at +58 412 530 2211."
+});
+Object.assign(I18N.fr, {
+ f_company:"Entreprise ou marque",f_opt:"(facultatif)",f_company_ph:"Ex. Café Arôme",f_wa_req:"Votre WhatsApp",
+ e_mail_req:"Nous avons besoin de votre e-mail pour l'envoi par e-mail.",
+ i_issued:"Émis le",i_until:"Valable jusqu'au",i_for:"Préparé pour",i_project:"Projet",i_company:"Entreprise",i_wa:"WhatsApp",i_mail:"E-mail",
+ i_plan:"Offre",i_eta:"Délai estimé",i_currency:"Devise",i_pref:"Canal préféré",
+ i_num:"#",i_grp_plan:"Offre choisie",i_grp_mods:"Modules supplémentaires",
+ i_dep:"Acompte pour démarrer (50 %)",i_bal:"Solde à la livraison (50 %)",
+ i_from:"* Montant de base indicatif. Le sur-mesure est ajusté après la réunion de cadrage.",
+ i_cond:"Conditions",
+ i_conds:["Prix exprimés en dollars (USD). Paiement accepté en devises ou en bolivars au taux BCV du jour.","Paiement : 50 % d'acompte pour démarrer et 50 % à la livraison finale en production.","Le délai commence à réception de l'acompte et des contenus du client (textes, logo, photos).","Comprend 2 séries d'ajustements de design. Les demandes hors périmètre sont chiffrées à part.","Garantie de 30 jours après le lancement pour la correction d'anomalies.","N'inclut pas l'achat du domaine ni les licences tierces, sauf mention dans ce devis."],
+ i_next:"Prochaines étapes",
+ i_nexts:["Vérifiez ce devis et dites-nous si vous souhaitez l'ajuster.","Confirmez-le par WhatsApp ou e-mail en indiquant le numéro {n}.","Nous planifions un appel de lancement et vous envoyons les coordonnées de paiement."],
+ i_accept:"Acceptation du client",i_sign:"Signature",i_date2:"Date",i_page:"Page {a} sur {b}",
+ i_tag:"Studio créatif digital · Caracas, Venezuela",
+ i_send:"Envoyer à Kromatik",i_sending:"Envoi…",i_share:"Partager l'image",i_png:"Télécharger l'image",i_send_wa2:"Envoyer par WhatsApp",s_ok:"Ticket envoyé à Kromatik. Réponse rapide.",s_sending:"Envoi du ticket…",wa_tip:"Astuce : joignez aussi l'image du devis dans la discussion.",t_png:"Image enregistrée : {f}",
+ ok_t:"Devis envoyé !",ok_p:"Nous avons bien reçu votre devis {n}. Réponse sous 24 heures.",ok_copy:"Une copie a été envoyée à {m}.",ok_new:"Créer un autre devis",
+ fb_t:"L'envoi automatique a échoué",fb_p:"Votre PDF a été téléchargé. Envoyez-le avec l'une de ces options :",fb_gmail:"Ouvrir dans Gmail",fb_app:"Ouvrir mon application e-mail",fb_wa:"Envoyer par WhatsApp",fb_copy:"Copier l'e-mail",
+ t_sent_mail:"Devis {n} envoyé à Kromatik.",t_sent_wa:"WhatsApp s'est ouvert avec votre devis {n}.",
+ m_head:"Bonjour Kromatik 👋 Je souhaite ce devis :",m_items:"Prestations",m_company:"Entreprise",m_email:"E-mail",m_wa:"WhatsApp",m_eta:"Délai estimé",m_valid:"Valable jusqu'au",m_dep:"Acompte 50 %",m_pdf:"(J'ai le PDF du devis, je peux vous l'envoyer ici.)",
+ auto:"Bonjour {name} ! Merci d'avoir contacté Kromatik. Nous avons reçu votre devis {n} ({plan}, total {t}). Nous vous recontactons sous 24 heures. Pour aller plus vite, écrivez-nous sur WhatsApp au +58 412 530 2211."
+});
+const KMAIL = "kromatikweb@gmail.com", KWA = "584125302211", KWA_TXT = "+58 412 530 2211";
+
+/* Kromatik — presupuesto profesional.
+   Un solo motor de maquetación que genera primitivas y dos salidas:
+   PDF vectorial multipágina (sin librerías) y PNG (canvas) para celular / WhatsApp. */
 const KPDF = (() => {
-  const W = 595.28, H = 841.89;
+  const W = 595.28, H = 841.89, M = 42;
   const HW = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
   const SPECIAL = { '€': 0x80, '…': 0x85, '‘': 0x91, '’': 0x92, '“': 0x93, '”': 0x94, '•': 0x95, '–': 0x96, '—': 0x97, '·': 0xB7 };
   const BASE = { 'á': 'a', 'à': 'a', 'â': 'a', 'ä': 'a', 'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e', 'í': 'i', 'î': 'i', 'ï': 'i', 'ó': 'o', 'ô': 'o', 'ö': 'o', 'ú': 'u', 'ù': 'u', 'û': 'u', 'ü': 'u', 'ñ': 'n', 'ç': 'c', 'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ñ': 'N', 'Ç': 'C', 'À': 'A', 'È': 'E' };
+  const clean = s => String(s == null ? '' : s).replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}️‍]/gu, '').replace(/[\r\t]/g, ' ');
   function enc(s) {
     let o = '';
-    for (const ch of String(s)) {
+    for (const ch of clean(s)) {
       let c = SPECIAL[ch] != null ? SPECIAL[ch] : ch.charCodeAt(0);
       if (c > 255) c = 63;
       const x = String.fromCharCode(c);
@@ -925,155 +1045,266 @@ const KPDF = (() => {
     }
     return o;
   }
-  function width(s, size, font) {
-    if (font === 'F3') return String(s).length * .6 * size;
-    let w = 0;
-    for (const ch of String(s)) {
-      const b = BASE[ch] || ch; const c = b.charCodeAt(0);
-      w += (c >= 32 && c <= 126) ? HW[c - 32] : 556;
-    }
-    return w / 1000 * size * (font === 'F2' ? 1.06 : 1);
+  function width(s, size, font, sp) {
+    s = clean(s);
+    let w;
+    if (font === 'F3') w = [...s].length * .6 * size;
+    else { w = 0; for (const ch of s) { const b = BASE[ch] || ch; const c = b.charCodeAt(0); w += (c >= 32 && c <= 126) ? HW[c - 32] : 556; } w = w / 1000 * size * (font === 'F2' ? 1.06 : 1); }
+    return w + (sp || 0) * [...s].length;
   }
   function wrap(s, size, font, maxW) {
-    const words = String(s || '').split(/\s+/).filter(Boolean); const lines = []; let cur = '';
-    for (const w of words) { const t = cur ? cur + ' ' + w : w; if (width(t, size, font) > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
-    if (cur) lines.push(cur); return lines;
+    const out = [];
+    for (const para of clean(s).split('\n')) {
+      const words = para.split(/\s+/).filter(Boolean); let cur = '';
+      for (let w of words) {
+        while (width(w, size, font) > maxW && w.length > 4) { // palabra larguísima (correo / URL)
+          let k = w.length - 1; while (k > 1 && width(w.slice(0, k), size, font) > maxW) k--;
+          if (cur) { out.push(cur); cur = ''; } out.push(w.slice(0, k)); w = w.slice(k);
+        }
+        const t = cur ? cur + ' ' + w : w;
+        if (width(t, size, font) > maxW && cur) { out.push(cur); cur = w; } else cur = t;
+      }
+      if (cur) out.push(cur);
+    }
+    return out;
   }
-  const rgb = h => [1, 3, 5].map(i => (parseInt(h.slice(i, i + 2), 16) / 255).toFixed(3)).join(' ');
   const lerpHex = (a, b, t) => '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, '0')).join('');
   const chroma = t => t < .5 ? lerpHex('#00E5FF', '#7B4DFF', t * 2) : lerpHex('#7B4DFF', '#FF2E88', (t - .5) * 2);
+  const fill = (s, o) => String(s).replace(/\{(\w+)\}/g, (_, k) => o[k] != null ? o[k] : '');
 
-  function build(inv) {
-    const c = [];
-    const Y = y => (H - y).toFixed(2);
-    const rect = (x, y, w, h, col) => c.push(`${rgb(col)} rg ${x.toFixed(2)} ${(H - y - h).toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f`);
-    const poly = (pts, col) => c.push(`${rgb(col)} rg ` + pts.map((p, i) => `${p[0].toFixed(2)} ${Y(p[1])} ${i ? 'l' : 'm'}`).join(' ') + ' h f');
-    const line = (x1, y1, x2, y2, col, w) => c.push(`${rgb(col)} RG ${w} w ${x1.toFixed(2)} ${Y(y1)} m ${x2.toFixed(2)} ${Y(y2)} l S`);
-    const text = (x, y, s, size, font, col, align) => {
-      let xx = x; const tw = width(s, size, font);
-      if (align === 'r') xx = x - tw; else if (align === 'c') xx = x - tw / 2;
-      c.push(`BT /${font} ${size} Tf ${rgb(col)} rg ${xx.toFixed(2)} ${Y(y)} Td (${enc(s)}) Tj ET`);
+  const INK = '#0B0B14', GREY = '#6E6E80', GREY2 = '#55556A', LINE = '#E6E6EC', SOFT = '#F4F4F7', DARK = '#05050A', IRIS = '#7B4DFF';
+
+  /* ---------- maquetación → páginas de primitivas ---------- */
+  function layout(inv, paged) {
+    const L = inv.L, pages = []; let ops, y;
+    const PH = paged ? H : Infinity, BOTTOM = 64;
+    const rect = (x, yy, w, h, c) => ops.push({ k: 'rect', x, y: yy, w, h, c });
+    const srect = (x, yy, w, h, c, lw) => ops.push({ k: 'srect', x, y: yy, w, h, c, lw });
+    const poly = (pts, c) => ops.push({ k: 'poly', pts, c });
+    const line = (x1, y1, x2, y2, c, lw) => ops.push({ k: 'line', x1, y1, x2, y2, c, lw });
+    const text = (x, yy, s, size, font, c, align, sp) => {
+      s = clean(s); const tw = width(s, size, font, sp);
+      const xx = align === 'r' ? x - tw : align === 'c' ? x - tw / 2 : x;
+      ops.push({ k: 'text', x: xx, y: yy, s, size, font, c, sp: sp || 0, ax: x, al: align });
     };
-    const tracked = (x, y, s, size, font, col, sp) => c.push(`BT /${font} ${size} Tf ${sp} Tc ${rgb(col)} rg ${x.toFixed(2)} ${Y(y)} Td (${enc(s)}) Tj 0 Tc ET`);
-    const grad = (x, y, w, h) => { const n = 90; for (let i = 0; i < n; i++) rect(x + w * i / n, y, w / n + .6, h, chroma(i / (n - 1))); };
+    const grad = (x, yy, w, h) => { const n = 90; for (let i = 0; i < n; i++) rect(x + w * i / n, yy, w / n + .6, h, chroma(i / (n - 1))); };
+    const cap = (x, yy, s, c, align) => text(x, yy, String(s).toUpperCase(), 6.5, 'F2', c || GREY, align, 1.1);
+    const newPage = () => {
+      ops = []; pages.push(ops);
+      if (pages.length > 1) {
+        rect(0, 0, W, 34, DARK); grad(0, 34, W, 2);
+        text(M, 22, 'KROMATIK', 9, 'F2', '#FFFFFF', null, 2);
+        text(W - M, 22, `${L.i_quote} ${inv.no}`, 8.5, 'F3', '#C9C9D3', 'r');
+        y = 66;
+      }
+    };
+    const ensure = h => { if (y + h > PH - BOTTOM) { newPage(); return true; } return false; };
 
-    // ---- header band ----
-    rect(0, 0, W, 158, '#05050A');
-    grad(0, 158, W, 3.5);
-    // symbol
-    const s = .44, sx = 42 - 14 * s, sy = 44 - 10 * s, G = KGEOM;
+    newPage();
+    /* ---- cabecera ---- */
+    rect(0, 0, W, 150, DARK);
+    grad(0, 150, W, 3.5);
+    const s = .44, sx = M - 14 * s, sy = 40 - 10 * s, G = KGEOM;
     const T = p => [sx + p[0] * s, sy + p[1] * s];
-    const L = G.LOW.map(T), UP = G.UP.map(T), ST = G.STEM;
-    poly([L[0], L[1], L[3]], '#2A1B86'); poly([L[1], L[2], L[3]], '#5B3BE6');
+    const LO = G.LOW.map(T), UP = G.UP.map(T), ST = G.STEM;
+    poly([LO[0], LO[1], LO[3]], '#2A1B86'); poly([LO[1], LO[2], LO[3]], '#5B3BE6');
     const sl = 24; for (let i = 0; i < sl; i++) { const y0 = ST[0][1] + (ST[2][1] - ST[0][1]) * i / sl, y1 = ST[0][1] + (ST[2][1] - ST[0][1]) * (i + 1) / sl + .4; poly([T([ST[0][0], y0]), T([ST[1][0], y0]), T([ST[1][0], y1]), T([ST[0][0], y1])], lerpHex('#00E5FF', '#7B4DFF', i / (sl - 1))); }
     poly([UP[0], UP[1], UP[2]], '#C247D8'); poly([UP[0], UP[2], UP[3]], '#9A45F2');
-    // wordmark (custom letters as strokes, clipped to cap height)
-    const ws = .205, wx = 42 + 94 * s + 16, wy = 36;
-    const X = v => (wx + v * ws), YY = v => (wy + v * ws);
-    const P = (x, y) => `${X(x).toFixed(2)} ${Y(YY(y))}`;
-    const k = .5523;
-    let ox = 0; const seg = [];
-    const adv = { K: 64, R: 66, O: 100, M: 94, A: 82, T: 70, I: 15 };
+    // wordmark
+    const ws = .205, wx = M + 94 * s + 16, wy = 32, k = .5523, cmds = [];
+    const adv = { K: 64, R: 66, O: 100, M: 94, A: 82, T: 70, I: 15 }; let ox = 0;
     for (const ch of 'KROMATIK') {
-      const o = ox;
-      const m = (x, y) => seg.push(P(o + x, y) + ' m'), l = (x, y) => seg.push(P(o + x, y) + ' l');
-      const cu = (a, b, d, e, f, g) => seg.push(`${P(o + a, b)} ${P(o + d, e)} ${P(o + f, g)} c`);
+      const o = ox, P = (x, yy) => [wx + (o + x) * ws, wy + yy * ws];
+      const m = (x, yy) => cmds.push(['m', ...P(x, yy)]), l = (x, yy) => cmds.push(['l', ...P(x, yy)]);
+      const cu = (a, b, d, e, f, g) => cmds.push(['c', ...P(a, b), ...P(d, e), ...P(f, g)]);
       if (ch === 'K') { m(7.5, -20); l(7.5, 120); m(11.5, 70); l(77.5, -20); m(33.5, 43); l(69.5, 120); }
       if (ch === 'R') { const r = 25.5, cx = 38, cy = 33; m(7.5, 120); l(7.5, 7.5); l(cx, 7.5); cu(cx + r * k, 7.5, cx + r, cy - r * k, cx + r, cy); cu(cx + r, cy + r * k, cx + r * k, 58.5, cx, 58.5); l(7.5, 58.5); m(34, 58.5); l(66, 120); }
-      if (ch === 'O') { const r = 42.5, cx = 50, cy = 50; m(cx, cy - r); cu(cx + r * k, cy - r, cx + r, cy - r * k, cx + r, cy); cu(cx + r, cy + r * k, cx + r * k, cy + r, cx, cy + r); cu(cx - r * k, cy + r, cx - r, cy + r * k, cx - r, cy); cu(cx - r, cy - r * k, cx - r * k, cy - r, cx, cy - r); seg.push('h'); }
+      if (ch === 'O') { const r = 42.5, cx = 50, cy = 50; m(cx, cy - r); cu(cx + r * k, cy - r, cx + r, cy - r * k, cx + r, cy); cu(cx + r, cy + r * k, cx + r * k, cy + r, cx, cy + r); cu(cx - r * k, cy + r, cx - r, cy + r * k, cx - r, cy); cu(cx - r, cy - r * k, cx - r * k, cy - r, cx, cy - r); cmds.push(['h']); }
       if (ch === 'M') { m(7.5, 120); l(7.5, 9.5); l(47, 76); l(86.5, 9.5); l(86.5, 120); }
       if (ch === 'A') { m(0, 122); l(41, 2); l(82, 122); }
       if (ch === 'T') { m(-4, 7.5); l(74, 7.5); m(35, 7.5); l(35, 120); }
       if (ch === 'I') { m(7.5, -20); l(7.5, 120); }
       ox += adv[ch] + 26;
     }
-    const wordW = (ox - 26) * ws;
-    c.push(`q ${(wx - 4).toFixed(2)} ${Y(wy + 100 * ws)} ${(wordW + 8).toFixed(2)} ${(100 * ws).toFixed(2)} re W n 1 1 1 RG ${(15 * ws).toFixed(2)} w 0 J 0 j 10 M ${seg.join(' ')} S Q`);
-    text(42, 116, inv.L.i_sub, 8.5, 'F1', '#9A9AA6');
-    text(42, 130, 'andresdcarrenog@gmail.com  ·  +58 412 530 2211', 8.5, 'F1', '#9A9AA6');
-    // right block
-    tracked(W - 42 - width(inv.L.i_quote.toUpperCase(), 7.5, 'F2') - 2.2 * inv.L.i_quote.length, 50, inv.L.i_quote.toUpperCase(), 7.5, 'F2', '#9A9AA6', 2.2);
-    text(W - 42, 72, inv.no, 17, 'F3', '#FFFFFF', 'r');
-    text(W - 42, 90, `${inv.L.i_date}: ${inv.date}`, 8.5, 'F1', '#9A9AA6', 'r');
-    text(W - 42, 104, inv.L.i_valid, 8.5, 'F2', '#FFB829', 'r');
+    ops.push({ k: 'path', cmds, c: '#FFFFFF', lw: 15 * ws, clip: [wx - 4, wy, (ox - 26) * ws + 8, 100 * ws] });
+    text(M, 108, L.i_tag, 8.5, 'F1', '#9A9AA6');
+    text(M, 122, `${KMAIL}   ·   ${KWA_TXT}`, 8.5, 'F1', '#9A9AA6');
+    cap(W - M, 46, L.i_quote, '#9A9AA6', 'r');
+    text(W - M, 68, inv.no, 15, 'F3', '#FFFFFF', 'r');
+    text(W - M, 88, `${L.i_issued}: ${inv.issued}`, 8.5, 'F1', '#C9C9D3', 'r');
+    text(W - M, 102, `${L.i_until}: ${inv.until}`, 8.5, 'F2', '#FFB829', 'r');
 
-    // ---- client box ----
-    let y = 186;
-    rect(42, y, W - 84, 52, '#F4F4F7');
-    const cw = (W - 84) / 3;
-    [[inv.L.i_client, inv.name], [inv.L.i_contact, inv.contact], [inv.L.i_channel, inv.channel]].forEach(([a, b], i) => {
-      tracked(54 + cw * i, y + 18, a.toUpperCase(), 6.5, 'F2', '#6E6E80', 1.2);
-      const v = wrap(b, 10, 'F2', cw - 20)[0] || '';
-      text(54 + cw * i, y + 36, v, 10, 'F2', '#0B0B14');
+    /* ---- cliente / proyecto ---- */
+    y = 176;
+    const bw = (W - 2 * M - 12) / 2, inner = bw - 28;
+    const cl = [], pr = [];
+    if (inv.client.company) cl.push([L.i_company, inv.client.company]);
+    if (inv.client.wa) cl.push([L.i_wa, inv.client.wa]);
+    if (inv.client.mail) cl.push([L.i_mail, inv.client.mail]);
+    pr.push([L.i_eta, inv.eta], [L.i_currency, 'USD ($)'], [L.i_pref, inv.pref]);
+    const kvLines = list => list.map(([a, b]) => { const lab = a + ': ', lw = width(lab, 8.5, 'F1'); return { lab, lw, v: wrap(b, 8.5, 'F2', inner - lw) }; });
+    const kvH = rows => rows.reduce((h, r) => h + Math.max(1, r.v.length) * 11.5 + 2, 0);
+    const nameL = wrap(inv.client.name, 11, 'F2', inner).slice(0, 2), planL = wrap(inv.plan, 11, 'F2', inner).slice(0, 2);
+    const clR = kvLines(cl), prR = kvLines(pr);
+    const bh = Math.max(kvH(clR) + (nameL.length - 1) * 13, kvH(prR) + (planL.length - 1) * 13) + 56;
+    [[M, L.i_for, nameL, clR], [M + bw + 12, L.i_project, planL, prR]].forEach(([x, t, nm, rows]) => {
+      rect(x, y, bw, bh, SOFT);
+      cap(x + 14, y + 18, t);
+      nm.forEach((n, i) => text(x + 14, y + 34 + i * 13, n, 11, 'F2', INK));
+      let yy = y + 50 + (nm.length - 1) * 13;
+      rows.forEach(r => { text(x + 14, yy, r.lab, 8.5, 'F1', GREY); r.v.forEach((t, i) => text(x + 14 + r.lw, yy + i * 11.5, t, 8.5, 'F2', INK)); yy += Math.max(1, r.v.length) * 11.5 + 2; });
     });
+    y += bh + 28;
 
-    // ---- table ----
-    y = 268;
-    const cx1 = 42, cx2 = 392, cx3 = W - 42;
-    tracked(cx1, y, inv.L.i_c1.toUpperCase(), 6.5, 'F2', '#6E6E80', 1.2);
-    text(cx2, y, inv.L.i_c2.toUpperCase(), 6.5, 'F2', '#6E6E80', 'c');
-    text(cx3, y, inv.L.i_c3.toUpperCase(), 6.5, 'F2', '#6E6E80', 'r');
-    line(42, y + 7, W - 42, y + 7, '#0B0B14', 1.1);
-    y += 24;
-    inv.rows.forEach(r => {
-      text(cx1, y, r.n, 10, 'F2', '#0B0B14');
-      const dl = wrap(r.d, 8.2, 'F1', 290);
-      dl.forEach((t, i) => text(cx1, y + 13 + i * 11, t, 8.2, 'F1', '#6E6E80'));
-      text(cx2, y, r.t, 8.5, 'F1', '#0B0B14', 'c');
-      text(cx3, y, r.amt, 9.5, 'F3', '#0B0B14', 'r');
-      y += 20 + dl.length * 11 + 8;
-      line(42, y - 10, W - 42, y - 8, '#E6E6EC', .6);
-    });
-
-    // ---- totals ----
-    y += 8;
-    const tx = W - 42 - 220;
-    text(tx, y, inv.L.i_sub2, 9, 'F1', '#55556A'); text(W - 42, y, inv.total, 9.5, 'F3', '#0B0B14', 'r');
-    y += 12;
-    rect(tx - 12, y, 232, 34, '#05050A');
-    grad(tx - 12, y + 34, 232, 2.2);
-    text(tx, y + 22, inv.L.i_total.toUpperCase(), 9, 'F2', '#FFFFFF');
-    text(W - 54, y + 23, inv.total, 14, 'F3', '#FFFFFF', 'r');
-    y += 62;
-
-    // ---- terms & notes ----
-    const box = (title, body, yy) => {
-      const lines = [].concat(...body.map(b => wrap(b, 8.2, 'F1', W - 84 - 28)));
-      const h = 26 + lines.length * 11.5;
-      c.push(`${rgb('#E6E6EC')} RG .8 w 42 ${(H - yy - h).toFixed(2)} ${(W - 84).toFixed(2)} ${h.toFixed(2)} re S`);
-      tracked(56, yy + 16, title.toUpperCase(), 6.5, 'F2', '#0B0B14', 1.2);
-      lines.forEach((t, i) => text(56, yy + 30 + i * 11.5, t, 8.2, 'F1', '#55556A'));
-      return yy + h + 12;
+    /* ---- tabla ---- */
+    const cN = M, cC = M + 24, cP = 420, cA = W - M, dW = 300;
+    const head = () => {
+      cap(cN, y, L.i_num); cap(cC, y, L.i_c1); cap(cP, y, L.i_c2, GREY, 'c'); cap(cA, y, L.i_c3, GREY, 'r');
+      line(M, y + 7, W - M, y + 7, INK, 1.1); y += 24;
     };
-    y = box(inv.L.i_terms, ['• ' + inv.L.i_t1, '• ' + inv.L.i_t2], y);
-    if (inv.notes) y = box(inv.L.i_notes, [inv.notes.slice(0, 900)], y);
+    ensure(90); head();
+    let n = 0;
+    inv.groups.forEach(g => {
+      if (ensure(60)) head();
+      text(cC, y, g.title.toUpperCase(), 6.5, 'F2', IRIS, null, 1.1); y += 16;
+      g.rows.forEach(r => {
+        const nl = wrap(r.n, 10, 'F2', dW), dl = wrap(r.d, 8.2, 'F1', dW);
+        const rh = nl.length * 13 + dl.length * 11 + 16;
+        if (ensure(rh)) head();
+        n++;
+        text(cN, y, String(n).padStart(2, '0'), 8.5, 'F3', '#8E8EA0');
+        nl.forEach((t, i) => text(cC, y + i * 13, t, 10, 'F2', INK));
+        dl.forEach((t, i) => text(cC, y + nl.length * 13 + i * 11, t, 8.2, 'F1', GREY));
+        text(cP, y, r.t, 8.5, 'F1', INK, 'c');
+        text(cA, y, r.amt, 9.5, 'F3', INK, 'r');
+        y += rh; line(M, y - 9, W - M, y - 9, LINE, .6);
+      });
+      y += 4;
+    });
 
-    // ---- footer ----
-    grad(0, H - 5, W, 5);
-    text(W / 2, H - 22, 'Kromatik  ·  +58 412 530 2211  ·  andresdcarrenog@gmail.com', 7.5, 'F1', '#8E8EA0', 'c');
+    /* ---- totales ---- */
+    ensure(120);
+    y += 10;
+    const tx = W - M - 232;
+    text(tx, y, L.i_sub2, 9, 'F1', GREY2); text(W - M, y, inv.sub, 9.5, 'F3', INK, 'r');
+    y += 12;
+    rect(tx - 12, y, 244, 36, DARK); grad(tx - 12, y + 36, 244, 2.2);
+    text(tx, y + 23, L.i_total.toUpperCase(), 9, 'F2', '#FFFFFF', null, 1);
+    text(W - M - 12, y + 24, inv.total, 14, 'F3', '#FFFFFF', 'r');
+    y += 58;
+    text(tx, y, L.i_dep, 8.5, 'F1', GREY2); text(W - M, y, inv.dep, 9, 'F3', INK, 'r'); y += 14;
+    text(tx, y, L.i_bal, 8.5, 'F1', GREY2); text(W - M, y, inv.bal, 9, 'F3', INK, 'r'); y += 24;
+    if (inv.from) { const fl = wrap(L.i_from, 8, 'F1', W - 2 * M); ensure(fl.length * 11 + 6); fl.forEach((t, i) => text(M, y + i * 11, t, 8, 'F1', GREY)); y += fl.length * 11 + 10; }
 
-    // ---- assemble ----
-    const stream = c.join('\n');
-    const objs = [
-      '<< /Type /Catalog /Pages 2 0 R >>',
-      '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 5 0 R /F2 6 0 R /F3 7 0 R >> >> /Contents 4 0 R >>`,
-      `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
-      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>',
-      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>',
-      '<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>',
-      `<< /Title (${enc('Presupuesto ' + inv.no + ' - Kromatik')}) /Author (Kromatik) /Producer (Kromatik Web) >>`
-    ];
+    /* ---- cajas de texto ---- */
+    const box = (title, items, mark) => {
+      const lines = [];
+      items.forEach((b, i) => { const pre = mark === 'n' ? (i + 1) + '.' : mark === 'b' ? '•' : ''; wrap(b, 8.2, 'F1', W - 2 * M - 28 - (mark ? 14 : 0)).forEach((t, j) => lines.push([j ? '' : pre, t])); });
+      const h = 30 + lines.length * 11.5;
+      ensure(h + 12);
+      srect(M, y, W - 2 * M, h, LINE, .8);
+      cap(M + 14, y + 17, title, INK);
+      lines.forEach(([p, t], i) => { if (p) text(M + 14, y + 32 + i * 11.5, p, 8.2, 'F2', IRIS); text(M + 14 + (mark ? 14 : 0), y + 32 + i * 11.5, t, 8.2, 'F1', GREY2); });
+      y += h + 12;
+    };
+    box(L.i_cond, L.i_conds, 'b');
+    box(L.i_next, L.i_nexts.map(t => fill(t, { n: inv.no })), 'n');
+    if (inv.notes) box(L.i_notes, [inv.notes.slice(0, 1200)], '');
+
+    /* ---- aceptación ---- */
+    ensure(74);
+    y += 10;
+    cap(M, y, L.i_accept, INK);
+    y += 38;
+    const half = (W - 2 * M - 24) / 2;
+    line(M, y, M + half, y, INK, .7); line(M + half + 24, y, W - M, y, INK, .7);
+    text(M, y + 12, `${L.i_sign} · ${inv.client.name}`, 7.5, 'F1', GREY);
+    text(M + half + 24, y + 12, L.i_date2, 7.5, 'F1', GREY);
+    y += 30;
+
+    /* ---- pie en cada página ---- */
+    const total = pages.length, endY = paged ? H : y + 44;
+    pages.forEach((p, i) => {
+      ops = p;
+      grad(0, endY - 5, W, 5);
+      text(M, endY - 20, `Kromatik  ·  ${KMAIL}  ·  ${KWA_TXT}`, 7.2, 'F1', '#8E8EA0');
+      if (paged) text(W - M, endY - 20, fill(L.i_page, { a: i + 1, b: total }), 7.2, 'F1', '#8E8EA0', 'r');
+    });
+    return { pages, height: endY };
+  }
+
+  /* ---------- salida PDF ---------- */
+  function build(inv) {
+    const { pages } = layout(inv, true);
+    const rgb = h => [1, 3, 5].map(i => (parseInt(h.slice(i, i + 2), 16) / 255).toFixed(3)).join(' ');
+    const Y = v => (H - v).toFixed(2), f = v => v.toFixed(2);
+    const streams = pages.map(ops => ops.map(o => {
+      if (o.k === 'rect') return `${rgb(o.c)} rg ${f(o.x)} ${f(H - o.y - o.h)} ${f(o.w)} ${f(o.h)} re f`;
+      if (o.k === 'srect') return `${rgb(o.c)} RG ${o.lw} w ${f(o.x)} ${f(H - o.y - o.h)} ${f(o.w)} ${f(o.h)} re S`;
+      if (o.k === 'poly') return `${rgb(o.c)} rg ` + o.pts.map((p, i) => `${f(p[0])} ${Y(p[1])} ${i ? 'l' : 'm'}`).join(' ') + ' h f';
+      if (o.k === 'line') return `${rgb(o.c)} RG ${o.lw} w ${f(o.x1)} ${Y(o.y1)} m ${f(o.x2)} ${Y(o.y2)} l S`;
+      if (o.k === 'text') return `BT /${o.font} ${o.size} Tf ${o.sp} Tc ${rgb(o.c)} rg ${f(o.x)} ${Y(o.y)} Td (${enc(o.s)}) Tj 0 Tc ET`;
+      if (o.k === 'path') {
+        const [cx, cy, cw, ch] = o.clip;
+        const d = o.cmds.map(c => c[0] === 'h' ? 'h' : c[0] === 'c' ? `${f(c[1])} ${Y(c[2])} ${f(c[3])} ${Y(c[4])} ${f(c[5])} ${Y(c[6])} c` : `${f(c[1])} ${Y(c[2])} ${c[0]}`).join(' ');
+        return `q ${f(cx)} ${f(H - cy - ch)} ${f(cw)} ${f(ch)} re W n ${rgb(o.c)} RG ${f(o.lw)} w 0 J 0 j 10 M ${d} S Q`;
+      }
+      return '';
+    }).join('\n'));
+    const N = pages.length, objs = [];
+    const pageIds = pages.map((_, i) => 7 + i * 2);
+    objs[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+    objs[2] = `<< /Type /Pages /Kids [${pageIds.map(i => i + ' 0 R').join(' ')}] /Count ${N} >>`;
+    objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+    objs[4] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+    objs[5] = '<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>';
+    objs[6] = `<< /Title (${enc(inv.L.i_quote + ' ' + inv.no + ' - Kromatik')}) /Author (Kromatik) /Subject (${enc(inv.plan)}) /Producer (Kromatik Web) >>`;
+    streams.forEach((st, i) => {
+      const pid = pageIds[i];
+      objs[pid] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents ${pid + 1} 0 R >>`;
+      objs[pid + 1] = `<< /Length ${st.length} >>\nstream\n${st}\nendstream`;
+    });
     let out = '%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'; const offs = [];
-    objs.forEach((o, i) => { offs.push(out.length); out += `${i + 1} 0 obj\n${o}\nendobj\n`; });
+    for (let i = 1; i < objs.length; i++) { offs[i] = out.length; out += `${i} 0 obj\n${objs[i]}\nendobj\n`; }
     const xref = out.length;
-    out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n` + offs.map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('');
-    out += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R /Info 8 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    out += `xref\n0 ${objs.length}\n0000000000 65535 f \n` + offs.slice(1).map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('');
+    out += `trailer\n<< /Size ${objs.length} /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xref}\n%%EOF`;
     const bytes = new Uint8Array(out.length);
     for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
     return bytes;
   }
-  return { build };
+
+  /* ---------- salida PNG (canvas, una sola hoja larga para celular) ---------- */
+  function png(inv, scale) {
+    scale = scale || 2;
+    const { pages, height } = layout(inv, false), ops = pages[0];
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(W * scale); cv.height = Math.round(height * scale);
+    const g = cv.getContext('2d');
+    g.scale(scale, scale);
+    g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, W, height);
+    const FONT = { F1: '400 {s}px Helvetica, Arial, "Liberation Sans", sans-serif', F2: '700 {s}px Helvetica, Arial, "Liberation Sans", sans-serif', F3: '400 {s}px "Courier New", Courier, "Liberation Mono", monospace' };
+    g.textBaseline = 'alphabetic';
+    ops.forEach(o => {
+      if (o.k === 'rect') { g.fillStyle = o.c; g.fillRect(o.x, o.y, o.w, o.h); }
+      else if (o.k === 'srect') { g.strokeStyle = o.c; g.lineWidth = o.lw; g.strokeRect(o.x, o.y, o.w, o.h); }
+      else if (o.k === 'poly') { g.fillStyle = o.c; g.beginPath(); o.pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); g.fill(); }
+      else if (o.k === 'line') { g.strokeStyle = o.c; g.lineWidth = o.lw; g.beginPath(); g.moveTo(o.x1, o.y1); g.lineTo(o.x2, o.y2); g.stroke(); }
+      else if (o.k === 'text') {
+        g.font = FONT[o.font].replace('{s}', o.size); g.fillStyle = o.c;
+        let x0 = o.x;
+        if (o.al === 'r' || o.al === 'c') { let tw = 0; for (const ch of o.s) tw += g.measureText(ch).width + o.sp; if (!o.sp) tw = g.measureText(o.s).width; x0 = o.al === 'r' ? o.ax - tw : o.ax - tw / 2; }
+        if (!o.sp) g.fillText(o.s, x0, o.y);
+        else { let x = x0; for (const ch of o.s) { g.fillText(ch, x, o.y); x += g.measureText(ch).width + o.sp; } }
+      } else if (o.k === 'path') {
+        g.save(); g.beginPath(); g.rect(...o.clip); g.clip();
+        g.beginPath(); o.cmds.forEach(c => { if (c[0] === 'm') g.moveTo(c[1], c[2]); else if (c[0] === 'l') g.lineTo(c[1], c[2]); else if (c[0] === 'c') g.bezierCurveTo(c[1], c[2], c[3], c[4], c[5], c[6]); else g.closePath(); });
+        g.strokeStyle = o.c; g.lineWidth = o.lw; g.lineCap = 'butt'; g.lineJoin = 'miter'; g.stroke(); g.restore();
+      }
+    });
+    return new Promise(res => cv.toBlob(b => res(b), 'image/png'));
+  }
+  return { build, png, layout };
 })();
 
 /* Kromatik particle engine — raw WebGL, no dependencies.
@@ -1589,7 +1820,8 @@ void main(){
   function setMethod(m) {
     st.method = m;
     $('#mWa').classList.toggle('on', m === 'whatsapp'); $('#mMail').classList.toggle('on', m === 'mail');
-    $('#fPhone').hidden = m !== 'whatsapp'; $('#fMail').hidden = m !== 'mail';
+    $('#optPhone').hidden = m === 'whatsapp'; $('#optMail').hidden = m === 'mail';
+    $('#ePhone').hidden = true; $('#eMail').hidden = true; $('#cDigits').classList.remove('bad'); $('#cEmail').classList.remove('bad');
   }
   $('#mWa').addEventListener('click', () => setMethod('whatsapp')); $('#mMail').addEventListener('click', () => setMethod('mail'));
   function countryFmt() {
@@ -1602,66 +1834,184 @@ void main(){
   $('#cName').addEventListener('input', () => { $('#cName').classList.remove('bad'); $('#eName').hidden = true; });
   $('#cEmail').addEventListener('input', () => { $('#cEmail').classList.remove('bad'); $('#eMail').hidden = true; });
 
+  const pad = n => String(n).padStart(2, '0');
   $('#quoteForm').addEventListener('submit', e => {
     e.preventDefault();
     const d = L(); let ok = true;
     const name = $('#cName').value.trim().replace(/\s+/g, ' ');
     if (name.split(' ').filter(w => w.length > 0).length < 2) { $('#eName').hidden = false; $('#cName').classList.add('bad'); ok = false; }
-    let contact = '';
-    if (st.method === 'whatsapp') {
-      const o = $('#cCountry').selectedOptions[0], n = +o.dataset.digits, dg = $('#cDigits').value;
+    // WhatsApp: obligatorio si el canal es WhatsApp, opcional (pero validado) si se escribe algo
+    const o = $('#cCountry').selectedOptions[0], n = +o.dataset.digits, dg = $('#cDigits').value;
+    let wa = '';
+    if (st.method === 'whatsapp' || dg) {
       if (dg.length !== n) { $('#ePhone').textContent = d.e_phone.replace('{n}', n).replace('{h}', dg.length); $('#ePhone').hidden = false; $('#cDigits').classList.add('bad'); ok = false; }
-      contact = o.value === 'VE' ? `${o.dataset.code} ${$('#cOp').value.slice(1)} ${dg}` : `${o.dataset.code} ${dg}`;
-    } else {
-      contact = $('#cEmail').value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact)) { $('#eMail').hidden = false; $('#cEmail').classList.add('bad'); ok = false; }
+      else wa = o.value === 'VE' ? `${o.dataset.code} ${$('#cOp').value.slice(1)} ${dg}` : `${o.dataset.code} ${dg}`;
     }
+    const mail = $('#cEmail').value.trim();
+    if ((st.method === 'mail' || mail) && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) { $('#eMail').textContent = mail ? d.e_mail : d.e_mail_req; $('#eMail').hidden = false; $('#cEmail').classList.add('bad'); ok = false; }
     if (!ok) { const bad = $('.inp.bad'); bad && bad.focus(); return; }
-    st.inv = { no: 'KMT-2026-' + Math.floor(1000 + Math.random() * 9000), date: new Date(), name, contact, notes: $('#cMsg').value.trim() };
+    const now = new Date();
+    st.inv = { no: `KMT-${String(now.getFullYear()).slice(2)}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${Math.floor(1000 + Math.random() * 9000)}`,
+      date: now, name, company: $('#cCompany').value.trim(), wa, mail, notes: $('#cMsg').value.trim(), method: st.method, sent: false };
     renderInvoice(); openModal(); toast(d.t_ready.replace('{n}', st.inv.no), true);
   });
 
-  // ---------- invoice ----------
+  // ---------- presupuesto ----------
   function invData() {
-    const d = L(), p = PLANS[st.plan], lg = st.lang;
+    const d = L(), p = PLANS[st.plan], lg = st.lang, v = st.inv;
     const tl = t => t === 'days' ? `${p.days} ${d.days}` : d[t];
-    const rows = p.items.map(it => ({ n: it.n[lg], d: it.d[lg], t: tl(it.t), v: it.amt }))
-      .concat([...st.mods].map(id => { const m = MODS.find(x => x.id === id); return { n: m.n[lg], d: m.d[lg], t: d[m.t], v: m.price }; }));
+    const planRows = p.items.map(it => ({ n: it.n[lg], d: it.d[lg], t: tl(it.t), v: it.amt }));
+    const modRows = [...st.mods].map(id => { const m = MODS.find(x => x.id === id); return { n: m.n[lg], d: m.d[lg], t: d[m.t], v: m.price }; });
+    const rows = planRows.concat(modRows);
     const sum = rows.reduce((s, r) => s + r.v, 0);
-    const date = st.inv.date.toLocaleDateString(lg === 'es' ? 'es-VE' : lg === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
-    return { d, p, rows, sum, date, channel: st.method === 'whatsapp' ? 'WhatsApp' : 'Mail' };
+    const loc = lg === 'es' ? 'es-VE' : lg === 'fr' ? 'fr-FR' : 'en-US';
+    const df = dt => dt.toLocaleDateString(loc, { day: 'numeric', month: 'long', year: 'numeric' });
+    const until = new Date(v.date.getTime() + 15 * 864e5);
+    const extra = [...st.mods].reduce((s, id) => s + (MODS.find(x => x.id === id).t === 'plus2' ? 2 : 1), 0);
+    const [a, b] = p.days.split('-').map(x => +x.trim());
+    const eta = `${a + extra} - ${b + extra} ${d.days}`;
+    const groups = [{ title: `${d.i_grp_plan} · ${p.name[lg]}`, rows: planRows }];
+    if (modRows.length) groups.push({ title: d.i_grp_mods, rows: modRows });
+    return { d, p, rows, groups, sum, issued: df(v.date), until: df(until), eta, pref: v.method === 'whatsapp' ? 'WhatsApp' : d.i_mail };
   }
+  function kpdfData() {
+    const x = invData(), v = st.inv;
+    const m2 = r => ({ n: r.n, d: r.d, t: r.t, amt: fmt2(r.v) });
+    return { L: x.d, no: v.no, issued: x.issued, until: x.until, plan: x.p.name[st.lang], eta: x.eta, pref: x.pref,
+      client: { name: v.name, company: v.company, wa: v.wa, mail: v.mail }, notes: v.notes,
+      groups: x.groups.map(g => ({ title: g.title, rows: g.rows.map(m2) })),
+      sub: fmt2(x.sum), total: fmt2(x.sum) + (x.p.plus ? ' *' : ''), dep: fmt2(x.sum / 2), bal: fmt2(x.sum / 2), from: !!x.p.plus };
+  }
+  function msgLines() {
+    const x = invData(), d = x.d, v = st.inv;
+    let i = 0;
+    const lines = [`*${d.m_head}*`, '', `*${d.wa_no}:* ${v.no}`, `*${d.wa_name}:* ${v.name}`];
+    if (v.company) lines.push(`*${d.m_company}:* ${v.company}`);
+    if (v.wa) lines.push(`*${d.m_wa}:* ${v.wa}`);
+    if (v.mail) lines.push(`*${d.m_email}:* ${v.mail}`);
+    lines.push(`*${d.wa_plan}:* ${x.p.name[st.lang]}`, '', `*${d.m_items}:*`);
+    x.rows.forEach(r => lines.push(`${pad(++i)}. ${r.n} — ${fmt2(r.v)}`));
+    lines.push('', `*${d.wa_total}:* ${fmt2(x.sum)}${x.p.plus ? ' *' : ''}`, `*${d.m_dep}:* ${fmt2(x.sum / 2)}`, `*${d.m_eta}:* ${x.eta}`, `*${d.m_valid}:* ${x.until}`);
+    if (v.notes) lines.push('', `*${d.wa_notes}:* ${v.notes}`);
+    return lines;
+  }
+  const plain = lines => lines.join('\n').replace(/\*/g, '');
+  const subject = () => { const x = invData(); return `Presupuesto ${st.inv.no} · ${x.p.name.es} · ${fmt2(x.sum)} · ${st.inv.name}`; };
+
   function renderInvoice() {
-    const { d, p, rows, sum, date, channel } = invData(), v = st.inv;
-    $('#invNo').textContent = v.no; $('#invDate').textContent = `${d.i_date}: ${date}`;
-    $('#invName').textContent = v.name; $('#invContact').textContent = v.contact; $('#invChannel').textContent = channel;
-    $('#invRows').innerHTML = rows.map(r => `<tr><td><div class="n">${esc(r.n)}</div><div class="dd">${esc(r.d)}</div></td><td class="c">${esc(r.t)}</td><td class="r">${fmt2(r.v)}</td></tr>`).join('');
-    $('#invSub').textContent = fmt2(sum); $('#invTotal').textContent = fmt2(sum) + (p.plus ? '*' : '');
+    const x = invData(), d = x.d, v = st.inv;
+    $('#invNo').textContent = v.no; $('#invDate').textContent = `${d.i_issued}: ${x.issued}`; $('#invUntil').textContent = `${d.i_until}: ${x.until}`;
+    $('#invName').textContent = v.name;
+    const kv = (k, val) => val ? `<span><i>${esc(k)}:</i> ${esc(val)}</span>` : '';
+    $('#invClient').innerHTML = kv(d.i_company, v.company) + kv(d.i_wa, v.wa) + kv(d.i_mail, v.mail);
+    $('#invPlan').textContent = x.p.name[st.lang];
+    $('#invProj').innerHTML = kv(d.i_eta, x.eta) + kv(d.i_currency, 'USD ($)') + kv(d.i_pref, x.pref);
+    let i = 0;
+    $('#invRows').innerHTML = x.groups.map(g => `<tr class="grp"><td></td><td colspan="3">${esc(g.title)}</td></tr>` +
+      g.rows.map(r => `<tr><td class="num">${pad(++i)}</td><td><div class="n">${esc(r.n)}</div><div class="dd">${esc(r.d)}</div></td><td class="c">${esc(r.t)}</td><td class="r">${fmt2(r.v)}</td></tr>`).join('')).join('');
+    $('#invSub').textContent = fmt2(x.sum); $('#invTotal').textContent = fmt2(x.sum) + (x.p.plus ? ' *' : '');
+    $('#invDep').textContent = fmt2(x.sum / 2); $('#invBal').textContent = fmt2(x.sum / 2);
+    $('#invFrom').hidden = !x.p.plus; $('#invFrom').textContent = d.i_from;
+    $('#invConds').innerHTML = d.i_conds.map(t => `<li>${esc(t)}</li>`).join('');
+    $('#invNext').innerHTML = d.i_nexts.map(t => `<li>${esc(t.replace('{n}', v.no))}</li>`).join('');
     $('#invNotesBox').hidden = !v.notes; $('#invNotes').textContent = v.notes;
-    // outgoing message
-    const mods = [...st.mods].map(id => MODS.find(x => x.id === id).n[st.lang]).join(', ') || '—';
-    const lines = [`*${d.wa_head}*`, '', `*${d.wa_no}:* ${v.no}`, `*${d.wa_name}:* ${v.name}`, `*${d.wa_contact}:* ${v.contact}`, `*${d.wa_plan}:* ${p.name[st.lang]}`, `*${d.wa_mods}:* ${mods}`, `*${d.wa_total}:* ${fmt2(sum)}`];
-    if (v.notes) lines.push(`*${d.wa_notes}:* ${v.notes}`);
+    // salidas
+    const waUrl = `https://wa.me/${KWA}?text=` + encodeURIComponent(msgLines().join('\n'));
+    const body = plain(msgLines());
+    $('#fbWa').href = waUrl;
+    $('#fbGmail').href = `https://mail.google.com/mail/?view=cm&fs=1&to=${KMAIL}&su=${encodeURIComponent(subject())}&body=${encodeURIComponent(body)}`;
+    $('#fbApp').href = `mailto:${KMAIL}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(body)}`;
     const a = $('#sendBtn');
-    if (st.method === 'whatsapp') { a.href = 'https://wa.me/584125302211?text=' + encodeURIComponent(lines.join('\n')); a.target = '_blank'; $('#sendTxt').textContent = d.i_send_wa; }
-    else { a.href = `mailto:andresdcarrenog@gmail.com?subject=${encodeURIComponent('Presupuesto Kromatik ' + v.no + ' · ' + p.name[st.lang])}&body=${encodeURIComponent(lines.join('\n').replace(/\*/g, ''))}`; a.target = '_self'; $('#sendTxt').textContent = d.i_send_mail; }
+    if (v.method === 'whatsapp') { a.href = waUrl; a.target = '_blank'; $('#sendTxt').textContent = d.i_send_wa2; }
+    else { a.href = '#'; a.removeAttribute('target'); $('#sendTxt').textContent = d.i_send; }
+    $('#pngTxt').textContent = canShareFiles() ? d.i_share : d.i_png;
   }
+
+  // envío de correo real (FormSubmit → kromatikweb@gmail.com). Devuelve true/false.
+  async function postMail(fields) {
+    const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 15000);
+    try {
+      const r = await fetch(`https://formsubmit.co/ajax/${KMAIL}`, { method: 'POST', signal: ctl.signal,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(fields) });
+      const j = await r.json().catch(() => ({}));
+      return r.ok && (j.success === true || j.success === 'true');
+    } catch (e) { return false; } finally { clearTimeout(tm); }
+  }
+  function quoteFields() {
+    const x = invData(), v = st.inv; let i = 0;
+    const f = {
+      _subject: subject(), _template: 'table', _captcha: 'false', _honey: $('#cHoney').value,
+      'Presupuesto': v.no, 'Fecha de emisión': x.issued, 'Válido hasta': x.until,
+      'Cliente': v.name, 'Empresa': v.company || '—', 'WhatsApp del cliente': v.wa || '—', 'Correo del cliente': v.mail || '—',
+      'Canal preferido': v.method === 'whatsapp' ? 'WhatsApp (el cliente abrió el chat)' : 'Correo',
+      'Plan': x.p.name.es, 'Conceptos': x.rows.map(r => `${pad(++i)}. ${r.n} (${r.t}) — ${fmt2(r.v)}`).join('\n'),
+      'Total': fmt2(x.sum) + (x.p.plus ? ' (monto base, a medida)' : ''), 'Anticipo 50%': fmt2(x.sum / 2), 'Plazo estimado': x.eta,
+      'Detalles del proyecto': v.notes || '—', 'Idioma de la web': st.lang.toUpperCase()
+    };
+    if (v.mail) { f.email = v.mail; f._replyto = v.mail;
+      f._autoresponse = L().auto.replace('{name}', v.name.split(' ')[0]).replace('{n}', v.no).replace('{plan}', x.p.name[st.lang]).replace('{t}', fmt2(x.sum)); }
+    return f;
+  }
+  function showDone() {
+    const d = L(), v = st.inv;
+    $('#okP').textContent = d.ok_p.replace('{n}', v.no);
+    $('#okCopy').textContent = v.mail ? d.ok_copy.replace('{m}', v.mail) : '';
+    $('#invDone').hidden = false; $('#invFb').hidden = true; $('#invSheet').hidden = true; $('#mFoot').hidden = true;
+  }
+  $('#okNew').addEventListener('click', () => { closeModal(); $('#cMsg').value = ''; });
+  $('#sendBtn').addEventListener('click', async e => {
+    const d = L(), v = st.inv;
+    if (v.method === 'whatsapp') {
+      // el enlace abre WhatsApp; en paralelo te llega una copia al correo
+      if (!v.sent) { v.sent = true; postMail(quoteFields()); }
+      toast(d.t_sent_wa.replace('{n}', v.no) + ' ' + d.wa_tip, true);
+      return;
+    }
+    e.preventDefault();
+    const a = $('#sendBtn'); a.classList.add('busy'); $('#sendTxt').textContent = d.i_sending;
+    const ok = await postMail(quoteFields());
+    a.classList.remove('busy'); $('#sendTxt').textContent = d.i_send;
+    if (ok) { v.sent = true; showDone(); toast(d.t_sent_mail.replace('{n}', v.no), true); }
+    else { downloadPdf(); $('#invFb').hidden = false; $('#invFb').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  });
+
   const modal = $('#modal'); let lastFocus = null;
-  function openModal() { lastFocus = document.activeElement; modal.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(() => $('#mClose').focus(), 50); }
+  function openModal() {
+    $('#invDone').hidden = true; $('#invFb').hidden = true; $('#invSheet').hidden = false; $('#mFoot').hidden = false;
+    lastFocus = document.activeElement; modal.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(() => $('#mClose').focus(), 50);
+    const mb = $('.modal-body', modal); if (mb) mb.scrollTop = 0;
+  }
   function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; lastFocus && lastFocus.focus && lastFocus.focus(); }
   $('#mClose').addEventListener('click', closeModal); $('#mBack').addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
-  $('#sendBtn').addEventListener('click', () => toast(L().t_sent.replace('{c}', st.method === 'whatsapp' ? 'WhatsApp' : 'Mail'), true));
-  $('#pdfBtn').addEventListener('click', () => {
-    const { d, rows, sum, date, channel } = invData(), v = st.inv;
-    const bytes = KPDF.build({ L: d, no: v.no, date, name: v.name, contact: v.contact, channel, notes: v.notes, total: fmt2(sum),
-      rows: rows.map(r => ({ n: r.n, d: r.d, t: r.t, amt: fmt2(r.v) })) });
-    const f = `Presupuesto_${v.no}_Kromatik.pdf`;
-    const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+
+  // dentro de claude.ai usamos la capacidad "downloads"; en tu hosting, descarga normal
+  const dlCap = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+  async function saveBlob(blob, f) {
+    const cap = await dlCap;
+    if (cap) { try { await cap.save({ filename: f, data: blob }); } catch (e) {} return; }
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = f; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 20000);
-    toast(d.t_pdf.replace('{f}', f), true);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  }
+  function downloadPdf() {
+    const f = `Presupuesto_${st.inv.no}_Kromatik.pdf`;
+    saveBlob(new Blob([KPDF.build(kpdfData())], { type: 'application/pdf' }), f);
+    toast(L().t_pdf.replace('{f}', f), true);
+  }
+  $('#pdfBtn').addEventListener('click', downloadPdf);
+  function canShareFiles() {
+    try { return !!(navigator.canShare && matchMedia('(pointer:coarse)').matches && navigator.canShare({ files: [new File([new Blob(['x'])], 'k.png', { type: 'image/png' })] })); } catch (e) { return false; }
+  }
+  $('#pngBtn').addEventListener('click', async () => {
+    const d = L(), f = `Presupuesto_${st.inv.no}_Kromatik.png`;
+    const blob = await KPDF.png(kpdfData(), 2);
+    if (canShareFiles()) {
+      try { await navigator.share({ files: [new File([blob], f, { type: 'image/png' })], title: `${d.i_quote} ${st.inv.no}`, text: `${d.i_quote} ${st.inv.no} · Kromatik` }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    saveBlob(blob, f); toast(d.t_png.replace('{f}', f), true);
   });
 
   // ---------- support ----------
@@ -1669,11 +2019,19 @@ void main(){
     const d = L(), n = $('#sName').value.trim(), u = $('#sUrl').value.trim(), ty = $('#sType').selectedOptions[0].textContent, m = $('#sMsg').value.trim();
     const txt = `*${d.sup_head}*\n\n*${d.wa_name}:* ${n}\n*${d.sup_site}:* ${u || '—'}\n*${d.sup_type}:* ${ty}\n*${d.sup_det}:* ${m}`;
     $('#supWa').href = 'https://wa.me/584125302211?text=' + encodeURIComponent(txt);
-    $('#supMail').href = `mailto:andresdcarrenog@gmail.com?subject=${encodeURIComponent('Ticket de soporte Kromatik: ' + ty)}&body=${encodeURIComponent(txt.replace(/\*/g, ''))}`;
+    $('#supMail').href = `mailto:kromatikweb@gmail.com?subject=${encodeURIComponent('Ticket de soporte Kromatik: ' + ty)}&body=${encodeURIComponent(txt.replace(/\*/g, ''))}`;
   }
   ['#sName', '#sUrl', '#sType', '#sMsg'].forEach(s => $(s).addEventListener('input', () => { updateSupport(); $('#eSup').hidden = true; }));
-  ['#supWa', '#supMail'].forEach(s => $(s).addEventListener('click', e => {
-    if (!$('#sName').value.trim() || !$('#sMsg').value.trim()) { e.preventDefault(); $('#eSup').hidden = false; ($('#sName').value.trim() ? $('#sMsg') : $('#sName')).focus(); }
+  ['#supWa', '#supMail'].forEach(s => $(s).addEventListener('click', async e => {
+    if (!$('#sName').value.trim() || !$('#sMsg').value.trim()) { e.preventDefault(); $('#eSup').hidden = false; ($('#sName').value.trim() ? $('#sMsg') : $('#sName')).focus(); return; }
+    if (s !== '#supMail') return;
+    e.preventDefault();
+    const d = L(), el = $('#supMail'), span = $('span', el), old = span.textContent, href = el.href;
+    el.classList.add('busy'); span.textContent = d.s_sending;
+    const ok = await postMail({ _subject: `Ticket de soporte · ${$('#sType').selectedOptions[0].textContent} · ${$('#sName').value.trim()}`, _template: 'table', _captcha: 'false',
+      'Nombre': $('#sName').value.trim(), 'Web': $('#sUrl').value.trim() || '—', 'Tipo': $('#sType').selectedOptions[0].textContent, 'Detalles': $('#sMsg').value.trim() });
+    el.classList.remove('busy'); span.textContent = old;
+    if (ok) { toast(d.s_ok, true); $('#sMsg').value = ''; } else location.href = href;
   }));
   $('#supForm').addEventListener('submit', e => e.preventDefault());
   $$('.copy').forEach(b => b.addEventListener('click', () => {
