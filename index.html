@@ -435,6 +435,13 @@ textarea.inp{resize:vertical;min-height:120px}
 .btn.busy{opacity:.7;pointer-events:none}
 @media (max-width:560px){.inv-info{grid-template-columns:1fr}}
 @media (max-width:560px){.modal-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px}.modal-foot .btn{padding:12px 10px;font-size:11px;letter-spacing:.06em}.modal-foot #sendBtn{grid-column:1/-1;padding:15px}.inv-fb .btns{display:grid;grid-template-columns:1fr 1fr}.inv-fb .btn{font-size:11px;padding:11px 8px}}
+.sum-bs{margin:0;text-align:right;font-family:var(--mono);font-size:12.5px;color:var(--saffron)}
+.inv-tot .bsbox{margin-top:8px;padding:10px 12px;border-radius:12px;background:#FFF6E0;display:grid;gap:4px}
+.inv-tot .bsbox .rw{display:flex;justify-content:space-between;gap:10px}
+.inv-tot .bsbox .rate{font-size:11.5px;color:#7A5A00}
+.inv-tot .bsbox .bs b{font-weight:600;font-size:13.5px;color:#0B0B14}
+.inv-tot .bsbox .bs b:last-child,.inv-tot .bsbox span:last-child{font-family:var(--mono)}
+.inv-tot .bsbox p{margin:2px 0 0;font-size:10.5px;color:#6E6E80;line-height:1.4}
 </style>
 </head>
 <body>
@@ -639,6 +646,7 @@ textarea.inp{resize:vertical;min-height:120px}
           <span class="lbl" data-i18n="q_sum">Tu configuración</span>
           <div id="sumRows" style="display:grid;gap:8px"></div>
           <div class="sum-total"><span class="small" data-i18n="q_tot">Total estimado</span><b id="sumTotal">$150 USD</b></div>
+          <p class="small sum-bs" id="sumBs" hidden></p>
         </div>
       </div>
       <form class="form rv" id="quoteForm" novalidate>
@@ -786,7 +794,12 @@ textarea.inp{resize:vertical;min-height:120px}
             <div class="rw"><span data-i18n="i_sub2">Subtotal</span><span id="invSub"></span></div>
             <div class="gt"><span data-i18n="i_total">Total</span><b id="invTotal"></b></div>
             <div class="rw pay"><span data-i18n="i_dep">Anticipo para iniciar (50%)</span><span id="invDep"></span></div>
-            <div class="rw pay"><span data-i18n="i_bal">Saldo contra entrega (50%)</span><span id="invBal"></span></div></div></div>
+            <div class="rw pay"><span data-i18n="i_bal">Saldo contra entrega (50%)</span><span id="invBal"></span></div>
+            <div class="bsbox" id="invBsBox" hidden>
+              <div class="rw rate"><span id="invRate"></span><span id="invRateV"></span></div>
+              <div class="rw bs"><b data-i18n="i_bs">Total en bolívares</b><b id="invBs"></b></div>
+              <div class="rw pay"><span data-i18n="i_bs_dep">Anticipo en bolívares</span><span id="invBsDep"></span></div>
+              <p id="invBsNote"></p></div></div></div>
           <p class="inv-from" id="invFrom" hidden data-i18n="i_from"></p>
           <div class="inv-terms"><b data-i18n="i_cond">Condiciones</b><ul id="invConds"></ul></div>
           <div class="inv-terms"><b data-i18n="i_next">Próximos pasos</b><ol id="invNext"></ol></div>
@@ -962,6 +975,7 @@ const MODS = [
 
 /* Presupuesto profesional: textos adicionales */
 Object.assign(I18N.es, {
+ i_rate:"Tasa BCV del euro · {d}",i_bs:"Total en bolívares",i_bs_dep:"Anticipo en bolívares",i_rate_note:"Montos en Bs. calculados con la tasa oficial BCV del euro del {d}; se recalculan con la tasa del día en que se realice el pago.",q_bs:"≈ Bs. {v} · tasa BCV € {d}",m_bs:"Total en Bs. (BCV €)",m_rate:"Tasa BCV €",
  f_company:"Empresa o marca",f_opt:"(opcional)",f_company_ph:"Ej. Café Aroma",f_wa_req:"Tu WhatsApp",
  e_mail_req:"Para enviarlo por correo necesitamos tu email.",
  i_issued:"Emisión",i_until:"Válido hasta",i_for:"Preparado para",i_project:"Proyecto",i_company:"Empresa",i_wa:"WhatsApp",i_mail:"Correo",
@@ -970,7 +984,7 @@ Object.assign(I18N.es, {
  i_dep:"Anticipo para iniciar (50%)",i_bal:"Saldo contra entrega (50%)",
  i_from:"* Monto base referencial. El proyecto a medida se ajusta tras la reunión de requerimientos.",
  i_cond:"Condiciones",
- i_conds:["Precios expresados en dólares (USD). Se acepta pago en divisas o su equivalente en bolívares a tasa BCV del día.","Forma de pago: 50% de anticipo para iniciar y 50% contra entrega final en producción.","El plazo comienza al recibir el anticipo y el contenido del cliente (textos, logo, fotos).","Incluye 2 rondas de ajustes de diseño. Cambios fuera del alcance se cotizan por separado.","Garantía de 30 días posteriores al lanzamiento para corrección de fallas.","No incluye compra de dominio ni licencias de terceros, salvo que se indique en este presupuesto."],
+ i_conds:["Precios expresados en dólares (USD). Se acepta pago en divisas o su equivalente en bolívares a la tasa oficial BCV del euro del día.","Forma de pago: 50% de anticipo para iniciar y 50% contra entrega final en producción.","El plazo comienza al recibir el anticipo y el contenido del cliente (textos, logo, fotos).","Incluye 2 rondas de ajustes de diseño. Cambios fuera del alcance se cotizan por separado.","Garantía de 30 días posteriores al lanzamiento para corrección de fallas.","No incluye compra de dominio ni licencias de terceros, salvo que se indique en este presupuesto."],
  i_next:"Próximos pasos",
  i_nexts:["Revisa este presupuesto y cuéntanos si quieres ajustar algo.","Confírmalo por WhatsApp o correo indicando el número {n}.","Agendamos una llamada de arranque y te enviamos los datos de pago."],
  i_accept:"Aceptación del cliente",i_sign:"Firma",i_date2:"Fecha",i_page:"Página {a} de {b}",
@@ -983,6 +997,7 @@ Object.assign(I18N.es, {
  auto:"¡Hola {name}! Gracias por escribir a Kromatik. Recibimos tu presupuesto {n} ({plan}, total {t}). Te contactaremos en menos de 24 horas para afinar detalles. Si quieres adelantar, escríbenos al WhatsApp +58 412 530 2211."
 });
 Object.assign(I18N.en, {
+ i_rate:"BCV euro rate · {d}",i_bs:"Total in bolívares",i_bs_dep:"Deposit in bolívares",i_rate_note:"Bs. amounts use the official BCV euro rate of {d}; they are recalculated with the rate of the payment date.",q_bs:"≈ Bs. {v} · BCV € rate {d}",m_bs:"Total in Bs. (BCV €)",m_rate:"BCV € rate",
  f_company:"Company or brand",f_opt:"(optional)",f_company_ph:"e.g. Aroma Café",f_wa_req:"Your WhatsApp",
  e_mail_req:"We need your email to send it by email.",
  i_issued:"Issued",i_until:"Valid until",i_for:"Prepared for",i_project:"Project",i_company:"Company",i_wa:"WhatsApp",i_mail:"Email",
@@ -991,7 +1006,7 @@ Object.assign(I18N.en, {
  i_dep:"Deposit to start (50%)",i_bal:"Balance on delivery (50%)",
  i_from:"* Reference base amount. Custom projects are adjusted after the requirements meeting.",
  i_cond:"Terms",
- i_conds:["Prices in US dollars (USD). Payment accepted in foreign currency or the bolívar equivalent at the official BCV rate of the day.","Payment: 50% deposit to start and 50% on final delivery to production.","The timeline starts once the deposit and the client's content (copy, logo, photos) are received.","Includes 2 rounds of design revisions. Out-of-scope changes are quoted separately.","30-day post-launch warranty for bug fixes.","Domain purchase and third-party licenses are not included unless stated in this quote."],
+ i_conds:["Prices in US dollars (USD). Payment accepted in foreign currency or the bolívar equivalent at the official BCV euro rate of the day.","Payment: 50% deposit to start and 50% on final delivery to production.","The timeline starts once the deposit and the client's content (copy, logo, photos) are received.","Includes 2 rounds of design revisions. Out-of-scope changes are quoted separately.","30-day post-launch warranty for bug fixes.","Domain purchase and third-party licenses are not included unless stated in this quote."],
  i_next:"Next steps",
  i_nexts:["Review this quote and let us know if you want to adjust anything.","Confirm it via WhatsApp or email quoting number {n}.","We schedule a kick-off call and send you the payment details."],
  i_accept:"Client acceptance",i_sign:"Signature",i_date2:"Date",i_page:"Page {a} of {b}",
@@ -1004,6 +1019,7 @@ Object.assign(I18N.en, {
  auto:"Hi {name}! Thanks for contacting Kromatik. We received your quote {n} ({plan}, total {t}). We'll reach out within 24 hours to go over the details. If you'd like to move faster, message us on WhatsApp at +58 412 530 2211."
 });
 Object.assign(I18N.fr, {
+ i_rate:"Taux BCV de l'euro · {d}",i_bs:"Total en bolivars",i_bs_dep:"Acompte en bolivars",i_rate_note:"Montants en Bs. calculés au taux officiel BCV de l'euro du {d} ; recalculés au taux du jour du paiement.",q_bs:"≈ Bs. {v} · taux BCV € {d}",m_bs:"Total en Bs. (BCV €)",m_rate:"Taux BCV €",
  f_company:"Entreprise ou marque",f_opt:"(facultatif)",f_company_ph:"Ex. Café Arôme",f_wa_req:"Votre WhatsApp",
  e_mail_req:"Nous avons besoin de votre e-mail pour l'envoi par e-mail.",
  i_issued:"Émis le",i_until:"Valable jusqu'au",i_for:"Préparé pour",i_project:"Projet",i_company:"Entreprise",i_wa:"WhatsApp",i_mail:"E-mail",
@@ -1012,7 +1028,7 @@ Object.assign(I18N.fr, {
  i_dep:"Acompte pour démarrer (50 %)",i_bal:"Solde à la livraison (50 %)",
  i_from:"* Montant de base indicatif. Le sur-mesure est ajusté après la réunion de cadrage.",
  i_cond:"Conditions",
- i_conds:["Prix exprimés en dollars (USD). Paiement accepté en devises ou en bolivars au taux BCV du jour.","Paiement : 50 % d'acompte pour démarrer et 50 % à la livraison finale en production.","Le délai commence à réception de l'acompte et des contenus du client (textes, logo, photos).","Comprend 2 séries d'ajustements de design. Les demandes hors périmètre sont chiffrées à part.","Garantie de 30 jours après le lancement pour la correction d'anomalies.","N'inclut pas l'achat du domaine ni les licences tierces, sauf mention dans ce devis."],
+ i_conds:["Prix exprimés en dollars (USD). Paiement accepté en devises ou en bolivars au taux officiel BCV de l'euro du jour.","Paiement : 50 % d'acompte pour démarrer et 50 % à la livraison finale en production.","Le délai commence à réception de l'acompte et des contenus du client (textes, logo, photos).","Comprend 2 séries d'ajustements de design. Les demandes hors périmètre sont chiffrées à part.","Garantie de 30 jours après le lancement pour la correction d'anomalies.","N'inclut pas l'achat du domaine ni les licences tierces, sauf mention dans ce devis."],
  i_next:"Prochaines étapes",
  i_nexts:["Vérifiez ce devis et dites-nous si vous souhaitez l'ajuster.","Confirmez-le par WhatsApp ou e-mail en indiquant le numéro {n}.","Nous planifions un appel de lancement et vous envoyons les coordonnées de paiement."],
  i_accept:"Acceptation du client",i_sign:"Signature",i_date2:"Date",i_page:"Page {a} sur {b}",
@@ -1183,7 +1199,7 @@ const KPDF = (() => {
     });
 
     /* ---- totales ---- */
-    ensure(120);
+    ensure(inv.bs ? 200 : 120);
     y += 10;
     const tx = W - M - 232;
     text(tx, y, L.i_sub2, 9, 'F1', GREY2); text(W - M, y, inv.sub, 9.5, 'F3', INK, 'r');
@@ -1194,6 +1210,16 @@ const KPDF = (() => {
     y += 58;
     text(tx, y, L.i_dep, 8.5, 'F1', GREY2); text(W - M, y, inv.dep, 9, 'F3', INK, 'r'); y += 14;
     text(tx, y, L.i_bal, 8.5, 'F1', GREY2); text(W - M, y, inv.bal, 9, 'F3', INK, 'r'); y += 24;
+    if (inv.bs) {
+      ensure(70);
+      rect(tx - 12, y - 12, 244, 50, '#FFF6E0');
+      text(tx, y + 2, fill(L.i_rate, { d: inv.bs.date }), 8, 'F1', '#7A5A00'); text(W - M - 8, y + 2, inv.bs.rate, 8.5, 'F3', '#7A5A00', 'r');
+      text(tx, y + 16, L.i_bs, 9, 'F2', INK); text(W - M - 8, y + 16, inv.bs.total, 10, 'F3', INK, 'r');
+      text(tx, y + 29, L.i_bs_dep, 8, 'F1', GREY2); text(W - M - 8, y + 29, inv.bs.dep, 8.5, 'F3', INK, 'r');
+      y += 50;
+      const nl = wrap(fill(L.i_rate_note, { d: inv.bs.date }), 7.5, 'F1', 244);
+      nl.forEach((t, i) => text(tx - 12, y + i * 10, t, 7.5, 'F1', GREY)); y += nl.length * 10 + 12;
+    }
     if (inv.from) { const fl = wrap(L.i_from, 8, 'F1', W - 2 * M); ensure(fl.length * 11 + 6); fl.forEach((t, i) => text(M, y + i * 11, t, 8, 'F1', GREY)); y += fl.length * 11 + 10; }
 
     /* ---- cajas de texto ---- */
@@ -1608,6 +1634,22 @@ void main(){
   const L = () => I18N[st.lang];
   const fmt = n => '$' + n.toLocaleString('en-US');
   const fmt2 = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+  // ---------- tasa oficial BCV del euro (se consulta cada vez que abren la web) ----------
+  let RATE = null; // { v: número, d: fecha legible }
+  const fmtBs = n => 'Bs. ' + n.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const rateDate = iso => { const t = new Date(iso); return isNaN(t) ? '' : t.toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'America/Caracas' }); };
+  async function loadRate() {
+    try {
+      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 9000);
+      const r = await fetch('https://ve.dolarapi.com/v1/euros/oficial', { signal: ctl.signal, cache: 'no-store' });
+      const j = await r.json(); const v = +j.promedio;
+      if (v > 0) { RATE = { v, d: rateDate(j.fechaActualizacion) }; try { localStorage.setItem('kmt-bcv-eur', JSON.stringify(RATE)); } catch (e) {} }
+    } catch (e) {
+      try { const c = JSON.parse(localStorage.getItem('kmt-bcv-eur') || 'null'); if (c && c.v > 0) RATE = c; } catch (e2) {}
+    }
+    if (typeof updateTotals === 'function') updateTotals();
+    if (st.inv && typeof renderInvoice === 'function') renderInvoice();
+  }
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   // ---------- toasts ----------
@@ -1806,6 +1848,7 @@ void main(){
       (st.mods.size ? [...st.mods].map(id => { const m = MODS.find(x => x.id === id); return `<div class="sum-row"><span>+ ${m.n[st.lang]}</span><span>${fmt(m.price)}</span></div>`; }).join('')
         : `<div class="sum-row"><span style="color:var(--ash)">${L().q_none}</span><span></span></div>`);
     $('#sumTotal').textContent = fmt(t) + ' USD';
+    const sb = $('#sumBs'); if (sb) { sb.hidden = !RATE; if (RATE) sb.textContent = L().q_bs.replace('{v}', (t * RATE.v).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })).replace('{d}', RATE.d); }
   }
 
   // ---------- quote form ----------
@@ -1880,7 +1923,8 @@ void main(){
     return { L: x.d, no: v.no, issued: x.issued, until: x.until, plan: x.p.name[st.lang], eta: x.eta, pref: x.pref,
       client: { name: v.name, company: v.company, wa: v.wa, mail: v.mail }, notes: v.notes,
       groups: x.groups.map(g => ({ title: g.title, rows: g.rows.map(m2) })),
-      sub: fmt2(x.sum), total: fmt2(x.sum) + (x.p.plus ? ' *' : ''), dep: fmt2(x.sum / 2), bal: fmt2(x.sum / 2), from: !!x.p.plus };
+      sub: fmt2(x.sum), total: fmt2(x.sum) + (x.p.plus ? ' *' : ''), dep: fmt2(x.sum / 2), bal: fmt2(x.sum / 2), from: !!x.p.plus,
+      bs: RATE ? { rate: fmtBs(RATE.v), date: RATE.d, total: fmtBs(x.sum * RATE.v), dep: fmtBs(x.sum * RATE.v / 2) } : null };
   }
   function msgLines() {
     const x = invData(), d = x.d, v = st.inv;
@@ -1891,7 +1935,7 @@ void main(){
     if (v.mail) lines.push(`*${d.m_email}:* ${v.mail}`);
     lines.push(`*${d.wa_plan}:* ${x.p.name[st.lang]}`, '', `*${d.m_items}:*`);
     x.rows.forEach(r => lines.push(`${pad(++i)}. ${r.n} — ${fmt2(r.v)}`));
-    lines.push('', `*${d.wa_total}:* ${fmt2(x.sum)}${x.p.plus ? ' *' : ''}`, `*${d.m_dep}:* ${fmt2(x.sum / 2)}`, `*${d.m_eta}:* ${x.eta}`, `*${d.m_valid}:* ${x.until}`);
+    lines.push('', `*${d.wa_total}:* ${fmt2(x.sum)}${x.p.plus ? ' *' : ''}`, `*${d.m_dep}:* ${fmt2(x.sum / 2)}`, ...(RATE ? [`*${d.m_bs}:* ${fmtBs(x.sum * RATE.v)} (${d.m_rate} ${RATE.d}: ${fmtBs(RATE.v)})`] : []), `*${d.m_eta}:* ${x.eta}`, `*${d.m_valid}:* ${x.until}`);
     if (v.notes) lines.push('', `*${d.wa_notes}:* ${v.notes}`);
     return lines;
   }
@@ -1911,6 +1955,8 @@ void main(){
       g.rows.map(r => `<tr><td class="num">${pad(++i)}</td><td><div class="n">${esc(r.n)}</div><div class="dd">${esc(r.d)}</div></td><td class="c">${esc(r.t)}</td><td class="r">${fmt2(r.v)}</td></tr>`).join('')).join('');
     $('#invSub').textContent = fmt2(x.sum); $('#invTotal').textContent = fmt2(x.sum) + (x.p.plus ? ' *' : '');
     $('#invDep').textContent = fmt2(x.sum / 2); $('#invBal').textContent = fmt2(x.sum / 2);
+    $('#invBsBox').hidden = !RATE;
+    if (RATE) { $('#invRate').textContent = d.i_rate.replace('{d}', RATE.d); $('#invRateV').textContent = fmtBs(RATE.v); $('#invBs').textContent = fmtBs(x.sum * RATE.v); $('#invBsDep').textContent = fmtBs(x.sum * RATE.v / 2); $('#invBsNote').textContent = d.i_rate_note.replace('{d}', RATE.d); }
     $('#invFrom').hidden = !x.p.plus; $('#invFrom').textContent = d.i_from;
     $('#invConds').innerHTML = d.i_conds.map(t => `<li>${esc(t)}</li>`).join('');
     $('#invNext').innerHTML = d.i_nexts.map(t => `<li>${esc(t.replace('{n}', v.no))}</li>`).join('');
@@ -1945,7 +1991,7 @@ void main(){
       'Cliente': v.name, 'Empresa': v.company || '—', 'WhatsApp del cliente': v.wa || '—', 'Correo del cliente': v.mail || '—',
       'Canal preferido': v.method === 'whatsapp' ? 'WhatsApp (el cliente abrió el chat)' : 'Correo',
       'Plan': x.p.name.es, 'Conceptos': x.rows.map(r => `${pad(++i)}. ${r.n} (${r.t}) — ${fmt2(r.v)}`).join('\n'),
-      'Total': fmt2(x.sum) + (x.p.plus ? ' (monto base, a medida)' : ''), 'Anticipo 50%': fmt2(x.sum / 2), 'Plazo estimado': x.eta,
+      'Total': fmt2(x.sum) + (x.p.plus ? ' (monto base, a medida)' : ''), 'Anticipo 50%': fmt2(x.sum / 2), 'Total en Bs. (tasa BCV €)': RATE ? `${fmtBs(x.sum * RATE.v)} — tasa ${fmtBs(RATE.v)} del ${RATE.d}` : 'Tasa BCV no disponible al momento', 'Plazo estimado': x.eta,
       'Detalles del proyecto': v.notes || '—', 'Idioma de la web': st.lang.toUpperCase()
     };
     if (v.mail) { f.email = v.mail; f._replyto = v.mail;
@@ -2109,6 +2155,7 @@ void main(){
   try { const s = localStorage.getItem('kmt-lang'); if (s && I18N[s]) startLang = s; } catch (e) {}
   $$('.lang button').forEach(b => b.addEventListener('click', () => { try { localStorage.setItem('kmt-lang', b.dataset.lang); } catch (e) {} }));
   applyLang(startLang);
+  loadRate();
   setMethod('whatsapp');
   go((location.hash || '#inicio').slice(1), true);
 })();
