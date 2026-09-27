@@ -442,6 +442,14 @@ textarea.inp{resize:vertical;min-height:120px}
 .inv-tot .bsbox .bs b{font-weight:600;font-size:13.5px;color:#0B0B14}
 .inv-tot .bsbox .bs b:last-child,.inv-tot .bsbox span:last-child{font-family:var(--mono)}
 .inv-tot .bsbox p{margin:2px 0 0;font-size:10.5px;color:#6E6E80;line-height:1.4}
+.inv-sh{border:1px solid rgba(123,77,255,.5);background:rgba(123,77,255,.1);border-radius:16px;padding:14px 18px 16px;margin-bottom:16px;display:grid;gap:8px}
+.inv-sh .sh-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.inv-sh .x{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);background:none;display:grid;place-items:center}
+.inv-sh .x svg{width:12px;height:12px}
+.inv-sh p{margin:0;font-size:14px;color:var(--ash)}
+.inv-sh .btn{padding:12px 16px;font-size:13px}
+@media (max-width:560px){.inv-sh .btns{display:grid;grid-template-columns:1fr 1fr 1fr}.inv-sh .btn{font-size:11px;padding:11px 6px}}
+.fb-why{margin:0;font-size:13px!important;color:var(--saffron)!important}
 </style>
 </head>
 <body>
@@ -761,11 +769,21 @@ textarea.inp{resize:vertical;min-height:120px}
       <div class="inv-fb" id="invFb" hidden>
         <b data-i18n="fb_t">No pudimos enviarlo automáticamente</b>
         <p data-i18n="fb_p">Tu PDF ya se descargó. Envíalo con cualquiera de estas opciones:</p>
+        <p class="fb-why" id="fbWhy" hidden></p>
         <div class="btns">
           <a class="btn btn-g" id="fbGmail" href="#" target="_blank" rel="noopener"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span data-i18n="fb_gmail">Abrir en Gmail</span></a>
           <a class="btn btn-g" id="fbApp" href="#"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span data-i18n="fb_app">Abrir mi app de correo</span></a>
           <a class="btn btn-g" id="fbWa" href="#" target="_blank" rel="noopener"><svg style="width:18px;height:18px"><use href="#i-wa"/></svg><span data-i18n="fb_wa">Enviar por WhatsApp</span></a>
           <button type="button" class="btn btn-g copy" data-copy="kromatikweb@gmail.com"><span data-i18n="fb_copy">Copiar correo</span></button>
+        </div>
+      </div>
+      <div class="inv-sh" id="invShare" hidden>
+        <div class="sh-top"><b data-i18n="sh_t">Envíalo a quien quieras</b><button type="button" class="x" id="shClose" aria-label="Cerrar"><svg><use href="#i-x"/></svg></button></div>
+        <p data-i18n="sh_p">El archivo ya se guardó en tu equipo. Elige por dónde mandarlo y adjúntalo:</p>
+        <div class="btns">
+          <a class="btn btn-g" id="shWa" href="#" target="_blank" rel="noopener"><svg style="width:18px;height:18px"><use href="#i-wa"/></svg><span>WhatsApp</span></a>
+          <a class="btn btn-g" id="shGmail" href="#" target="_blank" rel="noopener"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span>Gmail</span></a>
+          <a class="btn btn-g" id="shMail" href="#"><svg style="width:18px;height:18px"><use href="#i-mail"/></svg><span data-i18n="sh_mail">Otro correo</span></a>
         </div>
       </div>
       <div class="inv" id="invSheet">
@@ -788,7 +806,7 @@ textarea.inp{resize:vertical;min-height:120px}
             <div class="box"><small data-i18n="i_project">Proyecto</small><b id="invPlan"></b><div id="invProj"></div></div>
           </div>
           <div class="inv-t"><table>
-            <thead><tr><th class="num" data-i18n="i_num">#</th><th data-i18n="i_c1">Concepto / entregables</th><th class="c" data-i18n="i_c2">Plazo</th><th class="r" data-i18n="i_c3">Inversión</th></tr></thead>
+            <thead><tr><th class="num" data-i18n="i_num">#</th><th data-i18n="i_c1">Concepto / entregables</th><th class="c" data-i18n="i_stage">Etapa</th><th class="r" data-i18n="i_c3">Inversión</th></tr></thead>
             <tbody id="invRows"></tbody></table></div>
           <div class="inv-tot"><div>
             <div class="rw"><span data-i18n="i_sub2">Subtotal</span><span id="invSub"></span></div>
@@ -808,7 +826,7 @@ textarea.inp{resize:vertical;min-height:120px}
       </div>
     </div>
     <div class="modal-foot" id="mFoot">
-      <button type="button" class="btn btn-g" id="pdfBtn"><svg style="width:18px;height:18px"><use href="#i-pdf"/></svg><span data-i18n="i_pdf">Descargar PDF</span></button>
+      <button type="button" class="btn btn-g" id="pdfBtn"><svg style="width:18px;height:18px"><use href="#i-pdf"/></svg><span id="pdfTxt">Descargar PDF</span></button>
       <button type="button" class="btn btn-g" id="pngBtn"><svg style="width:18px;height:18px"><use href="#i-pdf"/></svg><span id="pngTxt">Descargar imagen</span></button>
       <a class="btn btn-p" id="sendBtn" href="#" rel="noopener"><span id="sendTxt">Enviar a Kromatik</span><svg><use href="#i-arr"/></svg></a>
     </div>
@@ -937,44 +955,71 @@ const PLANS = [
   desc:{es:"Página de aterrizaje directa para validar tu oferta en internet.",en:"A direct landing page to validate your offer online.",fr:"Une page d'atterrissage directe pour valider votre offre en ligne."},
   feats:{es:["Landing de alto impacto","Modo oscuro inmersivo","Adaptación móvil completa","WhatsApp directo"],en:["High-impact landing page","Immersive dark mode","Fully mobile-ready","Direct WhatsApp"],fr:["Landing à fort impact","Mode sombre immersif","100 % adapté au mobile","WhatsApp direct"]},
   items:[
-   {amt:100,t:"days",n:{es:"Maquetación de landing page esencial",en:"Essential landing page layout",fr:"Mise en page landing essentielle"},d:{es:"Estructura de una página optimizada, modo oscuro y enlace directo a WhatsApp.",en:"Optimized single-page structure, dark mode and direct WhatsApp link.",fr:"Structure monopage optimisée, mode sombre et lien WhatsApp direct."}},
-   {amt:50,t:"now",n:{es:"Despliegue cloud y certificado SSL",en:"Cloud deployment & SSL certificate",fr:"Déploiement cloud & certificat SSL"},d:{es:"Publicación en servidor, configuración de dominio y cifrado HTTPS.",en:"Server deployment, domain setup and HTTPS encryption.",fr:"Mise en ligne, configuration du domaine et chiffrement HTTPS."}}]},
+   {"amt": 40, "t": "f2", "n": {"es": "Diseño UI de la landing", "en": "Landing page UI design", "fr": "Design UI de la landing"}, "d": {"es": "Estructura visual, paleta, tipografía y jerarquía de la página.", "en": "Visual structure, palette, typography and page hierarchy.", "fr": "Structure visuelle, palette, typographie et hiérarchie de la page."}},
+   {"amt": 35, "t": "f3", "n": {"es": "Maquetación responsive", "en": "Responsive build", "fr": "Intégration responsive"}, "d": {"es": "Adaptación a celular, tablet y computadora, con modo oscuro.", "en": "Adapted to phone, tablet and desktop, with dark mode.", "fr": "Adaptation mobile, tablette et ordinateur, avec mode sombre."}},
+   {"amt": 10, "t": "f3", "n": {"es": "Botón directo a WhatsApp", "en": "Direct WhatsApp button", "fr": "Bouton WhatsApp direct"}, "d": {"es": "Enlace con mensaje prellenado para recibir clientes al instante.", "en": "Link with a prefilled message to receive clients instantly.", "fr": "Lien avec message prérempli pour recevoir vos clients instantanément."}},
+   {"amt": 15, "t": "f3", "n": {"es": "Textos base y optimización de imágenes", "en": "Base copy & image optimization", "fr": "Textes de base & optimisation des images"}, "d": {"es": "Ajuste de textos de venta y compresión de imágenes para carga rápida.", "en": "Sales copy tuning and image compression for fast loading.", "fr": "Ajustement des textes et compression des images pour un chargement rapide."}},
+   {"amt": 10, "t": "f4", "n": {"es": "Configuración de dominio (DNS)", "en": "Domain setup (DNS)", "fr": "Configuration du domaine (DNS)"}, "d": {"es": "Enlace de tu dominio con el servidor.", "en": "Linking your domain to the server.", "fr": "Liaison de votre domaine au serveur."}},
+   {"amt": 25, "t": "f4", "n": {"es": "Hosting cloud y certificado SSL", "en": "Cloud hosting & SSL certificate", "fr": "Hébergement cloud & certificat SSL"}, "d": {"es": "Publicación en servidor y cifrado HTTPS (candado de seguridad).", "en": "Server deployment and HTTPS encryption (security padlock).", "fr": "Mise en ligne et chiffrement HTTPS (cadenas de sécurité)."}},
+   {"amt": 15, "t": "f4", "n": {"es": "Pruebas y puesta en línea", "en": "Testing & go-live", "fr": "Tests & mise en ligne"}, "d": {"es": "Revisión en varios dispositivos y lanzamiento oficial.", "en": "Review on several devices and official launch.", "fr": "Vérification sur plusieurs appareils et lancement officiel."}}]},
  {id:"pro", price:300, color:"#4D7CFF", days:"5 - 7", popular:true,
   name:{es:"Landing Pro",en:"Landing Pro",fr:"Landing Pro"},
   tag:{es:"Más popular",en:"Most popular",fr:"La plus choisie"},
   desc:{es:"Para empresas que buscan captar prospectos todos los días.",en:"For companies that want new leads every day.",fr:"Pour les entreprises qui veulent des prospects chaque jour."},
   feats:{es:["Múltiples secciones","Galería de proyectos","Formulario de cotización","Carga instantánea"],en:["Multiple sections","Project gallery","Quote form","Instant loading"],fr:["Plusieurs sections","Galerie de projets","Formulaire de devis","Chargement instantané"]},
   items:[
-   {amt:120,t:"days",n:{es:"Arquitectura frontend y diseño UI/UX",en:"Frontend architecture & UI/UX design",fr:"Architecture frontend & design UI/UX"},d:{es:"Maquetación adaptable, jerarquía visual y diseño orientado a conversión.",en:"Responsive layouts, visual hierarchy and conversion-driven design.",fr:"Maquettes responsive, hiérarchie visuelle et design orienté conversion."}},
-   {amt:100,t:"now",n:{es:"Optimización Core Web Vitals",en:"Core Web Vitals optimization",fr:"Optimisation Core Web Vitals"},d:{es:"Minificación de recursos, carga diferida y configuración de velocidad < 0.4 s.",en:"Asset minification, lazy loading and sub-0.4 s load setup.",fr:"Minification, chargement différé et configuration < 0,4 s."}},
-   {amt:80,t:"now",n:{es:"Infraestructura cloud edge y DNS",en:"Cloud edge hosting & DNS",fr:"Hébergement cloud edge & DNS"},d:{es:"Distribución en servidores globales de alta disponibilidad y enlace de dominio.",en:"High-availability global servers and custom domain linking.",fr:"Serveurs mondiaux haute disponibilité et liaison du domaine."}}]},
+   {"amt": 30, "t": "f1", "n": {"es": "Estrategia y mapa de secciones", "en": "Strategy & section map", "fr": "Stratégie & plan des sections"}, "d": {"es": "Definición de objetivos, público y estructura de contenido.", "en": "Goals, audience and content structure.", "fr": "Objectifs, public cible et structure du contenu."}},
+   {"amt": 70, "t": "f2", "n": {"es": "Diseño UI/UX personalizado", "en": "Custom UI/UX design", "fr": "Design UI/UX sur mesure"}, "d": {"es": "Diseño de todas las secciones orientado a conversión.", "en": "Design of every section, focused on conversion.", "fr": "Design de toutes les sections, orienté conversion."}},
+   {"amt": 55, "t": "f3", "n": {"es": "Desarrollo frontend responsive", "en": "Responsive frontend development", "fr": "Développement frontend responsive"}, "d": {"es": "Programación de la web adaptable a celular, tablet y PC.", "en": "Site development adapted to phone, tablet and desktop.", "fr": "Développement du site adapté mobile, tablette et ordinateur."}},
+   {"amt": 30, "t": "f3", "n": {"es": "Galería de proyectos / portafolio", "en": "Project gallery / portfolio", "fr": "Galerie de projets / portfolio"}, "d": {"es": "Sección para mostrar trabajos, productos o casos de éxito.", "en": "Section to showcase work, products or success stories.", "fr": "Section pour présenter réalisations, produits ou cas clients."}},
+   {"amt": 30, "t": "f3", "n": {"es": "Formulario de cotización", "en": "Quote form", "fr": "Formulaire de devis"}, "d": {"es": "Conectado a tu correo y WhatsApp para recibir prospectos.", "en": "Connected to your email and WhatsApp to receive leads.", "fr": "Relié à votre e-mail et WhatsApp pour recevoir des prospects."}},
+   {"amt": 30, "t": "f3", "n": {"es": "Optimización de velocidad (Core Web Vitals)", "en": "Speed optimization (Core Web Vitals)", "fr": "Optimisation de la vitesse (Core Web Vitals)"}, "d": {"es": "Minificación, carga diferida y ajustes para cargar en menos de 0.4 s.", "en": "Minification, lazy loading and tuning for sub-0.4 s loading.", "fr": "Minification, chargement différé et réglages pour < 0,4 s."}},
+   {"amt": 15, "t": "f3", "n": {"es": "SEO técnico básico", "en": "Basic technical SEO", "fr": "SEO technique de base"}, "d": {"es": "Títulos, metadatos y vista previa al compartir en redes (Open Graph).", "en": "Titles, metadata and social share previews (Open Graph).", "fr": "Titres, métadonnées et aperçu de partage (Open Graph)."}},
+   {"amt": 25, "t": "f4", "n": {"es": "Hosting cloud edge, DNS y SSL", "en": "Cloud edge hosting, DNS & SSL", "fr": "Hébergement cloud edge, DNS & SSL"}, "d": {"es": "Servidores de alta disponibilidad, enlace de dominio y HTTPS.", "en": "High-availability servers, domain linking and HTTPS.", "fr": "Serveurs haute disponibilité, liaison du domaine et HTTPS."}},
+   {"amt": 15, "t": "f4", "n": {"es": "Pruebas, lanzamiento y capacitación", "en": "Testing, launch & training", "fr": "Tests, lancement & formation"}, "d": {"es": "Revisión final, publicación y guía de uso para tu equipo.", "en": "Final review, publishing and a usage guide for your team.", "fr": "Vérification finale, publication et guide d'utilisation."}}]},
  {id:"ecommerce", price:750, color:"#7B4DFF", days:"8 - 12",
   name:{es:"E-Commerce Elite",en:"E-Commerce Elite",fr:"E-Commerce Élite"},
   tag:{es:"Comercio digital",en:"Digital commerce",fr:"Commerce digital"},
   desc:{es:"Tienda online para cobrar productos y gestionar pedidos.",en:"An online store to sell products and manage orders.",fr:"Une boutique en ligne pour vendre et gérer vos commandes."},
   feats:{es:["Catálogo de productos","Cobros con pasarelas","Panel autogestionable","Certificado SSL y seguridad"],en:["Product catalog","Payment gateways","Self-managed dashboard","SSL & security"],fr:["Catalogue produits","Passerelles de paiement","Tableau de bord autonome","SSL & sécurité"]},
   items:[
-   {amt:350,t:"days",n:{es:"Frontend e-commerce avanzado y UI/UX",en:"Advanced e-commerce frontend & UI",fr:"Frontend e-commerce avancé & UI"},d:{es:"Catálogo reactivo, filtrado dinámico y carrito de compras interactivo.",en:"Reactive catalog, dynamic filters and interactive cart.",fr:"Catalogue réactif, filtres dynamiques et panier interactif."}},
-   {amt:200,t:"par",n:{es:"Gestión de inventario y panel CMS",en:"Inventory management & admin CMS",fr:"Gestion des stocks & CMS"},d:{es:"Panel administrativo para actualizar productos, stock y precios.",en:"Admin dashboard to update products, stock and prices.",fr:"Tableau de bord pour mettre à jour produits, stocks et prix."}},
-   {amt:200,t:"now",n:{es:"Pasarelas de cobro y cifrado SSL/TLS",en:"Payment gateways & SSL/TLS security",fr:"Passerelles de paiement & SSL/TLS"},d:{es:"Procesamiento seguro de tarjetas y cifrado de transacciones.",en:"Secure card processing and transaction encryption.",fr:"Traitement sécurisé des cartes et chiffrement des transactions."}}]},
+   {"amt": 50, "t": "f1", "n": {"es": "Estrategia de tienda y estructura del catálogo", "en": "Store strategy & catalog structure", "fr": "Stratégie de boutique & structure du catalogue"}, "d": {"es": "Categorías, flujo de compra y objetivos de venta.", "en": "Categories, purchase flow and sales goals.", "fr": "Catégories, parcours d'achat et objectifs de vente."}},
+   {"amt": 120, "t": "f2", "n": {"es": "Diseño UI/UX de la tienda", "en": "Store UI/UX design", "fr": "Design UI/UX de la boutique"}, "d": {"es": "Inicio, categorías, ficha de producto, carrito y checkout.", "en": "Home, categories, product page, cart and checkout.", "fr": "Accueil, catégories, fiche produit, panier et paiement."}},
+   {"amt": 110, "t": "f3", "n": {"es": "Desarrollo frontend responsive", "en": "Responsive frontend development", "fr": "Développement frontend responsive"}, "d": {"es": "Programación de la tienda adaptada a celular, tablet y PC.", "en": "Store development adapted to phone, tablet and desktop.", "fr": "Développement de la boutique adapté à tous les écrans."}},
+   {"amt": 80, "t": "f3", "n": {"es": "Catálogo con filtros y búsqueda", "en": "Catalog with filters & search", "fr": "Catalogue avec filtres & recherche"}, "d": {"es": "Fichas de producto, variantes, filtros dinámicos y buscador.", "en": "Product pages, variants, dynamic filters and search.", "fr": "Fiches produits, variantes, filtres dynamiques et recherche."}},
+   {"amt": 70, "t": "f3", "n": {"es": "Carrito y checkout optimizado", "en": "Optimized cart & checkout", "fr": "Panier & paiement optimisés"}, "d": {"es": "Proceso de compra corto y claro para vender más.", "en": "Short, clear checkout to sell more.", "fr": "Parcours d'achat court et clair pour vendre plus."}},
+   {"amt": 110, "t": "f3", "n": {"es": "Panel administrativo (CMS)", "en": "Admin dashboard (CMS)", "fr": "Tableau de bord (CMS)"}, "d": {"es": "Actualiza productos, stock, precios y pedidos sin programar.", "en": "Update products, stock, prices and orders without coding.", "fr": "Mettez à jour produits, stocks, prix et commandes sans coder."}},
+   {"amt": 40, "t": "f3", "n": {"es": "Configuración inicial del catálogo", "en": "Initial catalog setup", "fr": "Configuration initiale du catalogue"}, "d": {"es": "Carga de los productos iniciales acordados con el cliente.", "en": "Upload of the initial products agreed with the client.", "fr": "Chargement des produits initiaux convenus avec le client."}},
+   {"amt": 90, "t": "f3", "n": {"es": "Pasarelas de pago y notificaciones", "en": "Payment gateways & notifications", "fr": "Passerelles de paiement & notifications"}, "d": {"es": "Cobro seguro y aviso de cada pedido por correo o WhatsApp.", "en": "Secure payments and order alerts by email or WhatsApp.", "fr": "Paiement sécurisé et alerte de commande par e-mail ou WhatsApp."}},
+   {"amt": 35, "t": "f4", "n": {"es": "Seguridad SSL/TLS y respaldos", "en": "SSL/TLS security & backups", "fr": "Sécurité SSL/TLS & sauvegardes"}, "d": {"es": "Cifrado de transacciones y copias de seguridad.", "en": "Transaction encryption and backups.", "fr": "Chiffrement des transactions et sauvegardes."}},
+   {"amt": 45, "t": "f4", "n": {"es": "Hosting, DNS, pruebas y lanzamiento", "en": "Hosting, DNS, testing & launch", "fr": "Hébergement, DNS, tests & lancement"}, "d": {"es": "Publicación, compras de prueba y salida en vivo.", "en": "Publishing, test purchases and go-live.", "fr": "Mise en ligne, achats tests et lancement."}}]},
  {id:"custom", price:1200, color:"#FF2E88", days:"12 - 18", plus:true,
   name:{es:"Custom Total",en:"Full Custom",fr:"Sur-mesure Total"},
   tag:{es:"A medida",en:"Tailor-made",fr:"Sur mesure"},
   desc:{es:"Arquitectura de código para plataformas con flujos avanzados.",en:"Code architecture for platforms with advanced workflows.",fr:"Architecture logicielle pour plateformes aux flux avancés."},
   feats:{es:["Arquitectura de código","Bases de datos relacionales","Integración de APIs","Soporte prioritario"],en:["Code architecture","Relational databases","API integrations","Priority support"],fr:["Architecture logicielle","Bases de données relationnelles","Intégration d'API","Support prioritaire"]},
   items:[
-   {amt:600,t:"days",n:{es:"Arquitectura frontend exclusiva y código a medida",en:"Custom frontend architecture & code",fr:"Architecture frontend & code sur mesure"},d:{es:"Componentes a medida, microinteracciones y alto rendimiento.",en:"Tailored components, micro-interactions and high performance.",fr:"Composants sur mesure, micro-interactions et haute performance."}},
-   {amt:350,t:"par",n:{es:"Bases de datos relacionales y roles de usuario",en:"Relational databases & user roles",fr:"Bases de données & rôles utilisateurs"},d:{es:"Esquemas de datos, autenticación y niveles de permisos.",en:"Data schemas, authentication and permission tiers.",fr:"Schémas de données, authentification et niveaux de permissions."}},
-   {amt:250,t:"par",n:{es:"Integración de APIs externas y servidor cloud",en:"External API integration & cloud server",fr:"Intégration d'API & serveur cloud"},d:{es:"Webhooks, enlace con software de terceros y escalado cloud.",en:"Webhooks, third-party software links and cloud scaling.",fr:"Webhooks, liaison logicielle et mise à l'échelle cloud."}}]}
+   {"amt": 120, "t": "f1", "n": {"es": "Levantamiento de requerimientos y arquitectura", "en": "Requirements & technical architecture", "fr": "Cadrage & architecture technique"}, "d": {"es": "Reuniones, flujos del sistema y plan técnico.", "en": "Meetings, system flows and technical plan.", "fr": "Réunions, flux du système et plan technique."}},
+   {"amt": 200, "t": "f2", "n": {"es": "Diseño UI/UX a medida y prototipo", "en": "Custom UI/UX design & prototype", "fr": "Design UI/UX sur mesure & prototype"}, "d": {"es": "Pantallas completas y prototipo navegable para aprobar.", "en": "Full screens and a clickable prototype to approve.", "fr": "Écrans complets et prototype cliquable à valider."}},
+   {"amt": 230, "t": "f3", "n": {"es": "Desarrollo frontend a medida", "en": "Custom frontend development", "fr": "Développement frontend sur mesure"}, "d": {"es": "Componentes propios, microinteracciones y alto rendimiento.", "en": "Custom components, micro-interactions and high performance.", "fr": "Composants sur mesure, micro-interactions et haute performance."}},
+   {"amt": 200, "t": "f3", "n": {"es": "Backend y base de datos relacional", "en": "Backend & relational database", "fr": "Backend & base de données relationnelle"}, "d": {"es": "Lógica del sistema, esquemas de datos y API interna.", "en": "System logic, data schemas and internal API.", "fr": "Logique métier, schémas de données et API interne."}},
+   {"amt": 100, "t": "f3", "n": {"es": "Usuarios, autenticación y roles", "en": "Users, authentication & roles", "fr": "Utilisateurs, authentification & rôles"}, "d": {"es": "Inicio de sesión seguro y niveles de permisos.", "en": "Secure sign-in and permission tiers.", "fr": "Connexion sécurisée et niveaux de permissions."}},
+   {"amt": 120, "t": "f3", "n": {"es": "Integración de APIs externas y webhooks", "en": "External API integration & webhooks", "fr": "Intégration d'API externes & webhooks"}, "d": {"es": "Conexión con software de terceros (pagos, CRM, mensajería).", "en": "Connection with third-party software (payments, CRM, messaging).", "fr": "Connexion aux logiciels tiers (paiement, CRM, messagerie)."}},
+   {"amt": 100, "t": "f3", "n": {"es": "Panel administrativo", "en": "Admin dashboard", "fr": "Tableau de bord"}, "d": {"es": "Gestión de datos, usuarios y reportes.", "en": "Data, user and report management.", "fr": "Gestion des données, utilisateurs et rapports."}},
+   {"amt": 70, "t": "f4", "n": {"es": "Infraestructura cloud, DNS, SSL y escalado", "en": "Cloud infrastructure, DNS, SSL & scaling", "fr": "Infrastructure cloud, DNS, SSL & montée en charge"}, "d": {"es": "Servidor, dominio, cifrado y capacidad de crecer.", "en": "Server, domain, encryption and room to grow.", "fr": "Serveur, domaine, chiffrement et capacité d'évolution."}},
+   {"amt": 60, "t": "f4", "n": {"es": "QA, lanzamiento y documentación", "en": "QA, launch & documentation", "fr": "QA, lancement & documentation"}, "d": {"es": "Pruebas completas, salida en vivo y manual técnico.", "en": "Full testing, go-live and technical manual.", "fr": "Tests complets, mise en production et manuel technique."}}]}
 ];
 const MODS = [
- {id:"seo",price:100,icon:"i-seo",t:"plus1",n:{es:"SEO e indexación Google",en:"SEO & Google indexing",fr:"SEO & indexation Google"},d:{es:"Metadatos, sitemap y robots.txt para aparecer en búsquedas locales.",en:"Metadata, sitemap and robots.txt to show up in local searches.",fr:"Métadonnées, sitemap et robots.txt pour apparaître en recherche locale."}},
- {id:"cms",price:150,icon:"i-cms",t:"plus2",n:{es:"Panel autogestionable",en:"Self-managed panel",fr:"Panneau autonome"},d:{es:"Acceso privado para cambiar fotos, precios y textos sin programar.",en:"Private access to change photos, prices and copy without coding.",fr:"Accès privé pour modifier photos, prix et textes sans coder."}},
- {id:"multi",price:120,icon:"i-coin",t:"plus1",n:{es:"Checkout multimoneda",en:"Multi-currency checkout",fr:"Paiement multi-devises"},d:{es:"Cobro en bolívares (Pago Móvil) y divisas en la misma pasarela.",en:"Charge in bolívares (Pago Móvil) and foreign currency in one gateway.",fr:"Encaissement en bolivars (Pago Móvil) et en devises sur une seule passerelle."}}
+ {id:"seo",price:100,icon:"i-seo",t:"plus1",ph:"f3",n:{es:"SEO e indexación Google",en:"SEO & Google indexing",fr:"SEO & indexation Google"},d:{es:"Metadatos, sitemap y robots.txt para aparecer en búsquedas locales.",en:"Metadata, sitemap and robots.txt to show up in local searches.",fr:"Métadonnées, sitemap et robots.txt pour apparaître en recherche locale."}},
+ {id:"cms",price:150,icon:"i-cms",t:"plus2",ph:"f3",n:{es:"Panel autogestionable",en:"Self-managed panel",fr:"Panneau autonome"},d:{es:"Acceso privado para cambiar fotos, precios y textos sin programar.",en:"Private access to change photos, prices and copy without coding.",fr:"Accès privé pour modifier photos, prix et textes sans coder."}},
+ {id:"multi",price:120,icon:"i-coin",t:"plus1",ph:"f3",n:{es:"Checkout multimoneda",en:"Multi-currency checkout",fr:"Paiement multi-devises"},d:{es:"Cobro en bolívares (Pago Móvil) y divisas en la misma pasarela.",en:"Charge in bolívares (Pago Móvil) and foreign currency in one gateway.",fr:"Encaissement en bolivars (Pago Móvil) et en devises sur une seule passerelle."}}
 ];
 
 /* Presupuesto profesional: textos adicionales */
 Object.assign(I18N.es, {
+ fb_act:"Aviso para Kromatik: el formulario de correo aún no está activado. Abre kromatikweb@gmail.com, busca el correo de FormSubmit (revisa Spam) y toca «Activate Form».",fb_file:"Estás abriendo la web como archivo en tu equipo. El envío por correo solo funciona con la web publicada en internet (tu hosting).",
+ f1:"Planificación",f2:"Diseño",f3:"Desarrollo",f4:"Lanzamiento",i_stage:"Etapa",i_grp_inc:"Incluido sin costo",i_free:"Incluido",inc:["Garantía de 30 días post-lanzamiento","2 rondas de ajustes de diseño","Capacitación de uso y entrega de accesos"],inc_d:["Corrección de fallas técnicas después de publicar.","Cambios de diseño dentro del alcance aprobado.","Te enseñamos a usar tu web y te entregamos todas las claves."],
+ i_pdf_share:"Compartir PDF",sh_t:"Envíalo a quien quieras",sh_p:"El archivo ya se guardó en tu equipo. Elige por dónde mandarlo y adjúntalo:",sh_mail:"Otro correo",sh_attach:"(Te adjunto el presupuesto en PDF / imagen.)",
  i_rate:"Tasa BCV del euro · {d}",i_bs:"Total en bolívares",i_bs_dep:"Anticipo en bolívares",i_rate_note:"Montos en Bs. calculados con la tasa oficial BCV del euro del {d}; se recalculan con la tasa del día en que se realice el pago.",q_bs:"≈ Bs. {v} · tasa BCV € {d}",m_bs:"Total en Bs. (BCV €)",m_rate:"Tasa BCV €",
  f_company:"Empresa o marca",f_opt:"(opcional)",f_company_ph:"Ej. Café Aroma",f_wa_req:"Tu WhatsApp",
  e_mail_req:"Para enviarlo por correo necesitamos tu email.",
@@ -997,6 +1042,9 @@ Object.assign(I18N.es, {
  auto:"¡Hola {name}! Gracias por escribir a Kromatik. Recibimos tu presupuesto {n} ({plan}, total {t}). Te contactaremos en menos de 24 horas para afinar detalles. Si quieres adelantar, escríbenos al WhatsApp +58 412 530 2211."
 });
 Object.assign(I18N.en, {
+ fb_act:"Note for Kromatik: the email form is not activated yet. Open kromatikweb@gmail.com, find the FormSubmit email (check Spam) and tap «Activate Form».",fb_file:"You are opening the site as a local file. Email sending only works on the published site (your hosting).",
+ f1:"Planning",f2:"Design",f3:"Development",f4:"Launch",i_stage:"Stage",i_grp_inc:"Included at no cost",i_free:"Included",inc:["30-day post-launch warranty","2 rounds of design revisions","Training & handover of access"],inc_d:["Bug fixes after publishing.","Design changes within the approved scope.","We show you how to use your site and hand over every login."],
+ i_pdf_share:"Share PDF",sh_t:"Send it to anyone",sh_p:"The file is saved on your device. Pick how to send it and attach it:",sh_mail:"Other email",sh_attach:"(Quote attached as PDF / image.)",
  i_rate:"BCV euro rate · {d}",i_bs:"Total in bolívares",i_bs_dep:"Deposit in bolívares",i_rate_note:"Bs. amounts use the official BCV euro rate of {d}; they are recalculated with the rate of the payment date.",q_bs:"≈ Bs. {v} · BCV € rate {d}",m_bs:"Total in Bs. (BCV €)",m_rate:"BCV € rate",
  f_company:"Company or brand",f_opt:"(optional)",f_company_ph:"e.g. Aroma Café",f_wa_req:"Your WhatsApp",
  e_mail_req:"We need your email to send it by email.",
@@ -1019,6 +1067,9 @@ Object.assign(I18N.en, {
  auto:"Hi {name}! Thanks for contacting Kromatik. We received your quote {n} ({plan}, total {t}). We'll reach out within 24 hours to go over the details. If you'd like to move faster, message us on WhatsApp at +58 412 530 2211."
 });
 Object.assign(I18N.fr, {
+ fb_act:"Note pour Kromatik : le formulaire e-mail n'est pas encore activé. Ouvrez kromatikweb@gmail.com, trouvez l'e-mail de FormSubmit (voir Spam) et touchez « Activate Form ».",fb_file:"Vous ouvrez le site comme fichier local. L'envoi par e-mail ne fonctionne que sur le site publié (votre hébergement).",
+ f1:"Cadrage",f2:"Design",f3:"Développement",f4:"Lancement",i_stage:"Étape",i_grp_inc:"Inclus sans frais",i_free:"Inclus",inc:["Garantie de 30 jours après lancement","2 séries d'ajustements de design","Formation & remise des accès"],inc_d:["Correction des anomalies après la mise en ligne.","Modifications de design dans le périmètre validé.","Nous vous montrons comment utiliser votre site et remettons tous les accès."],
+ i_pdf_share:"Partager le PDF",sh_t:"Envoyez-le à qui vous voulez",sh_p:"Le fichier est enregistré sur votre appareil. Choisissez comment l'envoyer et joignez-le :",sh_mail:"Autre e-mail",sh_attach:"(Devis joint en PDF / image.)",
  i_rate:"Taux BCV de l'euro · {d}",i_bs:"Total en bolivars",i_bs_dep:"Acompte en bolivars",i_rate_note:"Montants en Bs. calculés au taux officiel BCV de l'euro du {d} ; recalculés au taux du jour du paiement.",q_bs:"≈ Bs. {v} · taux BCV € {d}",m_bs:"Total en Bs. (BCV €)",m_rate:"Taux BCV €",
  f_company:"Entreprise ou marque",f_opt:"(facultatif)",f_company_ph:"Ex. Café Arôme",f_wa_req:"Votre WhatsApp",
  e_mail_req:"Nous avons besoin de votre e-mail pour l'envoi par e-mail.",
@@ -1175,7 +1226,7 @@ const KPDF = (() => {
     /* ---- tabla ---- */
     const cN = M, cC = M + 24, cP = 420, cA = W - M, dW = 300;
     const head = () => {
-      cap(cN, y, L.i_num); cap(cC, y, L.i_c1); cap(cP, y, L.i_c2, GREY, 'c'); cap(cA, y, L.i_c3, GREY, 'r');
+      cap(cN, y, L.i_num); cap(cC, y, L.i_c1); cap(cP, y, L.i_stage, GREY, 'c'); cap(cA, y, L.i_c3, GREY, 'r');
       line(M, y + 7, W - M, y + 7, INK, 1.1); y += 24;
     };
     ensure(90); head();
@@ -1236,17 +1287,6 @@ const KPDF = (() => {
     box(L.i_cond, L.i_conds, 'b');
     box(L.i_next, L.i_nexts.map(t => fill(t, { n: inv.no })), 'n');
     if (inv.notes) box(L.i_notes, [inv.notes.slice(0, 1200)], '');
-
-    /* ---- aceptación ---- */
-    ensure(74);
-    y += 10;
-    cap(M, y, L.i_accept, INK);
-    y += 38;
-    const half = (W - 2 * M - 24) / 2;
-    line(M, y, M + half, y, INK, .7); line(M + half + 24, y, W - M, y, INK, .7);
-    text(M, y + 12, `${L.i_sign} · ${inv.client.name}`, 7.5, 'F1', GREY);
-    text(M + half + 24, y + 12, L.i_date2, 7.5, 'F1', GREY);
-    y += 30;
 
     /* ---- pie en cada página ---- */
     const total = pages.length, endY = paged ? H : y + 44;
@@ -1904,7 +1944,8 @@ void main(){
     const d = L(), p = PLANS[st.plan], lg = st.lang, v = st.inv;
     const tl = t => t === 'days' ? `${p.days} ${d.days}` : d[t];
     const planRows = p.items.map(it => ({ n: it.n[lg], d: it.d[lg], t: tl(it.t), v: it.amt }));
-    const modRows = [...st.mods].map(id => { const m = MODS.find(x => x.id === id); return { n: m.n[lg], d: m.d[lg], t: d[m.t], v: m.price }; });
+    const modRows = [...st.mods].map(id => { const m = MODS.find(x => x.id === id); return { n: m.n[lg], d: m.d[lg], t: d[m.ph || 'f3'], v: m.price }; });
+    const incRows = d.inc.map((n, i) => ({ n, d: d.inc_d[i], t: i === 0 ? d.f4 : i === 1 ? d.f2 : d.f4, v: 0, free: true }));
     const rows = planRows.concat(modRows);
     const sum = rows.reduce((s, r) => s + r.v, 0);
     const loc = lg === 'es' ? 'es-VE' : lg === 'fr' ? 'fr-FR' : 'en-US';
@@ -1915,11 +1956,12 @@ void main(){
     const eta = `${a + extra} - ${b + extra} ${d.days}`;
     const groups = [{ title: `${d.i_grp_plan} · ${p.name[lg]}`, rows: planRows }];
     if (modRows.length) groups.push({ title: d.i_grp_mods, rows: modRows });
+    groups.push({ title: d.i_grp_inc, rows: incRows });
     return { d, p, rows, groups, sum, issued: df(v.date), until: df(until), eta, pref: v.method === 'whatsapp' ? 'WhatsApp' : d.i_mail };
   }
   function kpdfData() {
     const x = invData(), v = st.inv;
-    const m2 = r => ({ n: r.n, d: r.d, t: r.t, amt: fmt2(r.v) });
+    const m2 = r => ({ n: r.n, d: r.d, t: r.t, amt: r.free ? x.d.i_free : fmt2(r.v) });
     return { L: x.d, no: v.no, issued: x.issued, until: x.until, plan: x.p.name[st.lang], eta: x.eta, pref: x.pref,
       client: { name: v.name, company: v.company, wa: v.wa, mail: v.mail }, notes: v.notes,
       groups: x.groups.map(g => ({ title: g.title, rows: g.rows.map(m2) })),
@@ -1935,6 +1977,7 @@ void main(){
     if (v.mail) lines.push(`*${d.m_email}:* ${v.mail}`);
     lines.push(`*${d.wa_plan}:* ${x.p.name[st.lang]}`, '', `*${d.m_items}:*`);
     x.rows.forEach(r => lines.push(`${pad(++i)}. ${r.n} — ${fmt2(r.v)}`));
+    lines.push(`✓ ${d.i_grp_inc}: ${d.inc.join(' · ')}`);
     lines.push('', `*${d.wa_total}:* ${fmt2(x.sum)}${x.p.plus ? ' *' : ''}`, `*${d.m_dep}:* ${fmt2(x.sum / 2)}`, ...(RATE ? [`*${d.m_bs}:* ${fmtBs(x.sum * RATE.v)} (${d.m_rate} ${RATE.d}: ${fmtBs(RATE.v)})`] : []), `*${d.m_eta}:* ${x.eta}`, `*${d.m_valid}:* ${x.until}`);
     if (v.notes) lines.push('', `*${d.wa_notes}:* ${v.notes}`);
     return lines;
@@ -1952,7 +1995,7 @@ void main(){
     $('#invProj').innerHTML = kv(d.i_eta, x.eta) + kv(d.i_currency, 'USD ($)') + kv(d.i_pref, x.pref);
     let i = 0;
     $('#invRows').innerHTML = x.groups.map(g => `<tr class="grp"><td></td><td colspan="3">${esc(g.title)}</td></tr>` +
-      g.rows.map(r => `<tr><td class="num">${pad(++i)}</td><td><div class="n">${esc(r.n)}</div><div class="dd">${esc(r.d)}</div></td><td class="c">${esc(r.t)}</td><td class="r">${fmt2(r.v)}</td></tr>`).join('')).join('');
+      g.rows.map(r => `<tr><td class="num">${pad(++i)}</td><td><div class="n">${esc(r.n)}</div><div class="dd">${esc(r.d)}</div></td><td class="c">${esc(r.t)}</td><td class="r">${r.free ? esc(d.i_free) : fmt2(r.v)}</td></tr>`).join('')).join('');
     $('#invSub').textContent = fmt2(x.sum); $('#invTotal').textContent = fmt2(x.sum) + (x.p.plus ? ' *' : '');
     $('#invDep').textContent = fmt2(x.sum / 2); $('#invBal').textContent = fmt2(x.sum / 2);
     $('#invBsBox').hidden = !RATE;
@@ -1970,7 +2013,7 @@ void main(){
     const a = $('#sendBtn');
     if (v.method === 'whatsapp') { a.href = waUrl; a.target = '_blank'; $('#sendTxt').textContent = d.i_send_wa2; }
     else { a.href = '#'; a.removeAttribute('target'); $('#sendTxt').textContent = d.i_send; }
-    $('#pngTxt').textContent = canShareFiles() ? d.i_share : d.i_png;
+    const sh = canShareFiles(); $('#pngTxt').textContent = sh ? d.i_share : d.i_png; $('#pdfTxt').textContent = sh ? d.i_pdf_share : d.i_pdf;
   }
 
   // envío de correo real (FormSubmit → kromatikweb@gmail.com). Devuelve true/false.
@@ -1980,8 +2023,9 @@ void main(){
       const r = await fetch(`https://formsubmit.co/ajax/${KMAIL}`, { method: 'POST', signal: ctl.signal,
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(fields) });
       const j = await r.json().catch(() => ({}));
+      postMail.last = j.message || '';
       return r.ok && (j.success === true || j.success === 'true');
-    } catch (e) { return false; } finally { clearTimeout(tm); }
+    } catch (e) { postMail.last = location.protocol === 'file:' ? 'file' : 'net'; return false; } finally { clearTimeout(tm); }
   }
   function quoteFields() {
     const x = invData(), v = st.inv; let i = 0;
@@ -2018,12 +2062,16 @@ void main(){
     const ok = await postMail(quoteFields());
     a.classList.remove('busy'); $('#sendTxt').textContent = d.i_send;
     if (ok) { v.sent = true; showDone(); toast(d.t_sent_mail.replace('{n}', v.no), true); }
-    else { downloadPdf(); $('#invFb').hidden = false; $('#invFb').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    else {
+      const why = postMail.last || '', fbw = $('#fbWhy');
+      fbw.textContent = /activat/i.test(why) ? d.fb_act : why === 'file' ? d.fb_file : '';
+      fbw.hidden = !fbw.textContent;
+      downloadPdf(); $('#invFb').hidden = false; $('#invFb').scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
   });
 
   const modal = $('#modal'); let lastFocus = null;
   function openModal() {
-    $('#invDone').hidden = true; $('#invFb').hidden = true; $('#invSheet').hidden = false; $('#mFoot').hidden = false;
+    $('#invDone').hidden = true; $('#invFb').hidden = true; $('#invShare').hidden = true; $('#invSheet').hidden = false; $('#mFoot').hidden = false;
     lastFocus = document.activeElement; modal.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(() => $('#mClose').focus(), 50);
     const mb = $('.modal-body', modal); if (mb) mb.scrollTop = 0;
   }
@@ -2046,19 +2094,35 @@ void main(){
     saveBlob(new Blob([KPDF.build(kpdfData())], { type: 'application/pdf' }), f);
     toast(L().t_pdf.replace('{f}', f), true);
   }
-  $('#pdfBtn').addEventListener('click', downloadPdf);
+  // ¿El dispositivo puede compartir archivos? (celular, y Chrome/Edge en Windows o Mac)
   function canShareFiles() {
-    try { return !!(navigator.canShare && matchMedia('(pointer:coarse)').matches && navigator.canShare({ files: [new File([new Blob(['x'])], 'k.png', { type: 'image/png' })] })); } catch (e) { return false; }
+    try { return !!(navigator.share && navigator.canShare && navigator.canShare({ files: [new File([new Blob(['x'])], 'k.pdf', { type: 'application/pdf' })] })); } catch (e) { return false; }
   }
-  $('#pngBtn').addEventListener('click', async () => {
-    const d = L(), f = `Presupuesto_${st.inv.no}_Kromatik.png`;
-    const blob = await KPDF.png(kpdfData(), 2);
+  function shareText() {
+    const x = invData(), d = x.d, v = st.inv;
+    return `${d.i_quote} ${v.no} · Kromatik\n${x.p.name[st.lang]} · ${fmt2(x.sum)}${RATE ? ` (${fmtBs(x.sum * RATE.v)})` : ''}\n${d.m_valid}: ${x.until}\nKromatik · ${KWA_TXT} · ${KMAIL}`;
+  }
+  // abre el menú de compartir del sistema; si no existe, descarga y muestra opciones para enviarlo
+  async function shareOrSave(blob, f, type) {
+    const d = L();
     if (canShareFiles()) {
-      try { await navigator.share({ files: [new File([blob], f, { type: 'image/png' })], title: `${d.i_quote} ${st.inv.no}`, text: `${d.i_quote} ${st.inv.no} · Kromatik` }); return; }
+      try { await navigator.share({ files: [new File([blob], f, { type })], title: `${d.i_quote} ${st.inv.no}`, text: shareText() }); return; }
       catch (e) { if (e && e.name === 'AbortError') return; }
     }
-    saveBlob(blob, f); toast(d.t_png.replace('{f}', f), true);
-  });
+    await saveBlob(blob, f);
+    toast((type === 'application/pdf' ? d.t_pdf : d.t_png).replace('{f}', f), true);
+    showSharePanel();
+  }
+  function showSharePanel() {
+    const t = shareText() + '\n\n' + L().sh_attach, sub = `${L().i_quote} ${st.inv.no} · Kromatik`;
+    $('#shWa').href = 'https://wa.me/?text=' + encodeURIComponent(t);
+    $('#shGmail').href = `https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(sub)}&body=${encodeURIComponent(t)}`;
+    $('#shMail').href = `mailto:?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(t)}`;
+    $('#invShare').hidden = false; $('#invShare').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  $('#shClose').addEventListener('click', () => { $('#invShare').hidden = true; });
+  $('#pdfBtn').addEventListener('click', () => shareOrSave(new Blob([KPDF.build(kpdfData())], { type: 'application/pdf' }), `Presupuesto_${st.inv.no}_Kromatik.pdf`, 'application/pdf'));
+  $('#pngBtn').addEventListener('click', async () => shareOrSave(await KPDF.png(kpdfData(), 2), `Presupuesto_${st.inv.no}_Kromatik.png`, 'image/png'));
 
   // ---------- support ----------
   function updateSupport() {
