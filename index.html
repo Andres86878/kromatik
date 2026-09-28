@@ -668,6 +668,12 @@ textarea.inp{resize:vertical;min-height:120px}
   .s-tabs{padding:0 16px}.s-menu{padding:14px 16px 90px}.s-filters{padding:0}.s-range{padding-left:16px}
   .s-tour,.s-gal{padding-left:16px;padding-right:16px}
 }
+.plan-bar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:-18px 0 26px}
+.plan-bar p{margin:0}
+.plan-cats button{padding:11px 18px}
+.plans.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:1100px){.plans.n3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.plans.n3{grid-template-columns:1fr}.plan-cats{width:100%}.plan-cats button{flex:1;padding:10px 8px;font-size:10.5px}}
 </style>
 </head>
 <body>
@@ -879,10 +885,11 @@ textarea.inp{resize:vertical;min-height:120px}
         <h2 class="h-l rv" data-i18n-html="pl_t">Planes <em class="ch">Kromatik.</em></h2>
         <p class="lead rv" data-i18n="pl_p">Elige el plan que mejor se adapta a tu objetivo, suma módulos y lleva el total directo a tu presupuesto.</p></div>
     </div>
+    <div class="plan-bar rv"><div class="seg plan-cats" id="planCats"></div><p class="small" id="catP"></p></div>
     <div class="plans" id="plans"></div>
     <div class="mods rv">
       <div class="mods-top">
-        <div><span class="lbl" data-i18n="md_lbl">Potencia opcional</span><h3 class="h-m" data-i18n="md_t">Módulos de expansión</h3><p class="small" style="margin:0" data-i18n="md_p">Activa funciones adicionales. Se suman automáticamente a tu presupuesto.</p></div>
+        <div><span class="lbl" id="modsLbl">Potencia opcional</span><h3 class="h-m" data-i18n="md_t">Módulos de expansión</h3><p class="small" style="margin:0" data-i18n="md_p">Activa funciones adicionales. Se suman automáticamente a tu presupuesto.</p></div>
         <div class="total"><span data-i18n="md_total">Total configurado</span><b id="liveTotal">$150</b></div>
       </div>
       <div class="mod-grid" id="mods"></div>
@@ -1200,7 +1207,7 @@ fr:{
 
 /* Plans, modules and invoice line items (amounts in USD) */
 const PLANS = [
- {id:"esencial", price:150, color:"#00E5FF", days:"3 - 5",
+ {id:"esencial", cat:"web", price:150, color:"#00E5FF", days:"3 - 5",
   name:{es:"Plan Esencial",en:"Essential Plan",fr:"Offre Essentielle"},
   tag:{es:"Entrada rápida",en:"Fast start",fr:"Démarrage rapide"},
   desc:{es:"Página de aterrizaje directa para validar tu oferta en internet.",en:"A direct landing page to validate your offer online.",fr:"Une page d'atterrissage directe pour valider votre offre en ligne."},
@@ -1213,7 +1220,7 @@ const PLANS = [
    {"amt": 10, "t": "f4", "n": {"es": "Configuración de dominio (DNS)", "en": "Domain setup (DNS)", "fr": "Configuration du domaine (DNS)"}, "d": {"es": "Enlace de tu dominio con el servidor.", "en": "Linking your domain to the server.", "fr": "Liaison de votre domaine au serveur."}},
    {"amt": 25, "t": "f4", "n": {"es": "Hosting cloud y certificado SSL", "en": "Cloud hosting & SSL certificate", "fr": "Hébergement cloud & certificat SSL"}, "d": {"es": "Publicación en servidor y cifrado HTTPS (candado de seguridad).", "en": "Server deployment and HTTPS encryption (security padlock).", "fr": "Mise en ligne et chiffrement HTTPS (cadenas de sécurité)."}},
    {"amt": 15, "t": "f4", "n": {"es": "Pruebas y puesta en línea", "en": "Testing & go-live", "fr": "Tests & mise en ligne"}, "d": {"es": "Revisión en varios dispositivos y lanzamiento oficial.", "en": "Review on several devices and official launch.", "fr": "Vérification sur plusieurs appareils et lancement officiel."}}]},
- {id:"pro", price:300, color:"#4D7CFF", days:"5 - 7", popular:true,
+ {id:"pro", cat:"web", price:300, color:"#4D7CFF", days:"5 - 7", popular:true,
   name:{es:"Landing Pro",en:"Landing Pro",fr:"Landing Pro"},
   tag:{es:"Más popular",en:"Most popular",fr:"La plus choisie"},
   desc:{es:"Para empresas que buscan captar prospectos todos los días.",en:"For companies that want new leads every day.",fr:"Pour les entreprises qui veulent des prospects chaque jour."},
@@ -1228,7 +1235,7 @@ const PLANS = [
    {"amt": 15, "t": "f3", "n": {"es": "SEO técnico básico", "en": "Basic technical SEO", "fr": "SEO technique de base"}, "d": {"es": "Títulos, metadatos y vista previa al compartir en redes (Open Graph).", "en": "Titles, metadata and social share previews (Open Graph).", "fr": "Titres, métadonnées et aperçu de partage (Open Graph)."}},
    {"amt": 25, "t": "f4", "n": {"es": "Hosting cloud edge, DNS y SSL", "en": "Cloud edge hosting, DNS & SSL", "fr": "Hébergement cloud edge, DNS & SSL"}, "d": {"es": "Servidores de alta disponibilidad, enlace de dominio y HTTPS.", "en": "High-availability servers, domain linking and HTTPS.", "fr": "Serveurs haute disponibilité, liaison du domaine et HTTPS."}},
    {"amt": 15, "t": "f4", "n": {"es": "Pruebas, lanzamiento y capacitación", "en": "Testing, launch & training", "fr": "Tests, lancement & formation"}, "d": {"es": "Revisión final, publicación y guía de uso para tu equipo.", "en": "Final review, publishing and a usage guide for your team.", "fr": "Vérification finale, publication et guide d'utilisation."}}]},
- {id:"ecommerce", price:750, color:"#7B4DFF", days:"8 - 12",
+ {id:"ecommerce", cat:"web", price:750, color:"#7B4DFF", days:"8 - 12",
   name:{es:"E-Commerce Elite",en:"E-Commerce Elite",fr:"E-Commerce Élite"},
   tag:{es:"Comercio digital",en:"Digital commerce",fr:"Commerce digital"},
   desc:{es:"Tienda online para cobrar productos y gestionar pedidos.",en:"An online store to sell products and manage orders.",fr:"Une boutique en ligne pour vendre et gérer vos commandes."},
@@ -1244,7 +1251,7 @@ const PLANS = [
    {"amt": 90, "t": "f3", "n": {"es": "Pasarelas de pago y notificaciones", "en": "Payment gateways & notifications", "fr": "Passerelles de paiement & notifications"}, "d": {"es": "Cobro seguro y aviso de cada pedido por correo o WhatsApp.", "en": "Secure payments and order alerts by email or WhatsApp.", "fr": "Paiement sécurisé et alerte de commande par e-mail ou WhatsApp."}},
    {"amt": 35, "t": "f4", "n": {"es": "Seguridad SSL/TLS y respaldos", "en": "SSL/TLS security & backups", "fr": "Sécurité SSL/TLS & sauvegardes"}, "d": {"es": "Cifrado de transacciones y copias de seguridad.", "en": "Transaction encryption and backups.", "fr": "Chiffrement des transactions et sauvegardes."}},
    {"amt": 45, "t": "f4", "n": {"es": "Hosting, DNS, pruebas y lanzamiento", "en": "Hosting, DNS, testing & launch", "fr": "Hébergement, DNS, tests & lancement"}, "d": {"es": "Publicación, compras de prueba y salida en vivo.", "en": "Publishing, test purchases and go-live.", "fr": "Mise en ligne, achats tests et lancement."}}]},
- {id:"custom", price:1200, color:"#FF2E88", days:"12 - 18", plus:true,
+ {id:"custom", cat:"web", price:1200, color:"#FF2E88", days:"12 - 18", plus:true,
   name:{es:"Custom Total",en:"Full Custom",fr:"Sur-mesure Total"},
   tag:{es:"A medida",en:"Tailor-made",fr:"Sur mesure"},
   desc:{es:"Arquitectura de código para plataformas con flujos avanzados.",en:"Code architecture for platforms with advanced workflows.",fr:"Architecture logicielle pour plateformes aux flux avancés."},
@@ -1261,13 +1268,16 @@ const PLANS = [
    {"amt": 60, "t": "f4", "n": {"es": "QA, lanzamiento y documentación", "en": "QA, launch & documentation", "fr": "QA, lancement & documentation"}, "d": {"es": "Pruebas completas, salida en vivo y manual técnico.", "en": "Full testing, go-live and technical manual.", "fr": "Tests complets, mise en production et manuel technique."}}]}
 ];
 const MODS = [
- {id:"seo",price:100,icon:"i-seo",t:"plus1",ph:"f3",n:{es:"SEO e indexación Google",en:"SEO & Google indexing",fr:"SEO & indexation Google"},d:{es:"Metadatos, sitemap y robots.txt para aparecer en búsquedas locales.",en:"Metadata, sitemap and robots.txt to show up in local searches.",fr:"Métadonnées, sitemap et robots.txt pour apparaître en recherche locale."}},
- {id:"cms",price:150,icon:"i-cms",t:"plus2",ph:"f3",n:{es:"Panel autogestionable",en:"Self-managed panel",fr:"Panneau autonome"},d:{es:"Acceso privado para cambiar fotos, precios y textos sin programar.",en:"Private access to change photos, prices and copy without coding.",fr:"Accès privé pour modifier photos, prix et textes sans coder."}},
- {id:"multi",price:120,icon:"i-coin",t:"plus1",ph:"f3",n:{es:"Checkout multimoneda",en:"Multi-currency checkout",fr:"Paiement multi-devises"},d:{es:"Cobro en bolívares (Pago Móvil) y divisas en la misma pasarela.",en:"Charge in bolívares (Pago Móvil) and foreign currency in one gateway.",fr:"Encaissement en bolivars (Pago Móvil) et en devises sur une seule passerelle."}}
+ {id:"seo",cat:"web",price:100,icon:"i-seo",t:"plus1",ph:"f3",n:{es:"SEO e indexación Google",en:"SEO & Google indexing",fr:"SEO & indexation Google"},d:{es:"Metadatos, sitemap y robots.txt para aparecer en búsquedas locales.",en:"Metadata, sitemap and robots.txt to show up in local searches.",fr:"Métadonnées, sitemap et robots.txt pour apparaître en recherche locale."}},
+ {id:"cms",cat:"web",price:150,icon:"i-cms",t:"plus2",ph:"f3",n:{es:"Panel autogestionable",en:"Self-managed panel",fr:"Panneau autonome"},d:{es:"Acceso privado para cambiar fotos, precios y textos sin programar.",en:"Private access to change photos, prices and copy without coding.",fr:"Accès privé pour modifier photos, prix et textes sans coder."}},
+ {id:"multi",cat:"web",price:120,icon:"i-coin",t:"plus1",ph:"f3",n:{es:"Checkout multimoneda",en:"Multi-currency checkout",fr:"Paiement multi-devises"},d:{es:"Cobro en bolívares (Pago Móvil) y divisas en la misma pasarela.",en:"Charge in bolívares (Pago Móvil) and foreign currency in one gateway.",fr:"Encaissement en bolivars (Pago Móvil) et en devises sur une seule passerelle."}}
 ];
 
 /* Presupuesto profesional: textos adicionales */
 Object.assign(I18N.es, {
+ inc_brand:["Archivos finales en alta calidad","Derechos de uso de tu marca","Soporte por WhatsApp"],inc_brand_d:["PNG, SVG y PDF listos para imprenta, web y redes.","La marca es 100% tuya al finalizar el pago.","Te ayudamos a aplicar tu marca en tus materiales."],inc_social:["Calendario aprobado por ti","Soporte por WhatsApp","Ajustes a publicaciones"],inc_social_d:["Revisas y apruebas el contenido antes de publicarlo.","Comunicación directa con tu gestor de redes.","Correcciones de textos y diseño antes de publicar."],
+ pl_p:"Webs, logos y gestión de redes. Elige tu servicio, el plan que mejor se adapta y lleva el total directo a tu presupuesto.",marq:["Páginas web 3D","Logos y branding","Gestión de redes","Tiendas online","SEO local","Multimoneda"],
+ mo:"Mensual",per_mo:"/mes",eta_mo:"Servicio mensual · inicio en {d} días",cat_p_web:"Webs rápidas y tiendas online hechas para vender.",cat_p_brand:"Logos e identidad visual que hacen que tu marca se vea de otro nivel.",cat_p_social:"Tus redes activas, profesionales y creciendo cada mes.",i_monthly:"Pago mensual por adelantado",mo_note:"Plan mensual: se paga por adelantado cada mes. La inversión en publicidad (pauta) no está incluida.",md_lbl_web:"Potencia opcional",md_lbl_brand:"Extras de marca",md_lbl_social:"Extras mensuales",
  nav_work:"Trabajos",wk_lbl:"Portafolio",wk_t:"Trabajos <em class='ch'>lanzados.</em>",wk_p:"Proyectos reales que ya están en línea. Cada uno diseñado desde cero para su marca.",wk_live:"En línea ahora",wk_role:"Director de orquesta · Web personal",wk_d:"Sitio de autor para un director de orquesta con proyección internacional: biografía, prensa, agenda de conciertos, multimedia y contacto de representación, en español e inglés.",wk_t1:"Diseño a medida",wk_t2:"Bilingüe ES / EN",wk_t3:"Agenda de conciertos",wk_t4:"Multimedia",wk_t5:"100% responsive",wk_s1:"Secciones",wk_s2:"Idiomas",wk_s3:"Carga",wk_q:"Un trabajo impecable hecho por mis queridos amigos de Kromatik.",wk_b1:"Visitar la web",wk_b2:"Ver en Instagram",wk_n_t:"Tu marca podría ser la próxima.",wk_n_p:"Arma tu presupuesto y lanzamos tu web en días.",
  sim_lbl:"Estudio en vivo",sim_t:"Diseña tu web <em class='ch'>en 10 segundos.</em>",sim_p:"Elige tu negocio, escribe tu marca, cambia colores y estilo. Todo funciona: carrito, pedidos, citas, filtros y reproductor.",t_sim:"Tu diseño ya está en el presupuesto. Completa tus datos.",
  fb_act:"Aviso para Kromatik: el formulario de correo aún no está activado. Abre kromatikweb@gmail.com, busca el correo de FormSubmit (revisa Spam) y toca «Activate Form».",fb_file:"Estás abriendo la web como archivo en tu equipo. El envío por correo solo funciona con la web publicada en internet (tu hosting).",
@@ -1295,6 +1305,9 @@ Object.assign(I18N.es, {
  auto:"¡Hola {name}! Gracias por escribir a Kromatik. Recibimos tu presupuesto {n} ({plan}, total {t}). Te contactaremos en menos de 24 horas para afinar detalles. Si quieres adelantar, escríbenos al WhatsApp +58 412 530 2211."
 });
 Object.assign(I18N.en, {
+ inc_brand:["High-quality final files","Brand usage rights","WhatsApp support"],inc_brand_d:["PNG, SVG and PDF ready for print, web and social.","The brand is 100% yours once paid in full.","We help you apply your brand to your materials."],inc_social:["Calendar approved by you","WhatsApp support","Post revisions"],inc_social_d:["You review and approve content before it goes live.","Direct line to your social media manager.","Copy and design fixes before publishing."],
+ pl_p:"Websites, logos and social media management. Pick your service and plan, then carry the total straight into your quote.",marq:["3D websites","Logos & branding","Social media","Online stores","Local SEO","Multi-currency"],
+ mo:"Monthly",per_mo:"/mo",eta_mo:"Monthly service · starts in {d} days",cat_p_web:"Fast websites and online stores built to sell.",cat_p_brand:"Logos and visual identity that take your brand to the next level.",cat_p_social:"Your social media active, professional and growing every month.",i_monthly:"Monthly payment in advance",mo_note:"Monthly plan: paid in advance each month. Ad spend is not included.",md_lbl_web:"Optional power",md_lbl_brand:"Brand extras",md_lbl_social:"Monthly extras",
  nav_work:"Work",wk_lbl:"Portfolio",wk_t:"Launched <em class='ch'>work.</em>",wk_p:"Real projects already live. Each one designed from scratch for its brand.",wk_live:"Live now",wk_role:"Orchestra conductor · Personal website",wk_d:"An author website for an internationally active orchestra conductor: biography, press, concert calendar, multimedia and booking contacts, in Spanish and English.",wk_t1:"Custom design",wk_t2:"Bilingual ES / EN",wk_t3:"Concert calendar",wk_t4:"Multimedia",wk_t5:"100% responsive",wk_s1:"Sections",wk_s2:"Languages",wk_s3:"Load",wk_q:"An impeccable job by my dear friends at Kromatik.",wk_b1:"Visit the site",wk_b2:"See on Instagram",wk_n_t:"Your brand could be next.",wk_n_p:"Build your quote and we launch your site in days.",
  sim_lbl:"Live studio",sim_t:"Design your site <em class='ch'>in 10 seconds.</em>",sim_p:"Pick your business, type your brand, change colors and style. Everything works: cart, orders, bookings, filters and player.",t_sim:"Your design is in the quote. Fill in your details.",
  fb_act:"Note for Kromatik: the email form is not activated yet. Open kromatikweb@gmail.com, find the FormSubmit email (check Spam) and tap «Activate Form».",fb_file:"You are opening the site as a local file. Email sending only works on the published site (your hosting).",
@@ -1322,6 +1335,9 @@ Object.assign(I18N.en, {
  auto:"Hi {name}! Thanks for contacting Kromatik. We received your quote {n} ({plan}, total {t}). We'll reach out within 24 hours to go over the details. If you'd like to move faster, message us on WhatsApp at +58 412 530 2211."
 });
 Object.assign(I18N.fr, {
+ inc_brand:["Fichiers finaux haute qualité","Droits d'utilisation de la marque","Support WhatsApp"],inc_brand_d:["PNG, SVG et PDF prêts pour l'impression, le web et les réseaux.","La marque vous appartient à 100 % après paiement.","Nous vous aidons à appliquer votre marque."],inc_social:["Calendrier validé par vous","Support WhatsApp","Ajustements des publications"],inc_social_d:["Vous validez le contenu avant publication.","Contact direct avec votre gestionnaire.","Corrections de textes et design avant publication."],
+ pl_p:"Sites web, logos et gestion des réseaux. Choisissez votre service et votre offre, puis reportez le total dans votre devis.",marq:["Sites web 3D","Logos & branding","Réseaux sociaux","Boutiques en ligne","SEO local","Multi-devises"],
+ mo:"Mensuel",per_mo:"/mois",eta_mo:"Service mensuel · démarrage sous {d} jours",cat_p_web:"Des sites rapides et boutiques en ligne conçus pour vendre.",cat_p_brand:"Logos et identité visuelle pour une marque de haut niveau.",cat_p_social:"Vos réseaux actifs, professionnels et en croissance chaque mois.",i_monthly:"Paiement mensuel d'avance",mo_note:"Offre mensuelle : payée d'avance chaque mois. Le budget publicitaire n'est pas inclus.",md_lbl_web:"Puissance optionnelle",md_lbl_brand:"Extras de marque",md_lbl_social:"Extras mensuels",
  nav_work:"Projets",wk_lbl:"Portfolio",wk_t:"Projets <em class='ch'>lancés.</em>",wk_p:"De vrais projets déjà en ligne, chacun conçu de zéro pour sa marque.",wk_live:"En ligne",wk_role:"Chef d'orchestre · Site personnel",wk_d:"Un site d'auteur pour un chef d'orchestre à rayonnement international : biographie, presse, agenda des concerts, multimédia et contacts d'agence, en espagnol et en anglais.",wk_t1:"Design sur mesure",wk_t2:"Bilingue ES / EN",wk_t3:"Agenda des concerts",wk_t4:"Multimédia",wk_t5:"100 % responsive",wk_s1:"Sections",wk_s2:"Langues",wk_s3:"Chargement",wk_q:"Un travail impeccable réalisé par mes chers amis de Kromatik.",wk_b1:"Visiter le site",wk_b2:"Voir sur Instagram",wk_n_t:"Votre marque pourrait être la prochaine.",wk_n_p:"Composez votre devis et nous lançons votre site en quelques jours.",
  sim_lbl:"Studio en direct",sim_t:"Créez votre site <em class='ch'>en 10 secondes.</em>",sim_p:"Choisissez votre activité, écrivez votre marque, changez couleurs et style. Tout fonctionne : panier, commandes, RDV, filtres et lecteur.",t_sim:"Votre design est dans le devis. Complétez vos informations.",
  fb_act:"Note pour Kromatik : le formulaire e-mail n'est pas encore activé. Ouvrez kromatikweb@gmail.com, trouvez l'e-mail de FormSubmit (voir Spam) et touchez « Activate Form ».",fb_file:"Vous ouvrez le site comme fichier local. L'envoi par e-mail ne fonctionne que sur le site publié (votre hébergement).",
@@ -1348,6 +1364,15 @@ Object.assign(I18N.fr, {
  m_head:"Bonjour Kromatik 👋 Je souhaite ce devis :",m_items:"Prestations",m_company:"Entreprise",m_email:"E-mail",m_wa:"WhatsApp",m_eta:"Délai estimé",m_valid:"Valable jusqu'au",m_dep:"Acompte 50 %",m_pdf:"(J'ai le PDF du devis, je peux vous l'envoyer ici.)",
  auto:"Bonjour {name} ! Merci d'avoir contacté Kromatik. Nous avons reçu votre devis {n} ({plan}, total {t}). Nous vous recontactons sous 24 heures. Pour aller plus vite, écrivez-nous sur WhatsApp au +58 412 530 2211."
 });
+
+/* Planes de branding y redes sociales */
+PLANS.push(...[{"id": "logo", "cat": "brand", "price": 60, "color": "#FFB829", "days": "3 - 4", "name": {"es": "Logo Esencial", "en": "Essential Logo", "fr": "Logo Essentiel"}, "tag": {"es": "Arranca con buen pie", "en": "Start strong", "fr": "Bien démarrer"}, "desc": {"es": "Un logo profesional y listo para usar en redes, web e impresión.", "en": "A professional logo ready for social, web and print.", "fr": "Un logo professionnel prêt pour les réseaux, le web et l'impression."}, "feats": {"es": ["1 concepto de logo", "2 rondas de ajustes", "Versiones color, blanco y negro", "Archivos PNG, SVG y PDF"], "en": ["1 logo concept", "2 revision rounds", "Color, white and black versions", "PNG, SVG and PDF files"], "fr": ["1 concept de logo", "2 séries d'ajustements", "Versions couleur, blanc et noir", "Fichiers PNG, SVG et PDF"]}, "items": [{"amt": 15, "t": "f1", "n": {"es": "Briefing y referencias de marca", "en": "Brand briefing & references", "fr": "Brief & références de marque"}, "d": {"es": "Entendemos tu negocio, tu público y el estilo que buscas.", "en": "We learn your business, audience and desired style.", "fr": "Nous comprenons votre activité, votre public et le style voulu."}}, {"amt": 35, "t": "f2", "n": {"es": "Diseño del logo", "en": "Logo design", "fr": "Design du logo"}, "d": {"es": "Concepto original con 2 rondas de ajustes incluidas.", "en": "Original concept with 2 revision rounds included.", "fr": "Concept original avec 2 séries d'ajustements incluses."}}, {"amt": 10, "t": "f4", "n": {"es": "Entrega de archivos finales", "en": "Final file delivery", "fr": "Livraison des fichiers finaux"}, "d": {"es": "PNG, SVG y PDF en color, blanco y negro.", "en": "PNG, SVG and PDF in color, white and black.", "fr": "PNG, SVG et PDF en couleur, blanc et noir."}}]}, {"id": "brand", "cat": "brand", "price": 150, "color": "#FF2E88", "days": "5 - 7", "popular": true, "name": {"es": "Branding Pro", "en": "Branding Pro", "fr": "Branding Pro"}, "tag": {"es": "Más popular", "en": "Most popular", "fr": "La plus choisie"}, "desc": {"es": "Logo + identidad visual completa con manual de marca.", "en": "Logo + full visual identity with a brand manual.", "fr": "Logo + identité visuelle complète avec charte graphique."}, "feats": {"es": ["3 propuestas de logo", "Paleta de color y tipografías", "Manual de marca en PDF", "Kit para redes sociales"], "en": ["3 logo proposals", "Color palette & typography", "PDF brand manual", "Social media kit"], "fr": ["3 propositions de logo", "Palette & typographies", "Charte graphique PDF", "Kit réseaux sociaux"]}, "items": [{"amt": 20, "t": "f1", "n": {"es": "Estrategia y concepto de marca", "en": "Brand strategy & concept", "fr": "Stratégie & concept de marque"}, "d": {"es": "Personalidad, valores y dirección visual de tu marca.", "en": "Your brand's personality, values and visual direction.", "fr": "Personnalité, valeurs et direction visuelle de votre marque."}}, {"amt": 60, "t": "f2", "n": {"es": "Diseño de logo (3 propuestas)", "en": "Logo design (3 proposals)", "fr": "Design du logo (3 propositions)"}, "d": {"es": "Tres caminos creativos; eliges uno y lo perfeccionamos.", "en": "Three creative routes; you pick one and we refine it.", "fr": "Trois pistes créatives ; vous en choisissez une, nous l'affinons."}}, {"amt": 25, "t": "f2", "n": {"es": "Paleta de color y tipografías", "en": "Color palette & typography", "fr": "Palette de couleurs & typographies"}, "d": {"es": "Sistema visual coherente para todos tus materiales.", "en": "A consistent visual system for all your materials.", "fr": "Un système visuel cohérent pour tous vos supports."}}, {"amt": 30, "t": "f3", "n": {"es": "Manual de marca", "en": "Brand manual", "fr": "Charte graphique"}, "d": {"es": "Guía en PDF con usos correctos, versiones y reglas.", "en": "PDF guide with correct usage, versions and rules.", "fr": "Guide PDF avec usages, versions et règles."}}, {"amt": 15, "t": "f4", "n": {"es": "Kit para redes sociales", "en": "Social media kit", "fr": "Kit réseaux sociaux"}, "d": {"es": "Foto de perfil, portadas y plantilla de historias.", "en": "Profile picture, covers and a story template.", "fr": "Photo de profil, bannières et modèle de stories."}}]}, {"id": "identity", "cat": "brand", "price": 300, "color": "#7B4DFF", "days": "8 - 12", "plus": true, "name": {"es": "Identidad Total", "en": "Full Identity", "fr": "Identité Totale"}, "tag": {"es": "Marca completa", "en": "Complete brand", "fr": "Marque complète"}, "desc": {"es": "Todo tu universo de marca: logo, manual, papelería y plantillas.", "en": "Your whole brand universe: logo, manual, stationery and templates.", "fr": "Tout l'univers de votre marque : logo, charte, papeterie et modèles."}, "feats": {"es": ["Todo lo de Branding Pro", "Papelería corporativa", "10 plantillas para Instagram", "Mockups de presentación"], "en": ["Everything in Branding Pro", "Corporate stationery", "10 Instagram templates", "Presentation mockups"], "fr": ["Tout Branding Pro", "Papeterie d'entreprise", "10 modèles Instagram", "Mockups de présentation"]}, "items": [{"amt": 150, "t": "f2", "n": {"es": "Branding Pro completo", "en": "Full Branding Pro", "fr": "Branding Pro complet"}, "d": {"es": "Estrategia, logo, paleta, tipografías, manual y kit de redes.", "en": "Strategy, logo, palette, typography, manual and social kit.", "fr": "Stratégie, logo, palette, typographies, charte et kit réseaux."}}, {"amt": 70, "t": "f3", "n": {"es": "Papelería corporativa", "en": "Corporate stationery", "fr": "Papeterie d'entreprise"}, "d": {"es": "Tarjetas de presentación, hoja membretada y firma de correo.", "en": "Business cards, letterhead and email signature.", "fr": "Cartes de visite, papier à en-tête et signature e-mail."}}, {"amt": 50, "t": "f3", "n": {"es": "10 plantillas para Instagram", "en": "10 Instagram templates", "fr": "10 modèles Instagram"}, "d": {"es": "Posts e historias editables con tu identidad.", "en": "Editable posts and stories in your identity.", "fr": "Posts et stories modifiables à votre image."}}, {"amt": 30, "t": "f4", "n": {"es": "Mockups y presentación de marca", "en": "Brand mockups & presentation", "fr": "Mockups & présentation de marque"}, "d": {"es": "Tu marca aplicada en escenarios reales para lucirla.", "en": "Your brand shown in real-life scenes.", "fr": "Votre marque mise en scène dans des situations réelles."}}]}, {"id": "social1", "cat": "social", "price": 120, "per": true, "color": "#00E5FF", "days": "3 - 5", "name": {"es": "Redes Start", "en": "Social Start", "fr": "Réseaux Start"}, "tag": {"es": "Presencia constante", "en": "Steady presence", "fr": "Présence régulière"}, "desc": {"es": "Tu Instagram activo y profesional todo el mes.", "en": "Your Instagram active and professional all month.", "fr": "Votre Instagram actif et professionnel tout le mois."}, "feats": {"es": ["1 red (Instagram)", "12 publicaciones al mes", "Diseño + textos + hashtags", "Reporte mensual"], "en": ["1 network (Instagram)", "12 posts per month", "Design + copy + hashtags", "Monthly report"], "fr": ["1 réseau (Instagram)", "12 publications par mois", "Design + textes + hashtags", "Rapport mensuel"]}, "items": [{"amt": 20, "t": "mo", "n": {"es": "Estrategia y calendario de contenido", "en": "Content strategy & calendar", "fr": "Stratégie & calendrier éditorial"}, "d": {"es": "Plan mensual de temas alineado a tus objetivos.", "en": "Monthly topic plan aligned with your goals.", "fr": "Plan mensuel de sujets aligné sur vos objectifs."}}, {"amt": 80, "t": "mo", "n": {"es": "12 publicaciones diseñadas", "en": "12 designed posts", "fr": "12 publications conçues"}, "d": {"es": "Diseño, textos persuasivos y hashtags; publicadas por nosotros.", "en": "Design, persuasive copy and hashtags; published by us.", "fr": "Design, textes persuasifs et hashtags ; publiés par nos soins."}}, {"amt": 20, "t": "mo", "n": {"es": "Reporte mensual de resultados", "en": "Monthly results report", "fr": "Rapport mensuel de résultats"}, "d": {"es": "Alcance, interacción y recomendaciones para el mes siguiente.", "en": "Reach, engagement and next-month recommendations.", "fr": "Portée, engagement et recommandations pour le mois suivant."}}]}, {"id": "social2", "cat": "social", "price": 220, "per": true, "color": "#7B4DFF", "days": "3 - 5", "popular": true, "name": {"es": "Redes Pro", "en": "Social Pro", "fr": "Réseaux Pro"}, "tag": {"es": "Más popular", "en": "Most popular", "fr": "La plus choisie"}, "desc": {"es": "Gestión completa para crecer y atender a tus clientes.", "en": "Full management to grow and serve your customers.", "fr": "Gestion complète pour grandir et répondre à vos clients."}, "feats": {"es": ["Instagram + Facebook", "16 posts + 12 historias", "2 reels al mes", "Respuesta a comentarios y DM"], "en": ["Instagram + Facebook", "16 posts + 12 stories", "2 reels per month", "Comment & DM replies"], "fr": ["Instagram + Facebook", "16 posts + 12 stories", "2 reels par mois", "Réponses aux commentaires & DM"]}, "items": [{"amt": 20, "t": "mo", "n": {"es": "Estrategia y calendario de contenido", "en": "Content strategy & calendar", "fr": "Stratégie & calendrier éditorial"}, "d": {"es": "Plan mensual para Instagram y Facebook.", "en": "Monthly plan for Instagram and Facebook.", "fr": "Plan mensuel pour Instagram et Facebook."}}, {"amt": 100, "t": "mo", "n": {"es": "16 publicaciones + 12 historias", "en": "16 posts + 12 stories", "fr": "16 publications + 12 stories"}, "d": {"es": "Diseño, textos y publicación en ambas redes.", "en": "Design, copy and publishing on both networks.", "fr": "Design, textes et publication sur les deux réseaux."}}, {"amt": 50, "t": "mo", "n": {"es": "2 reels editados", "en": "2 edited reels", "fr": "2 reels montés"}, "d": {"es": "Edición con música, subtítulos y portada.", "en": "Editing with music, captions and cover.", "fr": "Montage avec musique, sous-titres et couverture."}}, {"amt": 35, "t": "mo", "n": {"es": "Gestión de comunidad", "en": "Community management", "fr": "Gestion de communauté"}, "d": {"es": "Respuesta a comentarios y mensajes en horario laboral.", "en": "Replies to comments and messages during business hours.", "fr": "Réponses aux commentaires et messages aux heures ouvrées."}}, {"amt": 15, "t": "mo", "n": {"es": "Reporte mensual de resultados", "en": "Monthly results report", "fr": "Rapport mensuel de résultats"}, "d": {"es": "Métricas clave y próximos pasos.", "en": "Key metrics and next steps.", "fr": "Indicateurs clés et prochaines étapes."}}]}, {"id": "social3", "cat": "social", "price": 380, "per": true, "color": "#FF2E88", "days": "5 - 7", "plus": true, "name": {"es": "Redes Full", "en": "Social Full", "fr": "Réseaux Full"}, "tag": {"es": "Crecimiento total", "en": "Full growth", "fr": "Croissance totale"}, "desc": {"es": "Contenido, reels y publicidad para vender más cada mes.", "en": "Content, reels and ads to sell more every month.", "fr": "Contenu, reels et publicité pour vendre plus chaque mois."}, "feats": {"es": ["Hasta 3 redes", "20 posts + 30 historias", "4 reels al mes", "Campañas de anuncios"], "en": ["Up to 3 networks", "20 posts + 30 stories", "4 reels per month", "Ad campaigns"], "fr": ["Jusqu'à 3 réseaux", "20 posts + 30 stories", "4 reels par mois", "Campagnes publicitaires"]}, "items": [{"amt": 30, "t": "mo", "n": {"es": "Estrategia mensual y calendario", "en": "Monthly strategy & calendar", "fr": "Stratégie mensuelle & calendrier"}, "d": {"es": "Planificación para hasta 3 redes con objetivos de venta.", "en": "Planning for up to 3 networks with sales goals.", "fr": "Planification pour 3 réseaux avec objectifs de vente."}}, {"amt": 140, "t": "mo", "n": {"es": "20 publicaciones + 30 historias", "en": "20 posts + 30 stories", "fr": "20 publications + 30 stories"}, "d": {"es": "Diseño, textos y publicación en todas tus redes.", "en": "Design, copy and publishing on all your networks.", "fr": "Design, textes et publication sur tous vos réseaux."}}, {"amt": 100, "t": "mo", "n": {"es": "4 reels editados", "en": "4 edited reels", "fr": "4 reels montés"}, "d": {"es": "Guion, edición, subtítulos y portada.", "en": "Script, editing, captions and cover.", "fr": "Script, montage, sous-titres et couverture."}}, {"amt": 70, "t": "mo", "n": {"es": "Campañas de anuncios (gestión)", "en": "Ad campaigns (management)", "fr": "Campagnes publicitaires (gestion)"}, "d": {"es": "Configuración y optimización; la inversión en pauta va aparte.", "en": "Setup and optimization; ad spend is billed separately.", "fr": "Configuration et optimisation ; le budget publicitaire est en sus."}}, {"amt": 40, "t": "mo", "n": {"es": "Comunidad + reporte estratégico", "en": "Community + strategic report", "fr": "Communauté + rapport stratégique"}, "d": {"es": "Atención de comentarios y DM, métricas y ajustes.", "en": "Comments and DMs, metrics and adjustments.", "fr": "Commentaires et DM, indicateurs et ajustements."}}]}]);
+MODS.push(...[{"id": "brandanim", "cat": "brand", "price": 50, "icon": "i-tri", "t": "plus2", "n": {"es": "Logo animado", "en": "Animated logo", "fr": "Logo animé"}, "d": {"es": "Animación corta de tu logo para reels, historias e intros.", "en": "Short logo animation for reels, stories and intros.", "fr": "Courte animation du logo pour reels, stories et intros."}}, {"id": "brandcards", "cat": "brand", "price": 35, "icon": "i-cms", "t": "plus1", "n": {"es": "Tarjetas de presentación", "en": "Business cards", "fr": "Cartes de visite"}, "d": {"es": "Diseño de tarjeta a dos caras lista para imprenta.", "en": "Two-sided card design, print-ready.", "fr": "Carte recto-verso prête pour l'impression."}}, {"id": "brandtpl", "cat": "brand", "price": 40, "icon": "i-seo", "t": "plus1", "n": {"es": "10 plantillas para redes", "en": "10 social templates", "fr": "10 modèles réseaux"}, "d": {"es": "Posts e historias editables con tu identidad.", "en": "Editable posts and stories in your identity.", "fr": "Posts et stories modifiables à votre image."}}, {"id": "socialreel", "cat": "social", "price": 60, "icon": "i-tri", "t": "mo", "n": {"es": "+2 reels al mes", "en": "+2 reels per month", "fr": "+2 reels par mois"}, "d": {"es": "Más video corto para llegar a nuevas personas.", "en": "More short video to reach new people.", "fr": "Plus de vidéo courte pour toucher de nouveaux publics."}}, {"id": "socialads", "cat": "social", "price": 80, "icon": "i-seo", "t": "mo", "n": {"es": "Gestión de anuncios", "en": "Ads management", "fr": "Gestion des publicités"}, "d": {"es": "Campañas en Meta Ads; la inversión en pauta va aparte.", "en": "Meta Ads campaigns; ad spend billed separately.", "fr": "Campagnes Meta Ads ; budget publicitaire en sus."}}, {"id": "socialshoot", "cat": "social", "price": 90, "icon": "i-cms", "t": "mo", "n": {"es": "Sesión de fotos de producto", "en": "Product photo session", "fr": "Séance photo produit"}, "d": {"es": "Fotos profesionales de tus productos para el contenido.", "en": "Professional product photos for your content.", "fr": "Photos professionnelles de vos produits pour le contenu."}}]);
+const CATS = [
+ {id:"web",n:{es:"Páginas web",en:"Websites",fr:"Sites web"}},
+ {id:"brand",n:{es:"Logos y branding",en:"Logos & branding",fr:"Logos & branding"}},
+ {id:"social",n:{es:"Gestión de redes",en:"Social media",fr:"Réseaux sociaux"}}
+];
 const KMAIL = "kromatikweb@gmail.com", KWA = "584125302211", KWA_TXT = "+58 412 530 2211";
 
 /* Kromatik — presupuesto profesional.
@@ -1516,14 +1541,15 @@ const KPDF = (() => {
     text(tx, y + 23, L.i_total.toUpperCase(), 9, 'F2', '#FFFFFF', null, 1);
     text(W - M - 12, y + 24, inv.total, 14, 'F3', '#FFFFFF', 'r');
     y += 58;
-    text(tx, y, L.i_dep, 8.5, 'F1', GREY2); text(W - M, y, inv.dep, 9, 'F3', INK, 'r'); y += 14;
-    text(tx, y, L.i_bal, 8.5, 'F1', GREY2); text(W - M, y, inv.bal, 9, 'F3', INK, 'r'); y += 24;
+    text(tx, y, inv.depLabel || L.i_dep, 8.5, 'F1', GREY2); text(W - M, y, inv.dep, 9, 'F3', INK, 'r'); y += 14;
+    if (inv.bal) { text(tx, y, L.i_bal, 8.5, 'F1', GREY2); text(W - M, y, inv.bal, 9, 'F3', INK, 'r'); y += 14; }
+    y += 10;
     if (inv.bs) {
       ensure(70);
       rect(tx - 12, y - 12, 244, 50, '#FFF6E0');
       text(tx, y + 2, fill(L.i_rate, { d: inv.bs.date }), 8, 'F1', '#7A5A00'); text(W - M - 8, y + 2, inv.bs.rate, 8.5, 'F3', '#7A5A00', 'r');
       text(tx, y + 16, L.i_bs, 9, 'F2', INK); text(W - M - 8, y + 16, inv.bs.total, 10, 'F3', INK, 'r');
-      text(tx, y + 29, L.i_bs_dep, 8, 'F1', GREY2); text(W - M - 8, y + 29, inv.bs.dep, 8.5, 'F3', INK, 'r');
+      text(tx, y + 29, inv.depLabel || L.i_bs_dep, 8, 'F1', GREY2); text(W - M - 8, y + 29, inv.bs.dep, 8.5, 'F3', INK, 'r');
       y += 50;
       const nl = wrap(fill(L.i_rate_note, { d: inv.bs.date }), 7.5, 'F1', 244);
       nl.forEach((t, i) => text(tx - 12, y + i * 10, t, 7.5, 'F1', GREY)); y += nl.length * 10 + 12;
@@ -1541,7 +1567,7 @@ const KPDF = (() => {
       lines.forEach(([p, t], i) => { if (p) text(M + 14, y + 32 + i * 11.5, p, 8.2, 'F2', IRIS); text(M + 14 + (mark ? 14 : 0), y + 32 + i * 11.5, t, 8.2, 'F1', GREY2); });
       y += h + 12;
     };
-    box(L.i_cond, L.i_conds, 'b');
+    box(L.i_cond, inv.conds || L.i_conds, 'b');
     box(L.i_next, L.i_nexts.map(t => fill(t, { n: inv.no })), 'n');
     if (inv.notes) box(L.i_notes, [inv.notes.slice(0, 1200)], '');
 
@@ -2162,7 +2188,7 @@ const KSIM = (() => {
 (() => {
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   document.documentElement.classList.add('js');
-  const st = { lang: 'es', plan: 0, mods: new Set(), method: 'whatsapp', sim: 'shop', cart: [], slot: 0, inv: null };
+  const st = { lang: 'es', cat: 'web', plan: 0, mods: new Set(), method: 'whatsapp', sim: 'shop', cart: [], slot: 0, inv: null };
   const L = () => I18N[st.lang];
   const fmt = n => '$' + n.toLocaleString('en-US');
   const fmt2 = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
@@ -2337,21 +2363,40 @@ const KSIM = (() => {
 
   // ---------- plans & modules ----------
   const chk = '<svg><use href="#i-check"/></svg>';
+  const per = p => p.per ? L().per_mo : '';
+  const price = p => fmt(p.price) + (p.plus ? '+' : '');
   function total() { let t = PLANS[st.plan].price; st.mods.forEach(id => t += MODS.find(m => m.id === id).price); return t; }
+  function setPlan(i) {
+    st.plan = i; const c = PLANS[i].cat;
+    if (c !== st.cat) { st.cat = c; [...st.mods].forEach(id => { if (MODS.find(m => m.id === id).cat !== c) st.mods.delete(id); }); }
+  }
+  function renderCats() {
+    const d = L();
+    $('#planCats').innerHTML = CATS.map(c => `<button type="button" data-cat="${c.id}" class="${c.id === st.cat ? 'on' : ''}">${c.n[st.lang]}</button>`).join('');
+    $$('#planCats button').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.cat === st.cat) return;
+      const list = PLANS.map((p, i) => [p, i]).filter(([p]) => p.cat === b.dataset.cat);
+      setPlan((list.find(([p]) => p.popular) || list[0])[1]); renderPlans(); renderMods(); renderForm();
+    }));
+    $('#catP').textContent = d['cat_p_' + st.cat];
+    $('#modsLbl').textContent = d['md_lbl_' + st.cat];
+  }
   function renderPlans() {
     const d = L();
-    $('#plans').innerHTML = PLANS.map((p, i) => `
+    renderCats();
+    $('#plans').className = 'plans n' + PLANS.filter(p => p.cat === st.cat).length;
+    $('#plans').innerHTML = PLANS.map((p, i) => p.cat !== st.cat ? '' : `
       <article class="plan rv${i === st.plan ? ' on' : ''}" data-i="${i}" tabindex="0" role="radio" aria-checked="${i === st.plan}">
         <span class="glare"></span>
         <span class="tg" style="color:${p.color}">${p.tag[st.lang]}</span>
         <h3>${p.name[st.lang]}</h3>
         <p class="pd">${p.desc[st.lang]}</p>
-        <div class="pr">${fmt(p.price)}${p.plus ? '+' : ''}<small>USD</small></div>
+        <div class="pr">${price(p)}<small>USD${per(p)}</small></div>
         <ul>${p.feats[st.lang].map(f => `<li><span style="color:${p.color}">${chk}</span>${f}</li>`).join('')}</ul>
         <span class="sel"><span>${i === st.plan ? d.chosen : d.choose}</span><span class="rd"></span></span>
       </article>`).join('');
     $$('.plan').forEach(el => {
-      const pick = () => { st.plan = +el.dataset.i; renderPlans(); renderForm(); updateTotals(); };
+      const pick = () => { setPlan(+el.dataset.i); renderPlans(); renderMods(); renderForm(); updateTotals(); };
       el.addEventListener('click', pick);
       el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
       el.addEventListener('pointermove', e => {
@@ -2365,34 +2410,34 @@ const KSIM = (() => {
     updateTotals();
   }
   function renderMods() {
-    $('#mods').innerHTML = MODS.map(m => `
+    $('#mods').innerHTML = MODS.filter(m => m.cat === st.cat).map(m => `
       <button type="button" class="mod${st.mods.has(m.id) ? ' on' : ''}" data-id="${m.id}" aria-pressed="${st.mods.has(m.id)}">
         <span class="mod-top"><span class="mod-ic"><svg><use href="#${m.icon}"/></svg></span><span class="tog"></span></span>
-        <h4>${m.n[st.lang]}</h4><p>${m.d[st.lang]}</p><span class="pp">+${fmt(m.price)} USD</span>
+        <h4>${m.n[st.lang]}</h4><p>${m.d[st.lang]}</p><span class="pp">+${fmt(m.price)} USD${m.t === 'mo' ? L().per_mo : ''}</span>
       </button>`).join('');
     $$('.mod').forEach(b => b.addEventListener('click', () => toggleMod(b.dataset.id)));
   }
   function toggleMod(id) { st.mods.has(id) ? st.mods.delete(id) : st.mods.add(id); renderMods(); renderForm(); updateTotals(); }
   function updateTotals() {
     const t = total();
-    const lt = $('#liveTotal'); if (lt) lt.textContent = fmt(t) + (PLANS[st.plan].plus ? '+' : '');
+    const lt = $('#liveTotal'); if (lt) lt.textContent = fmt(t) + (PLANS[st.plan].plus ? '+' : '') + per(PLANS[st.plan]);
     const p = PLANS[st.plan];
     $('#sumRows').innerHTML = `<div class="sum-row"><span>${p.name[st.lang]}</span><span>${fmt(p.price)}</span></div>` +
       (st.mods.size ? [...st.mods].map(id => { const m = MODS.find(x => x.id === id); return `<div class="sum-row"><span>+ ${m.n[st.lang]}</span><span>${fmt(m.price)}</span></div>`; }).join('')
         : `<div class="sum-row"><span style="color:var(--ash)">${L().q_none}</span><span></span></div>`);
-    $('#sumTotal').textContent = fmt(t) + ' USD';
+    $('#sumTotal').textContent = fmt(t) + ' USD' + per(PLANS[st.plan]);
     const sb = $('#sumBs'); if (sb) { sb.hidden = !RATE; if (RATE) sb.textContent = L().q_bs.replace('{v}', (t * RATE.v).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })).replace('{d}', RATE.d); }
   }
 
   // ---------- quote form ----------
   function renderForm() {
     const sel = $('#cPlan');
-    sel.innerHTML = PLANS.map((p, i) => `<option value="${i}"${i === st.plan ? ' selected' : ''}>${p.name[st.lang]} · ${fmt(p.price)}${p.plus ? '+' : ''} USD</option>`).join('');
-    $('#chips').innerHTML = MODS.map(m => `<button type="button" class="achip${st.mods.has(m.id) ? ' on' : ''}" data-id="${m.id}" aria-pressed="${st.mods.has(m.id)}"><i></i>${m.n[st.lang]}</button>`).join('');
+    sel.innerHTML = CATS.map(c => `<optgroup label="${c.n[st.lang]}">` + PLANS.map((p, i) => p.cat !== c.id ? '' : `<option value="${i}"${i === st.plan ? ' selected' : ''}>${p.name[st.lang]} · ${price(p)} USD${per(p)}</option>`).join('') + '</optgroup>').join('');
+    $('#chips').innerHTML = MODS.filter(m => m.cat === st.cat).map(m => `<button type="button" class="achip${st.mods.has(m.id) ? ' on' : ''}" data-id="${m.id}" aria-pressed="${st.mods.has(m.id)}"><i></i>${m.n[st.lang]}</button>`).join('');
     $$('#chips .achip').forEach(b => b.addEventListener('click', () => toggleMod(b.dataset.id)));
     updateTotals();
   }
-  $('#cPlan').addEventListener('change', e => { st.plan = +e.target.value; renderPlans(); updateTotals(); });
+  $('#cPlan').addEventListener('change', e => { setPlan(+e.target.value); renderPlans(); renderMods(); renderForm(); });
   function setMethod(m) {
     st.method = m;
     $('#mWa').classList.toggle('on', m === 'whatsapp'); $('#mMail').classList.toggle('on', m === 'mail');
@@ -2436,21 +2481,23 @@ const KSIM = (() => {
   function invData() {
     const d = L(), p = PLANS[st.plan], lg = st.lang, v = st.inv;
     const tl = t => t === 'days' ? `${p.days} ${d.days}` : d[t];
+    const mt = m => m.t === 'mo' ? d.mo : d[m.ph || 'f3'];
     const planRows = p.items.map(it => ({ n: it.n[lg], d: it.d[lg], t: tl(it.t), v: it.amt }));
-    const modRows = [...st.mods].map(id => { const m = MODS.find(x => x.id === id); return { n: m.n[lg], d: m.d[lg], t: d[m.ph || 'f3'], v: m.price }; });
-    const incRows = d.inc.map((n, i) => ({ n, d: d.inc_d[i], t: i === 0 ? d.f4 : i === 1 ? d.f2 : d.f4, v: 0, free: true }));
+    const modRows = [...st.mods].map(id => { const m = MODS.find(x => x.id === id); return { n: m.n[lg], d: m.d[lg], t: mt(m), v: m.price }; });
+    const incK = p.cat === 'web' ? 'inc' : 'inc_' + p.cat;
+    const incRows = d[incK].map((n, i) => ({ n, d: d[incK + '_d'][i], t: p.per ? d.mo : i === 1 ? d.f2 : d.f4, v: 0, free: true }));
     const rows = planRows.concat(modRows);
     const sum = rows.reduce((s, r) => s + r.v, 0);
     const loc = lg === 'es' ? 'es-VE' : lg === 'fr' ? 'fr-FR' : 'en-US';
     const df = dt => dt.toLocaleDateString(loc, { day: 'numeric', month: 'long', year: 'numeric' });
     const until = new Date(v.date.getTime() + 15 * 864e5);
-    const extra = [...st.mods].reduce((s, id) => s + (MODS.find(x => x.id === id).t === 'plus2' ? 2 : 1), 0);
+    const extra = [...st.mods].reduce((s, id) => { const t = MODS.find(x => x.id === id).t; return s + (t === 'plus2' ? 2 : t === 'plus1' ? 1 : 0); }, 0);
     const [a, b] = p.days.split('-').map(x => +x.trim());
-    const eta = `${a + extra} - ${b + extra} ${d.days}`;
+    const eta = p.per ? d.eta_mo.replace('{d}', p.days) : `${a + extra} - ${b + extra} ${d.days}`;
     const groups = [{ title: `${d.i_grp_plan} · ${p.name[lg]}`, rows: planRows }];
     if (modRows.length) groups.push({ title: d.i_grp_mods, rows: modRows });
     groups.push({ title: d.i_grp_inc, rows: incRows });
-    return { d, p, rows, groups, sum, issued: df(v.date), until: df(until), eta, pref: v.method === 'whatsapp' ? 'WhatsApp' : d.i_mail };
+    return { d, p, per: !!p.per, conds: p.per ? [d.mo_note].concat(d.i_conds) : d.i_conds, rows, groups, sum, issued: df(v.date), until: df(until), eta, pref: v.method === 'whatsapp' ? 'WhatsApp' : d.i_mail };
   }
   function kpdfData() {
     const x = invData(), v = st.inv;
@@ -2458,8 +2505,8 @@ const KSIM = (() => {
     return { L: x.d, no: v.no, issued: x.issued, until: x.until, plan: x.p.name[st.lang], eta: x.eta, pref: x.pref,
       client: { name: v.name, company: v.company, wa: v.wa, mail: v.mail }, notes: v.notes,
       groups: x.groups.map(g => ({ title: g.title, rows: g.rows.map(m2) })),
-      sub: fmt2(x.sum), total: fmt2(x.sum) + (x.p.plus ? ' *' : ''), dep: fmt2(x.sum / 2), bal: fmt2(x.sum / 2), from: !!x.p.plus,
-      bs: RATE ? { rate: fmtBs(RATE.v), date: RATE.d, total: fmtBs(x.sum * RATE.v), dep: fmtBs(x.sum * RATE.v / 2) } : null };
+      sub: fmt2(x.sum), total: fmt2(x.sum) + (x.per ? x.d.per_mo : '') + (x.p.plus ? ' *' : ''), dep: x.per ? fmt2(x.sum) : fmt2(x.sum / 2), bal: x.per ? null : fmt2(x.sum / 2), depLabel: x.per ? x.d.i_monthly : null, conds: x.conds, from: !!x.p.plus,
+      bs: RATE ? { rate: fmtBs(RATE.v), date: RATE.d, total: fmtBs(x.sum * RATE.v), dep: fmtBs(x.sum * RATE.v / (x.per ? 1 : 2)) } : null };
   }
   function msgLines() {
     const x = invData(), d = x.d, v = st.inv;
@@ -2470,8 +2517,8 @@ const KSIM = (() => {
     if (v.mail) lines.push(`*${d.m_email}:* ${v.mail}`);
     lines.push(`*${d.wa_plan}:* ${x.p.name[st.lang]}`, '', `*${d.m_items}:*`);
     x.rows.forEach(r => lines.push(`${pad(++i)}. ${r.n} — ${fmt2(r.v)}`));
-    lines.push(`✓ ${d.i_grp_inc}: ${d.inc.join(' · ')}`);
-    lines.push('', `*${d.wa_total}:* ${fmt2(x.sum)}${x.p.plus ? ' *' : ''}`, `*${d.m_dep}:* ${fmt2(x.sum / 2)}`, ...(RATE ? [`*${d.m_bs}:* ${fmtBs(x.sum * RATE.v)} (${d.m_rate} ${RATE.d}: ${fmtBs(RATE.v)})`] : []), `*${d.m_eta}:* ${x.eta}`, `*${d.m_valid}:* ${x.until}`);
+    lines.push(`✓ ${d.i_grp_inc}: ${d[x.p.cat === 'web' ? 'inc' : 'inc_' + x.p.cat].join(' · ')}`);
+    lines.push('', `*${d.wa_total}:* ${fmt2(x.sum)}${x.per ? d.per_mo : ''}${x.p.plus ? ' *' : ''}`, ...(x.per ? [] : [`*${d.m_dep}:* ${fmt2(x.sum / 2)}`]), ...(RATE ? [`*${d.m_bs}:* ${fmtBs(x.sum * RATE.v)} (${d.m_rate} ${RATE.d}: ${fmtBs(RATE.v)})`] : []), `*${d.m_eta}:* ${x.eta}`, `*${d.m_valid}:* ${x.until}`);
     if (v.notes) lines.push('', `*${d.wa_notes}:* ${v.notes}`);
     return lines;
   }
@@ -2489,12 +2536,13 @@ const KSIM = (() => {
     let i = 0;
     $('#invRows').innerHTML = x.groups.map(g => `<tr class="grp"><td></td><td colspan="3">${esc(g.title)}</td></tr>` +
       g.rows.map(r => `<tr><td class="num">${pad(++i)}</td><td><div class="n">${esc(r.n)}</div><div class="dd">${esc(r.d)}</div></td><td class="c">${esc(r.t)}</td><td class="r">${r.free ? esc(d.i_free) : fmt2(r.v)}</td></tr>`).join('')).join('');
-    $('#invSub').textContent = fmt2(x.sum); $('#invTotal').textContent = fmt2(x.sum) + (x.p.plus ? ' *' : '');
-    $('#invDep').textContent = fmt2(x.sum / 2); $('#invBal').textContent = fmt2(x.sum / 2);
+    $('#invSub').textContent = fmt2(x.sum); $('#invTotal').textContent = fmt2(x.sum) + (x.per ? d.per_mo : '') + (x.p.plus ? ' *' : '');
+    $('#invDep').textContent = x.per ? fmt2(x.sum) : fmt2(x.sum / 2); $('#invBal').textContent = fmt2(x.sum / 2);
+    $('#invDep').previousElementSibling.textContent = x.per ? d.i_monthly : d.i_dep; $('#invBal').parentElement.hidden = x.per;
     $('#invBsBox').hidden = !RATE;
-    if (RATE) { $('#invRate').textContent = d.i_rate.replace('{d}', RATE.d); $('#invRateV').textContent = fmtBs(RATE.v); $('#invBs').textContent = fmtBs(x.sum * RATE.v); $('#invBsDep').textContent = fmtBs(x.sum * RATE.v / 2); $('#invBsNote').textContent = d.i_rate_note.replace('{d}', RATE.d); }
+    if (RATE) { $('#invRate').textContent = d.i_rate.replace('{d}', RATE.d); $('#invRateV').textContent = fmtBs(RATE.v); $('#invBs').textContent = fmtBs(x.sum * RATE.v); $('#invBsDep').textContent = fmtBs(x.sum * RATE.v / (x.per ? 1 : 2)); $('#invBsDep').previousElementSibling.textContent = x.per ? d.i_monthly : d.i_bs_dep; $('#invBsNote').textContent = d.i_rate_note.replace('{d}', RATE.d); }
     $('#invFrom').hidden = !x.p.plus; $('#invFrom').textContent = d.i_from;
-    $('#invConds').innerHTML = d.i_conds.map(t => `<li>${esc(t)}</li>`).join('');
+    $('#invConds').innerHTML = x.conds.map(t => `<li>${esc(t)}</li>`).join('');
     $('#invNext').innerHTML = d.i_nexts.map(t => `<li>${esc(t.replace('{n}', v.no))}</li>`).join('');
     $('#invNotesBox').hidden = !v.notes; $('#invNotes').textContent = v.notes;
     // salidas
@@ -2528,7 +2576,7 @@ const KSIM = (() => {
       'Cliente': v.name, 'Empresa': v.company || '—', 'WhatsApp del cliente': v.wa || '—', 'Correo del cliente': v.mail || '—',
       'Canal preferido': v.method === 'whatsapp' ? 'WhatsApp (el cliente abrió el chat)' : 'Correo',
       'Plan': x.p.name.es, 'Conceptos': x.rows.map(r => `${pad(++i)}. ${r.n} (${r.t}) — ${fmt2(r.v)}`).join('\n'),
-      'Total': fmt2(x.sum) + (x.p.plus ? ' (monto base, a medida)' : ''), 'Anticipo 50%': fmt2(x.sum / 2), 'Total en Bs. (tasa BCV €)': RATE ? `${fmtBs(x.sum * RATE.v)} — tasa ${fmtBs(RATE.v)} del ${RATE.d}` : 'Tasa BCV no disponible al momento', 'Plazo estimado': x.eta,
+      'Total': fmt2(x.sum) + (x.p.plus ? ' (monto base, a medida)' : ''), 'Anticipo 50%': x.per ? 'N/A (plan mensual, ' + fmt2(x.sum) + '/mes)' : fmt2(x.sum / 2), 'Total en Bs. (tasa BCV €)': RATE ? `${fmtBs(x.sum * RATE.v)} — tasa ${fmtBs(RATE.v)} del ${RATE.d}` : 'Tasa BCV no disponible al momento', 'Plazo estimado': x.eta,
       'Detalles del proyecto': v.notes || '—', 'Idioma de la web': st.lang.toUpperCase()
     };
     if (v.mail) { f.email = v.mail; f._replyto = v.mail;
@@ -2649,7 +2697,7 @@ const KSIM = (() => {
   function renderSim() { if (typeof KSIM !== 'undefined') KSIM.render(st.lang); }
   document.addEventListener('kmt:sim-order', e => {
     const { plan, notes, shop } = e.detail;
-    st.plan = plan; if (shop) st.mods.add('cms');
+    setPlan(plan); if (shop) st.mods.add('cms');
     renderPlans(); renderMods(); renderForm(); updateTotals();
     const m = $('#cMsg'); m.value = notes + (m.value && !m.value.startsWith(notes.split(':')[0]) ? '\n' + m.value : '');
     location.hash = '#presupuesto'; setTimeout(() => toast(L().t_sim, true), 700);
